@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MobileApps.App">
+    <!--
+    There is the color theme for app on the link https://colorscheme.ru/#4K61TUCODw0w0
+    -->
+    <Application.Resources>
+        <Color x:Key="Primary1">#FBBF3C</Color>
+        <Color x:Key="PrimaryShade1_1">#FFCD60</Color>
+        <Color x:Key="PrimaryShade1_2">#FFDA8B</Color>
+
+        <Color x:Key="SecondaryA1">#5138CC</Color>
+        <Color x:Key="SecondaryAShade1_1">#544699</Color>
+        <Color x:Key="SecondaryAShade1_2">#251285</Color>
+        <Color x:Key="SecondaryAShade1_3">#7E69E6</Color>
+        <Color x:Key="SecondaryAShade1_4">#998AE6</Color>
+
+        <Color x:Key="SecondaryB1">#2A8EC3</Color>
+        <Color x:Key="SecondaryBShade1_1">#3C7492</Color>
+        <Color x:Key="SecondaryBShade1_2">#0E577F</Color>
+        <Color x:Key="SecondaryBShade1_3">#5CB3E1</Color>
+        <Color x:Key="SecondaryBShade1_4">#80BFE1</Color>
+
+    </Application.Resources>
+</Application>

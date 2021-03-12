@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             BackgroundColor="White"
+             x:DataType="viewModels:NewReportViewModel"
+             x:Class="MobileApps.Views.NewReportPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout CompressedLayout.IsHeadless="true">
+                <Frame MinimumHeightRequest="400">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Entry Grid.Row="0"
+                           Text="{Binding NumberCar, Mode=TwoWay}"
+                           TextColor="Black" 
+                           HorizontalTextAlignment="Center"
+                           IsTextPredictionEnabled="False"
+                           Placeholder="A123BC"
+                           PlaceholderColor="Gray"
+                           MaxLength="6"
+                           FontSize="Title"></Entry>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Entry Grid.Column="0"
+                               Text="{Binding RegionCar, Mode=TwoWay}"
+                               TextColor="Black" 
+                               HorizontalTextAlignment="Center"
+                               IsTextPredictionEnabled="False"
+                               Placeholder="777"
+                               PlaceholderColor="Gray"
+                               MaxLength="3"
+                               Keyboard="Numeric"
+                               FontSize="Title"></Entry>
+                            <Entry Grid.Column="1"
+                               Text="{Binding CountryCar, Mode=TwoWay}"
+                               TextColor="Black" 
+                               HorizontalTextAlignment="Center"
+                               IsTextPredictionEnabled="False"
+                               Placeholder="RUS"
+                               PlaceholderColor="Gray"
+                               MaxLength="3"
+                               FontSize="Title"></Entry>
+                        </Grid>
+                        <Image Grid.Row="2"
+                           HorizontalOptions="Center"
+                           HeightRequest="70"
+                           WidthRequest="100"
+                           Source="{Binding Path=CountryFlag}"></Image>
+                    </Grid>
+                </Frame>
+                <Frame MinimumHeightRequest="500">
+                    <StackLayout Orientation="Vertical">
+                        <StackLayout Grid.Row="0" 
+                                 Orientation="Horizontal"
+                                 HorizontalOptions="Center">
+                            <ImageButton Source="_0__camera.png"
+                                     Command="{Binding TakePhotosCommand}"
+                                     BackgroundColor="Transparent"
+                                     HeightRequest="80"
+                                     WidthRequest="55"></ImageButton>
+                            <ImageButton Source="_0__image.png"
+                                     Command="{Binding PickPhotoCommand}"
+                                     BackgroundColor="Transparent"
+                                     HeightRequest="80"
+                                     WidthRequest="55"></ImageButton>
+                        </StackLayout>
+                        <!--<Frame Padding="0" 
+                           CornerRadius="20">
+                        <Image Source="{Binding ImagesPathsCollection[0]}"></Image>
+                    </Frame>
+                    <Frame Padding="0"
+                           CornerRadius="20">
+                        <Image Source="{Binding ImagesPathsCollection[1]}"></Image>
+                    </Frame>
+                    <Frame Padding="0"
+                           CornerRadius="20">
+                        <Image Source="{Binding ImagesPathsCollection[2]}"></Image>
+                    </Frame>-->
+                        <CollectionView Grid.Row="1"
+                                  ItemsSource="{Binding ImagesPathsCollection}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="ImageSource">
+                                    <Frame Padding="5"
+                                           Margin="10"
+                                           HeightRequest="200">
+                                        <Image Source="{Binding Path=.}"
+                                               Aspect="Fill"></Image>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Button Grid.Row="2" 
+                            TextColor="White"
+                            FontSize="Title"
+                            CornerRadius="10"
+                            BackgroundColor="{StaticResource SecondaryB1}"
+                            Command="{Binding SendReportCommand}"
+                            Text="Отправить жалобу"></Button>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

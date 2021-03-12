@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ext="clr-namespace:MobileApps.Models"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             BackgroundColor="White"
+             x:DataType="viewModels:ProfileViewModel"
+             x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Orientation="Vertical" Padding="10">
+                <Frame>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="6*"/>
+                        </Grid.ColumnDefinitions>
+                        <Frame Grid.Column="0"
+                               Padding="0"
+                               CornerRadius="100"
+                               IsClippedToBounds="True"
+                               HeightRequest="100"
+                               WidthRequest="100">
+                            <Image Source="_0__bank.png"
+                                   HeightRequest="150"
+                                   WidthRequest="150"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   BackgroundColor="Bisque"></Image>
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1"
+                                     HorizontalOptions="Center">
+                            <Label Text="{Binding Path=User.Username, Mode=OneWay}"
+                                   TextColor="Black"
+                                   FontSize="Title"></Label>
+                            <Label Text="{Binding Path=User.FirstName}"
+                                   TextColor="DimGray"
+                                   FontSize="Large"></Label>
+                            <Label Text="{Binding Path=User.LastName, Mode=OneWay}"
+                                   TextColor="DimGray"
+                                   FontSize="Large">
+                            </Label>
+                        </StackLayout>
+                    </Grid>
+                </Frame>
+                <Frame HeightRequest="150">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="8*"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0"
+                               Text="Ваши достижения"
+                               HorizontalTextAlignment="Center"
+                               FontSize="Large"
+                               TextColor="Black"/>
+                        <CarouselView Grid.Row="1">
+
+                        </CarouselView>
+                    </Grid>
+                </Frame>
+                <Frame HeightRequest="100">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0"
+                               Grid.Column="0"
+                               FontSize="Medium"
+                               TextColor="DodgerBlue"
+                               Text="В обработке:"></Label>
+                        <Label Grid.Row="0"
+                               Grid.Column="1"
+                               FontSize="Medium"
+                               Margin="10, 0"
+                               TextColor="DodgerBlue"
+                               Text="{Binding Path=User.CountProcessing}"></Label>
+                        <Label Grid.Row="1"
+                               Grid.Column="0"
+                               FontSize="Medium"
+                               TextColor="ForestGreen"
+                               Text="Принято:"></Label>
+                        <Label Grid.Row="1"
+                               Grid.Column="1"
+                               FontSize="Medium"
+                               TextColor="ForestGreen"
+                               Margin="10, 0"
+                               Text="{Binding Path=User.CountAccepted}"></Label>
+                        <Label Grid.Row="2"
+                               Grid.Column="0"
+                               FontSize="Medium"
+                               TextColor="DarkRed"
+                               Text="Отклонено:"></Label>
+                        <Label Grid.Row="2"
+                               Grid.Column="1"
+                               FontSize="Medium"
+                               TextColor="DarkRed"
+                               Margin="10, 0"
+                               Text="{Binding Path=User.CountDeclined}"></Label>
+                    </Grid>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

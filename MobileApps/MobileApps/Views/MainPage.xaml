@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:views="clr-namespace:MobileApps.Views;assembly=MobileApps"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             x:Class="MobileApps.MainPage"
+             mc:Ignorable="d"
+             BarBackgroundColor="{StaticResource SecondaryB1}"
+             UnselectedTabColor="{StaticResource SecondaryBShade1_2}"
+             SelectedTabColor="{StaticResource Primary1}">
+    <TabbedPage.Children>
+        <views:ReportsPage IconImageSource="_0__house.png"/>
+        <views:AchievementsPage IconImageSource="_0__movies_app.png"/>
+        <views:ProfilePage IconImageSource="_0__mortarboard.png"/>
+    </TabbedPage.Children>
+</TabbedPage>

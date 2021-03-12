@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             x:DataType="viewModels:ReportsViewModel"
+             mc:Ignorable="d"
+             BackgroundColor="White"
+             x:Class="MobileApps.Views.ReportsPage">
+    <ContentPage.Content>
+        <AbsoluteLayout>
+            <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+                <CollectionView ItemsSource="{Binding Path=Reports, Mode=OneWay}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="interfaces:IReport">
+                            <Frame Margin="10, 10"
+                                   Padding="15">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Frame Grid.Column="0"
+                                           Padding="0"
+                                           CornerRadius="100"
+                                           IsClippedToBounds="True"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           HeightRequest="125"
+                                           WidthRequest="125">
+                                        <Image Source="_0__bank.png"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               HeightRequest="150"
+                                               WidthRequest="150"
+                                               BackgroundColor="Bisque"></Image>
+                                    </Frame>
+                                    <Grid Grid.Column="1" Padding="0, 20">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="2*"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" 
+                                               Text="{Binding Path=BadCar.Number}"
+                                               FontSize="Title"
+                                               HorizontalTextAlignment="Center"
+                                               TextColor="Black"></Label>
+                                        <StackLayout Grid.Row="1" 
+                                                     Orientation="Horizontal"
+                                                     VerticalOptions="Start"
+                                                     HorizontalOptions="Center">
+                                            <Label Text="{Binding Path=BadCar.Region}"
+                                                   TextColor="Black"
+                                                   VerticalTextAlignment="Center"
+                                                   FontSize="Subtitle"></Label>
+                                            <Label Text="{Binding Path=BadCar.Country}"
+                                                   VerticalTextAlignment="Center"
+                                                   TextColor="Black"
+                                                   FontSize="Subtitle"></Label>
+                                            <Image Source="russia.png"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   HeightRequest="30"
+                                                   WidthRequest="30"></Image>
+                                        </StackLayout>
+                                        <Label Grid.Row="2" Text="{Binding Path=DateReported}"
+                                               TextColor="Gray"
+                                               VerticalTextAlignment="End"
+                                               HorizontalOptions="Center"
+                                               HorizontalTextAlignment="End"
+                                               FontSize="Medium"></Label>
+                                    </Grid>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+            <ImageButton Margin="15"
+                         Source="plus.png"
+                         Command="{Binding OpenNewReportPageCommand}"
+                         BackgroundColor="{StaticResource Primary1}"
+                         CornerRadius="100"
+                         Padding="10"
+                         AbsoluteLayout.LayoutBounds=".95, .95, 90, 90" 
+                         AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        </AbsoluteLayout>
+    </ContentPage.Content>
+</ContentPage>
