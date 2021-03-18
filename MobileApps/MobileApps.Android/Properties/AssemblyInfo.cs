@@ -39,3 +39,5 @@ using Android.App;
 // Add these properties if you would like to filter out devices that do not have cameras, or set to false to make them optional
 [assembly: UsesFeature("android.hardware.camera", Required = true)]
 [assembly: UsesFeature("android.hardware.camera.autofocus", Required = true)]
+// Access to check network state
+[assembly: UsesPermission(Android.Manifest.Permission.AccessNetworkState)]
