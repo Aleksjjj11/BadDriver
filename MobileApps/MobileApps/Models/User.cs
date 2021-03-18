@@ -98,7 +98,7 @@ namespace MobileApps.Models
             string accessToken = responseJson["access"]?.ToString();
 
             if (accessToken is null)
-                throw new Exception("Access token is null!");
+                throw new Exception("Ошибка авторизации");
             //Если токены успешно получены, необходимо получить полную информацию о юзере
             client = new RestClient($"{ipUrl}/reports/user-info/");
             client.Timeout = -1;
@@ -134,7 +134,7 @@ namespace MobileApps.Models
             string accessToken = responseJson["access"]?.ToString();
 
             if (accessToken is null)
-                throw new Exception("Access token is null!");
+                throw new Exception("Ошибка авторизации");
 
             client = new RestClient($"{ipUrl}/reports/user-reports/");
             client.Timeout = -1;

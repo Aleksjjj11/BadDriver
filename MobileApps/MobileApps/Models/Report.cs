@@ -36,7 +36,7 @@ namespace MobileApps.Models
         public Color ColorStatus => Status switch
         {
             StatusReport.Processing => Color.DeepSkyBlue,
-            StatusReport.Accepted => Color.Green,
+            StatusReport.Accepted => Color.ForestGreen,
             StatusReport.Declined => Color.DarkRed
         };
         public string Description { get; set; }
