@@ -9,20 +9,27 @@
              mc:Ignorable="d"
              BackgroundColor="White"
              x:Class="MobileApps.Views.ReportsPage">
+
     <ContentPage.Content>
         <AbsoluteLayout>
             <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-                <CollectionView ItemsSource="{Binding Path=Reports, Mode=OneWay}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="interfaces:IReport">
-                            <Frame Margin="10, 10"
+                <RefreshView IsRefreshing="{Binding IsBusy, Mode=TwoWay}"
+                             Command="{Binding RefreshInfoCommand}"
+                             RefreshColor="{StaticResource Primary1}">
+                    <CollectionView ItemsSource="{Binding Path=Reports, Mode=OneWay}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding Mode=TwoWay, Path=SelectedReport}"
+                                SelectionChangedCommand="{Binding MoreInfoReportCommand}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="interfaces:IReport">
+                                <Frame Margin="10, 10"
                                    Padding="15">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Frame Grid.Column="0"
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Frame Grid.Column="0"
                                            Padding="0"
                                            CornerRadius="100"
                                            IsClippedToBounds="True"
@@ -30,54 +37,63 @@
                                            VerticalOptions="Center"
                                            HeightRequest="125"
                                            WidthRequest="125">
-                                        <Image Source="_0__bank.png"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"
-                                               HeightRequest="150"
-                                               WidthRequest="150"
-                                               BackgroundColor="Bisque"></Image>
-                                    </Frame>
-                                    <Grid Grid.Column="1" Padding="0, 20">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="30"/>
-                                            <RowDefinition Height="30"/>
-                                            <RowDefinition Height="2*"/>
-                                        </Grid.RowDefinitions>
-                                        <Label Grid.Row="0" 
+                                            <Image Source="{Binding Path=ImagePreview}"
+                                                   Aspect="Fill"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   HeightRequest="150"
+                                                   WidthRequest="150"
+                                                   BackgroundColor="Bisque"></Image>
+                                        </Frame>
+                                        <Grid Grid.Column="1" Padding="0, 20">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Label Grid.Row="0" 
                                                Text="{Binding Path=BadCar.Number}"
                                                FontSize="Title"
                                                HorizontalTextAlignment="Center"
                                                TextColor="Black"></Label>
-                                        <StackLayout Grid.Row="1" 
+                                            <StackLayout Grid.Row="1" 
                                                      Orientation="Horizontal"
                                                      VerticalOptions="Start"
                                                      HorizontalOptions="Center">
-                                            <Label Text="{Binding Path=BadCar.Region}"
+                                                <Label Text="{Binding Path=BadCar.Region}"
                                                    TextColor="Black"
                                                    VerticalTextAlignment="Center"
                                                    FontSize="Subtitle"></Label>
-                                            <Label Text="{Binding Path=BadCar.Country}"
+                                                <Label Text="{Binding Path=BadCar.Country}"
                                                    VerticalTextAlignment="Center"
                                                    TextColor="Black"
                                                    FontSize="Subtitle"></Label>
-                                            <Image Source="russia.png"
+                                                <Image Source="russia.png"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"
                                                    HeightRequest="30"
                                                    WidthRequest="30"></Image>
-                                        </StackLayout>
-                                        <Label Grid.Row="2" Text="{Binding Path=DateReported}"
+                                            </StackLayout>
+                                            <Label Grid.Row="2"
+                                                   Text="{Binding Path=TextStatus, Mode=OneWay}"
+                                                   TextColor="{Binding Path=ColorStatus, Mode=OneWay}"
+                                                   FontSize="Title"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center"/>
+                                            <Label Grid.Row="3" Text="{Binding Path=DateReported}"
                                                TextColor="Gray"
                                                VerticalTextAlignment="End"
                                                HorizontalOptions="Center"
                                                HorizontalTextAlignment="End"
                                                FontSize="Medium"></Label>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </RefreshView>
             </Grid>
             <ImageButton Margin="15"
                          Source="plus.png"
