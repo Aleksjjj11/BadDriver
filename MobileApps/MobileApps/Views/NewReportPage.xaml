@@ -72,31 +72,24 @@
                                      HeightRequest="80"
                                      WidthRequest="55"></ImageButton>
                         </StackLayout>
-                        <!--<Frame Padding="0" 
-                           CornerRadius="20">
-                        <Image Source="{Binding ImagesPathsCollection[0]}"></Image>
-                    </Frame>
-                    <Frame Padding="0"
-                           CornerRadius="20">
-                        <Image Source="{Binding ImagesPathsCollection[1]}"></Image>
-                    </Frame>
-                    <Frame Padding="0"
-                           CornerRadius="20">
-                        <Image Source="{Binding ImagesPathsCollection[2]}"></Image>
-                    </Frame>-->
-                        <CollectionView Grid.Row="1"
-                                  ItemsSource="{Binding ImagesPathsCollection}">
-                            <CollectionView.ItemTemplate>
+                        <CarouselView ItemsSource="{Binding CompressedImagesPathsCollection}"
+                                      PeekAreaInsets="30"
+                                      HeightRequest="350">
+                            <CarouselView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal"
+                                                   ItemSpacing="20"/>
+                            </CarouselView.ItemsLayout>
+                            <CarouselView.ItemTemplate>
                                 <DataTemplate x:DataType="ImageSource">
-                                    <Frame Padding="5"
-                                           Margin="10"
-                                           HeightRequest="200">
+                                    <Frame Padding="0"
+                                           CornerRadius="10"
+                                           Margin="10">
                                         <Image Source="{Binding Path=.}"
                                                Aspect="Fill"></Image>
                                     </Frame>
                                 </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
                         <Button Grid.Row="2" 
                             TextColor="White"
                             FontSize="Title"

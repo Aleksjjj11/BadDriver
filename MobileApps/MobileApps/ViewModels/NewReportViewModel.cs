@@ -3,21 +3,27 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using Android.Graphics;
+using MobileApps.Interfaces;
+using MobileApps.Models;
 using SkiaSharp;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Path = System.IO.Path;
 
 namespace MobileApps.ViewModels
 {
     public class NewReportViewModel : BaseViewModel
     {
         private readonly Page _ownPage;
-        public ObservableCollection<ImageSource> ImagesPathsCollection { get; }
+        private  IUser _user => App.CurrentUser;
+        public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
+        public ObservableCollection<string> ImagesPathsCollection { get; }
 
         public NewReportViewModel(Page page)
         {
             _ownPage = page;
-            ImagesPathsCollection = new ObservableCollection<ImageSource>();
+            CompressedImagesPathsCollection = new ObservableCollection<ImageSource>();
+            ImagesPathsCollection = new ObservableCollection<string>();
         }
 
         private string _countryCar;
@@ -42,6 +48,17 @@ namespace MobileApps.ViewModels
             {
                 _numberCar = value.ToUpper();
                 OnPropertyChanged(nameof(NumberCar));
+            }
+        }
+
+        private string _description;
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                _description = value;
+                OnPropertyChanged(nameof(Description));
             }
         }
 
@@ -73,36 +90,44 @@ namespace MobileApps.ViewModels
         public ICommand PickPhotoCommand => new Command(() =>
         {
             PickPhoto();
-            OnPropertyChanged(nameof(ImagesPathsCollection));
+            OnPropertyChanged(nameof(CompressedImagesPathsCollection));
         });
 
         private async void PickPhoto()
         {
             try
             {
-                ImagesPathsCollection.Clear();
+                string folder = Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures);
+
+                CompressedImagesPathsCollection.Clear();
                 
                 var photo = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 1 фото",
 
                 });
+
                 string pathResizedPhoto = ResizeImage(1024, 100, photo);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
+                ImagesPathsCollection.Add(photo.FullPath);
 
                 var photo2 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 2 фото",
                 });
+
                 string pathResizedPhoto2 = ResizeImage(1024, 100, photo2);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
+                ImagesPathsCollection.Add(photo2.FullPath);
 
                 var photo3 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 3 фото",
                 });
+
                 string pathResizedPhoto3 = ResizeImage(1024, 100, photo3);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
+                ImagesPathsCollection.Add(photo3.FullPath);
             }
             catch (Exception ex)
             {
@@ -113,35 +138,42 @@ namespace MobileApps.ViewModels
         public ICommand TakePhotosCommand => new Command(() =>
         {
             TakePhoto();
-            OnPropertyChanged(nameof(ImagesPathsCollection));
+            OnPropertyChanged(nameof(CompressedImagesPathsCollection));
         });
 
         private async void TakePhoto()
         {
             try
             {
-                ImagesPathsCollection.Clear();
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
                 
                 var photo = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 1 фото",
                 });
+
                 string pathResizedPhoto = ResizeImage(1024, 100, photo);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
+                ImagesPathsCollection.Add(photo.FullPath);
 
                 var photo2 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 2 фото",
                 });
+
                 string pathResizedPhoto2 = ResizeImage(1024, 100, photo2);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
+                ImagesPathsCollection.Add(photo2.FullPath);
 
                 var photo3 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 3 фото",
                 });
+
                 string pathResizedPhoto3 = ResizeImage(1024, 100, photo3);
-                ImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
+                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
+                ImagesPathsCollection.Add(photo3.FullPath);
+
             }
             catch (Exception ex)
             {
@@ -160,14 +192,15 @@ namespace MobileApps.ViewModels
                 return;
             }
             //Проверка выбранных картинок
-            if (ImagesPathsCollection.Count != 3)
+            if (CompressedImagesPathsCollection.Count != 3)
             {
                 await _ownPage.DisplayAlert("Нехватка данных", "Не были выбрана или сделаны фотографии нарушения.", "Исправить");
                 return;
             }
 
             //Дальше будет отправка запроса на сервер
-
+            (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+            _ownPage.SendBackButtonPressed();
         }
 
         private bool IsCorrectData()
