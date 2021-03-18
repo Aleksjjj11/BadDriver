@@ -13,5 +13,7 @@ namespace MobileApps.Interfaces
         int CountDeclined { get; }
         int CountAccepted { get; }
         int CountProcessing { get; }
+        void Update(string ipUrl);
+        void UpdateReports(string ipUrl);
     }
 }
