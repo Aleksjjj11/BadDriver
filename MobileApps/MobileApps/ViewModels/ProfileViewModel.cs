@@ -1,20 +1,55 @@
-﻿using MobileApps.Interfaces;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
+using MobileApps.Interfaces;
 using MobileApps.Models;
+using MobileApps.Views;
+using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace MobileApps.ViewModels
 {
     public class ProfileViewModel : BaseViewModel
     {
-        public IUser User { get; set; }
-        public ProfileViewModel()
+        public IUser User => App.CurrentUser;
+        public bool IsBusy { get; set; }
+        private BackgroundWorker _bwUpdater;
+        private Page _ownPage;
+        public ProfileViewModel(Page page)
         {
-            User = new User
+            _ownPage = page;
+            _bwUpdater = new BackgroundWorker
             {
-                Username = "Taske",
-                Email = "Taske@mail.ru",
-                FirstName = "Фамилия",
-                LastName = "Имя"
+                WorkerReportsProgress = true
             };
+            _bwUpdater.DoWork += BwUpdaterOnDoWork;
+            _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
+            IsBusy = true;
+            _bwUpdater.RunWorkerAsync();
         }
+
+        private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            OnPropertyChanged(nameof(User));
+            IsBusy = false;
+            OnPropertyChanged(nameof(IsBusy));
+        }
+
+        private void BwUpdaterOnDoWork(object sender, DoWorkEventArgs e)
+        {
+            User.Update("http://188.225.83.42:7000");
+            User.UpdateReports("http://188.225.83.42:7000");
+            Log.Warning("INFO", "SCROLL!!!!!!!!!!!!!!!!!!");
+        }
+
+        public ICommand UpdateUserCommand => new Command(() =>
+        {
+            _bwUpdater.RunWorkerAsync();
+        });
+
+        public ICommand OpenSettings => new Command(() =>
+        {
+            _ownPage.Navigation.PushModalAsync(new AuthorizationPage());
+        });
     }
 }

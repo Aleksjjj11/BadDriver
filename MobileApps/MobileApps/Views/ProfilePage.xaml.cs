@@ -14,7 +14,7 @@ namespace MobileApps.Views
     {
         public ProfilePage()
         {
-            BindingContext = new ProfileViewModel();
+            BindingContext = new ProfileViewModel(this);
             InitializeComponent();
         }
     }
