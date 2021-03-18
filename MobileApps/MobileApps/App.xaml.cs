@@ -28,8 +28,8 @@ namespace MobileApps
                 {
                     CurrentUser = new User
                     {
-                        Username = Preferences.Get("username", "nick"),
-                        Password = Preferences.Get("password", "27062000")
+                        Username = Preferences.Get("username", "Annonim"),
+                        Password = Preferences.Get("password", "123")
                     };
                     CurrentUser.Update("http://188.225.83.42:7000");
                     CurrentUser.UpdateReports("http://188.225.83.42:7000");
@@ -39,11 +39,8 @@ namespace MobileApps
             {
                 CurrentUser = new User
                 {
-                    Username = "nick",
-                    Password = "27062000",
+                    Username = "Annonim",
                 };
-                CurrentUser.Update("http://188.225.83.42:7000");
-                CurrentUser.UpdateReports("http://188.225.83.42:7000");
             }
         }
 

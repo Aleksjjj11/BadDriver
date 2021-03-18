@@ -1,12 +1,118 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             BackgroundColor="White"
+             x:DataType="viewModels:AuthorizationViewModel"
              x:Class="MobileApps.Views.AuthorizationPage">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Hello, world!"
-                   VerticalOptions="CenterAndExpand"
-                   HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+       <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Frame Grid.Row="0"
+                   CornerRadius="20"
+                   BackgroundColor="{StaticResource SecondaryB1}">
+                <Label x:Name="AuthLabel"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"
+                       FontSize="40"
+                       TextColor="White"
+                       Text="Авторизация"/>
+            </Frame>
+            <Frame Grid.Row="1"
+                   CornerRadius="20"
+                   BackgroundColor="#22D3D3D3"
+                   Margin="30">
+                <ScrollView>
+                    <Grid>
+                    <StackLayout x:Name="AuthLayout"
+                                 IsVisible="{Binding IsAuthorization, Mode=OneWay}"
+                                 Spacing="30">
+                            <Entry Placeholder="Логин"
+                                   Text="{Binding Username, Mode=TwoWay}"
+                                   PlaceholderColor="DarkGray"
+                                   TextColor="Black"
+                                   FontSize="Title"
+                                   HorizontalTextAlignment="Center"></Entry>
+                            <Entry Placeholder="Пароль"
+                                   Text="{Binding Password, Mode=TwoWay}"
+                                   PlaceholderColor="DarkGray"
+                                   TextColor="Black"
+                                   FontSize="Title"
+                                   HorizontalTextAlignment="Center"
+                                   IsPassword="True"></Entry>
+                            <Button Text="Авторизоваться"
+                                    Command="{Binding SendForm}"
+                                    TextColor="White"
+                                    BackgroundColor="{StaticResource Primary1}"
+                                    CornerRadius="10"></Button>
+                            <Button Text="Я новенький"
+                                    Command="{Binding ChangeForm}"
+                                    TextColor="White"
+                                    BackgroundColor="{StaticResource SecondaryAShade1_1}"
+                                    CornerRadius="10"></Button>
+                            <Button Text="Забыл пароль"
+                                    TextColor="White"
+                                    BackgroundColor="{StaticResource SecondaryB1}"
+                                    CornerRadius="10"></Button>
+                    </StackLayout>
+                    <StackLayout x:Name="RegStackLayout"
+                                 Spacing="30"
+                                 IsVisible="{Binding IsRegistration, Mode=OneWay}">
+                        <Entry Placeholder="Логин"
+                               Text="{Binding Username, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"></Entry>
+                        <Entry Placeholder="Пароль"
+                               Text="{Binding Password, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"
+                               IsPassword="True"></Entry>
+                        <Entry Placeholder="Повторим пароль"
+                               Text="{Binding RepeatPassword, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"
+                               IsPassword="True"></Entry>
+                        <Entry Placeholder="Имя"
+                               Text="{Binding FirstName, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"></Entry>
+                        <Entry Placeholder="Фамилия"
+                               Text="{Binding LastName, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"></Entry>
+                        <Entry Placeholder="Почта"
+                               Text="{Binding Email, Mode=TwoWay}"
+                               PlaceholderColor="DarkGray"
+                               TextColor="Black"
+                               FontSize="Title"
+                               HorizontalTextAlignment="Center"></Entry>
+                        <Button Text="Зарегистрироваться"
+                                Command="{Binding SendForm}"
+                                TextColor="White"
+                                BackgroundColor="{StaticResource Primary1}"
+                                CornerRadius="10"></Button>
+                        <Button Text="Уже смешарик"
+                                Command="{Binding ChangeForm}"
+                                TextColor="White"
+                                BackgroundColor="{StaticResource SecondaryAShade1_1}"
+                                CornerRadius="10"></Button>
+                    </StackLayout>
+                </Grid>
+                </ScrollView>
+            </Frame>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
