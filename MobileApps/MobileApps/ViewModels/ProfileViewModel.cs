@@ -51,5 +51,11 @@ namespace MobileApps.ViewModels
         {
             _ownPage.Navigation.PushModalAsync(new AuthorizationPage());
         });
+
+        public ICommand LogoutCommand => new Command(() =>
+        {
+            App.CurrentUser = null;
+            App.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
+        });
     }
 }
