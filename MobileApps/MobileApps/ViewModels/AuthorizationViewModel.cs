@@ -7,6 +7,7 @@ using MobileApps.Models;
 using MobileApps.Views;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Application = Android.App.Application;
@@ -42,6 +43,8 @@ namespace MobileApps.ViewModels
         public AuthorizationViewModel(Page page)
         {
             _ownPage = page;
+            Username = App.CurrentUser?.Username;
+            Password = App.CurrentUser?.Password;
             _bwAuth = new BackgroundWorker();
             _bwAuth.DoWork += BwAuthOnDoWork;
             _bwAuth.RunWorkerCompleted += BwAuthOnRunWorkerCompleted;
@@ -58,7 +61,9 @@ namespace MobileApps.ViewModels
                         var user = e.Result as IUser;
                         (user as User)?.Update();
                         App.CurrentUser = user;
-                        _ownPage.SendBackButtonPressed();
+                        (_ownPage as AuthorizationPage).BackPressed();
+                        Preferences.Set("username", App.CurrentUser?.Username);
+                        Preferences.Set("password", App.CurrentUser?.Password);
                         Toast.MakeText(Application.Context, "Вы успешно зарегистрировались", ToastLength.Long)?.Show();
                     }
 
@@ -183,7 +188,15 @@ namespace MobileApps.ViewModels
             {
                 (user as User)?.Update();
                 App.CurrentUser = user;
-                _ownPage.SendBackButtonPressed();
+                (_ownPage as AuthorizationPage).BackPressed();
+                Preferences.Set("username", App.CurrentUser?.Username);
+                Preferences.Set("password", App.CurrentUser?.Password);
+                return "Вы успешно авторизировались!";
+            }
+            catch (InvalidOperationException ex)
+            {
+                Preferences.Set("username", App.CurrentUser?.Username);
+                Preferences.Set("password", App.CurrentUser?.Password);
                 return "Вы успешно авторизировались!";
             }
             catch (Exception ex)

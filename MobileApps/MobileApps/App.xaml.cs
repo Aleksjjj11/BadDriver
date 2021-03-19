@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using MobileApps.Interfaces;
 using MobileApps.Models;
+using MobileApps.Views;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Xamarin.Essentials;
@@ -37,17 +38,16 @@ namespace MobileApps
             }
             else
             {
-                CurrentUser = new User
-                {
-                    Username = "Annonim",
-                };
+                CurrentUser = null;
+                var page = new AuthorizationPage();
+                MainPage.Navigation.PushModalAsync(page);
             }
         }
 
         protected override void OnSleep()
         {
-            Preferences.Set("username", CurrentUser.Username);
-            Preferences.Set("password", CurrentUser.Password);
+            Preferences.Set("username", CurrentUser?.Username);
+            Preferences.Set("password", CurrentUser?.Password);
         }
 
         protected override void OnResume()

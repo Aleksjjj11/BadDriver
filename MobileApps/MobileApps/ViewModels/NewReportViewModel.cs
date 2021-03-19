@@ -73,7 +73,7 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(RegionCar));
             }
         }
-
+        
         public ImageSource CountryFlag 
         {
             get

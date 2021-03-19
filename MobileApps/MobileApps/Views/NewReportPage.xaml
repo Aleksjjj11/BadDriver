@@ -2,13 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
-             BackgroundColor="White"
+             BackgroundColor="#f1f1f1"
              x:DataType="viewModels:NewReportViewModel"
              x:Class="MobileApps.Views.NewReportPage">
     <ContentPage.Content>
         <ScrollView>
             <StackLayout CompressedLayout.IsHeadless="true">
-                <Frame MinimumHeightRequest="400">
+                <Frame MinimumHeightRequest="400"
+                       CornerRadius="20">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -56,7 +57,19 @@
                            Source="{Binding Path=CountryFlag}"></Image>
                     </Grid>
                 </Frame>
-                <Frame MinimumHeightRequest="500">
+                <Frame HeightRequest="200"
+                       CornerRadius="20">
+                    <ScrollView>
+                        <Editor Text="{Binding Description, Mode=TwoWay}"
+                                FontSize="Large"
+                                Placeholder="Описание жалобы"
+                                PlaceholderColor="Gray"
+                                TextColor="Black"
+                                MinimumHeightRequest="150"/>
+                    </ScrollView>
+                </Frame>
+                <Frame MinimumHeightRequest="500"
+                       CornerRadius="20">
                     <StackLayout Orientation="Vertical">
                         <StackLayout Grid.Row="0" 
                                  Orientation="Horizontal"

@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ext="clr-namespace:MobileApps.Models"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
-             BackgroundColor="White"
+             BackgroundColor="#f1f1f1"
              x:DataType="viewModels:ProfileViewModel"
              x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
     <ContentPage.Content>
@@ -13,10 +13,10 @@
                      Command="{Binding UpdateUserCommand}">
             <ScrollView>
                 <StackLayout Orientation="Vertical" Padding="10">
-                    <Frame>
+                    <Frame CornerRadius="20">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="100" />
                                 <ColumnDefinition Width="6*" />
                             </Grid.ColumnDefinitions>
                             <Frame Grid.Column="0"
@@ -35,7 +35,8 @@
                             </Frame>
 
                             <StackLayout Grid.Column="1"
-                                         HorizontalOptions="Center">
+                                         HorizontalOptions="Start"
+                                         Margin="20, 0">
                                 <Label Text="{Binding Path=User.Username, Mode=OneWay}"
                                        TextColor="Black"
                                        FontSize="Title" />
@@ -48,7 +49,8 @@
                             </StackLayout>
                         </Grid>
                     </Frame>
-                    <Frame HeightRequest="150">
+                    <Frame HeightRequest="150"
+                           CornerRadius="20">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*" />
@@ -62,9 +64,12 @@
                             <CarouselView Grid.Row="1" />
                         </Grid>
                     </Frame>
-                    <Frame HeightRequest="100">
+                    <Frame HeightRequest="150"
+                           Padding="10"
+                           CornerRadius="20">
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
@@ -75,32 +80,39 @@
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0"
                                    Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   FontSize="Title"
+                                   Text="Статистика"
+                                   TextColor="Black"
+                                   HorizontalOptions="Center"></Label>
+                            <Label Grid.Row="1"
+                                   Grid.Column="0"
                                    FontSize="Medium"
                                    TextColor="DodgerBlue"
                                    Text="В обработке:" />
-                            <Label Grid.Row="0"
+                            <Label Grid.Row="1"
                                    Grid.Column="1"
                                    FontSize="Medium"
                                    Margin="10, 0"
                                    TextColor="DodgerBlue"
                                    Text="{Binding Path=User.CountProcessing, Mode=OneWay}" />
-                            <Label Grid.Row="1"
+                            <Label Grid.Row="2"
                                    Grid.Column="0"
                                    FontSize="Medium"
                                    TextColor="ForestGreen"
                                    Text="Принято:" />
-                            <Label Grid.Row="1"
+                            <Label Grid.Row="2"
                                    Grid.Column="1"
                                    FontSize="Medium"
                                    TextColor="ForestGreen"
                                    Margin="10, 0"
                                    Text="{Binding Path=User.CountAccepted, Mode=OneWay}" />
-                            <Label Grid.Row="2"
+                            <Label Grid.Row="3"
                                    Grid.Column="0"
                                    FontSize="Medium"
                                    TextColor="DarkRed"
                                    Text="Отклонено:" />
-                            <Label Grid.Row="2"
+                            <Label Grid.Row="3"
                                    Grid.Column="1"
                                    FontSize="Medium"
                                    TextColor="DarkRed"
@@ -108,6 +120,11 @@
                                    Text="{Binding Path=User.CountDeclined, Mode=OneWay}" />
                         </Grid>
                     </Frame>
+                    <Button Text="Покинуть нас"
+                            CornerRadius="20"
+                            BackgroundColor="#55CD5C5C"
+                            TextColor="IndianRed"
+                            Command="{Binding LogoutCommand}"></Button>
                 </StackLayout>
             </ScrollView>
         </RefreshView>
