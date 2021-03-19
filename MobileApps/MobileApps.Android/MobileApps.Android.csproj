@@ -85,6 +85,21 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable\enter.png" />
+    <AndroidResource Include="Resources\fonts\Nunito_Black.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_BlackItalic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_Bold.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_BoldItalic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_ExtraBold.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_ExtraBoldItalic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_ExtraLight.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_ExtraLightItalic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_Italic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_Light.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_LightItalic.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_Regular.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_SemiBold.ttf" />
+    <AndroidResource Include="Resources\fonts\Nunito_SemiBoldItalic.ttf" />
     <AndroidResource Include="Resources\layout\Tabbar.xml" />
     <AndroidResource Include="Resources\layout\Toolbar.xml" />
     <AndroidResource Include="Resources\values\styles.xml" />
