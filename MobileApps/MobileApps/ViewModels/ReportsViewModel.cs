@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using MobileApps.Interfaces;
 using MobileApps.Models;
@@ -12,6 +13,7 @@ namespace MobileApps.ViewModels
     {
         private Page _ownPage;
         public ObservableCollection<IReport> Reports => App.CurrentUser.Reports;
+        public IReport[] ArrayReports => Reports.ToArray();
         public IReport SelectedReport { get; set; }
 
         private BackgroundWorker _bwUpdater;
@@ -34,7 +36,7 @@ namespace MobileApps.ViewModels
         {
             IsBusy = false;
             OnPropertyChanged(nameof(Reports));
-
+            OnPropertyChanged(nameof(ArrayReports));
         }
 
         private void BwUpdaterOnProgressChanged(object sender, ProgressChangedEventArgs e)

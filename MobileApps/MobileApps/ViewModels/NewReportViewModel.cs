@@ -19,6 +19,17 @@ namespace MobileApps.ViewModels
         public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
         public ObservableCollection<string> ImagesPathsCollection { get; }
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+        
         public NewReportViewModel(Page page)
         {
             _ownPage = page;
@@ -185,6 +196,7 @@ namespace MobileApps.ViewModels
 
         private async void SendReportToServer()
         {
+            IsBusy = true;
             //Проверка верно введённых данных
             if (IsCorrectData() == false)
             {
@@ -200,6 +212,7 @@ namespace MobileApps.ViewModels
 
             //Дальше будет отправка запроса на сервер
             (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+            IsBusy = false;
             _ownPage.SendBackButtonPressed();
         }
 

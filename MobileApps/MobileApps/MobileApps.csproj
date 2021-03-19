@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Com.Airbnb.Xamarin.Forms.Lottie" Version="4.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="RestSharp" Version="105.2.3" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
@@ -36,6 +37,11 @@
     <EmbeddedResource Update="Views\ReportsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <None Remove="Fonts\Comfortaa-Regular.ttf" />
+    <EmbeddedResource Include="Fonts\Comfortaa-Regular.ttf" />
+    <None Remove="Fonts\Nunito-Black.ttf" />
+    <EmbeddedResource Include="Fonts\Nunito-Black.ttf" />
+    <None Remove="Animations\19314-sequis-empty-state.json" />
   </ItemGroup>
 
   <ItemGroup>

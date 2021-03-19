@@ -5,11 +5,16 @@
              BackgroundColor="#f1f1f1"
              x:DataType="viewModels:NewReportViewModel"
              x:Class="MobileApps.Views.NewReportPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout CompressedLayout.IsHeadless="true">
-                <Frame MinimumHeightRequest="400"
-                       CornerRadius="20">
+            <StackLayout CompressedLayout.IsHeadless="true"
+                         Padding="10">
+                <Frame MinimumHeightRequest="400">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -57,8 +62,7 @@
                            Source="{Binding Path=CountryFlag}"></Image>
                     </Grid>
                 </Frame>
-                <Frame HeightRequest="200"
-                       CornerRadius="20">
+                <Frame HeightRequest="200">
                     <ScrollView>
                         <Editor Text="{Binding Description, Mode=TwoWay}"
                                 FontSize="Large"
@@ -68,8 +72,7 @@
                                 MinimumHeightRequest="150"/>
                     </ScrollView>
                 </Frame>
-                <Frame MinimumHeightRequest="500"
-                       CornerRadius="20">
+                <Frame MinimumHeightRequest="500">
                     <StackLayout Orientation="Vertical">
                         <StackLayout Grid.Row="0" 
                                  Orientation="Horizontal"
@@ -103,11 +106,17 @@
                                 </DataTemplate>
                             </CarouselView.ItemTemplate>
                         </CarouselView>
+                        <ActivityIndicator IsRunning="{Binding IsBusy, Mode=TwoWay}"
+                                           HeightRequest="100"
+                                           WidthRequest="100"
+                                           Color="{StaticResource Primary1}"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
                         <Button Grid.Row="2" 
                             TextColor="White"
                             FontSize="Title"
                             CornerRadius="10"
-                            BackgroundColor="{StaticResource SecondaryB1}"
+                            BackgroundColor="#ee2A8EC3"
                             Command="{Binding SendReportCommand}"
                             Text="Отправить жалобу"></Button>
                     </StackLayout>

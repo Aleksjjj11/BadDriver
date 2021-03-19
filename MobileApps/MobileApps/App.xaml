@@ -21,6 +21,31 @@
         <Color x:Key="SecondaryBShade1_2">#0E577F</Color>
         <Color x:Key="SecondaryBShade1_3">#5CB3E1</Color>
         <Color x:Key="SecondaryBShade1_4">#80BFE1</Color>
-
+        <Style TargetType="Entry" x:Key="EntryStyle">
+            <Setter Property="FontFamily" Value="Comfortaa"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="FontFamily" Value="Comfortaa"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
+        </Style>
+        <Style TargetType="Frame">
+            <Setter Property="CornerRadius" Value="15"></Setter>
+        </Style>
+        <Style TargetType="Entry">
+            <Setter Property="FontFamily" Value="Comfortaa"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
+        </Style>
+        <Style TargetType="Editor">
+            <Setter Property="FontFamily" Value="Comfortaa"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="Comfortaa"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
+        </Style>
+        <Style TargetType="ContentPage">
+            <Setter Property="BackgroundColor" Value="#F1F1F1"></Setter>
+        </Style>
     </Application.Resources>
 </Application>

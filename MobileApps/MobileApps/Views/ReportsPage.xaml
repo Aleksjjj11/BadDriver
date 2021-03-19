@@ -1,98 +1,135 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              x:DataType="viewModels:ReportsViewModel"
              mc:Ignorable="d"
-             BackgroundColor="White"
+             BackgroundColor="#f1f1f1"
              x:Class="MobileApps.Views.ReportsPage">
-
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
+                <Setter Property="FontFamily" Value="Comfortaa" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <AbsoluteLayout>
             <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
                 <RefreshView IsRefreshing="{Binding IsBusy, Mode=TwoWay}"
                              Command="{Binding RefreshInfoCommand}"
                              RefreshColor="{StaticResource Primary1}">
-                    <CollectionView ItemsSource="{Binding Path=Reports, Mode=OneWay}"
-                                SelectionMode="Single"
-                                SelectedItem="{Binding Mode=TwoWay, Path=SelectedReport}"
-                                SelectionChangedCommand="{Binding MoreInfoReportCommand}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="interfaces:IReport">
-                                <Frame Margin="10, 10"
-                                   Padding="15">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Frame Grid.Column="0"
-                                           Padding="0"
-                                           CornerRadius="100"
-                                           IsClippedToBounds="True"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center"
-                                           HeightRequest="125"
-                                           WidthRequest="125">
-                                            <Image Source="{Binding Path=ImagePreview}"
-                                                   Aspect="Fill"
+                    <ScrollView>
+                        <StackLayout>
+                            <BindableLayout.ItemsSource>
+                                <Binding Path="ArrayReports"
+                                         Mode="OneWay" />
+                            </BindableLayout.ItemsSource>
+                            <BindableLayout.EmptyView>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="3*"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" 
+                                           Text="Кажется тут пусто"
+                                           VerticalOptions="End"
+                                           FontSize="Title"
+                                           TextColor="{StaticResource SecondaryB1}"></Label>
+                                    <forms:AnimationView 
+                                        Grid.Row="1"
+                                        Animation="_19314_sequis_empty_state.json"
+                                        IsAnimating="True"
+                                        AnimationSource="AssetOrBundle"
+                                        AutoPlay="True"
+                                        RepeatMode="Infinite"
+                                        HeightRequest="300"
+                                        WidthRequest="300"
+                                        VerticalOptions="Start"
+                                        HorizontalOptions="Center" 
+                                        forms:CacheComposition="True"/>
+                                </Grid>
+                            </BindableLayout.EmptyView>
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="interfaces:IReport">
+                                    <Frame Margin="10, 5"
+                                           Padding="15">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Frame Grid.Column="0"
+                                                   Padding="0"
+                                                   CornerRadius="100"
+                                                   IsClippedToBounds="True"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"
-                                                   HeightRequest="150"
-                                                   WidthRequest="150"
-                                                   BackgroundColor="Bisque"></Image>
-                                        </Frame>
-                                        <Grid Grid.Column="1" Padding="0, 20">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="30"/>
-                                                <RowDefinition Height="30"/>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <Label Grid.Row="0" 
-                                               Text="{Binding Path=BadCar.Number}"
-                                               FontSize="Title"
-                                               HorizontalTextAlignment="Center"
-                                               TextColor="Black"></Label>
-                                            <StackLayout Grid.Row="1" 
-                                                     Orientation="Horizontal"
-                                                     VerticalOptions="Start"
-                                                     HorizontalOptions="Center">
-                                                <Label Text="{Binding Path=BadCar.Region}"
-                                                   TextColor="Black"
-                                                   VerticalTextAlignment="Center"
-                                                   FontSize="Subtitle"></Label>
-                                                <Label Text="{Binding Path=BadCar.Country}"
-                                                   VerticalTextAlignment="Center"
-                                                   TextColor="Black"
-                                                   FontSize="Subtitle"></Label>
-                                                <Image Source="russia.png"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center"
-                                                   HeightRequest="30"
-                                                   WidthRequest="30"></Image>
-                                            </StackLayout>
-                                            <Label Grid.Row="2"
-                                                   Text="{Binding Path=TextStatus, Mode=OneWay}"
-                                                   TextColor="{Binding Path=ColorStatus, Mode=OneWay}"
-                                                   FontSize="Title"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center"/>
-                                            <Label Grid.Row="3" Text="{Binding Path=DateReported}"
-                                               TextColor="Gray"
-                                               VerticalTextAlignment="End"
-                                               HorizontalOptions="Center"
-                                               HorizontalTextAlignment="End"
-                                               FontSize="Medium"></Label>
+                                                   HeightRequest="125"
+                                                   WidthRequest="125">
+                                                <Image Source="{Binding Path=ImagePreview}"
+                                                       Aspect="Fill"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="150"
+                                                       WidthRequest="150"
+                                                       BackgroundColor="Bisque" />
+                                            </Frame>
+                                            <Grid Grid.Column="1" Padding="0, 20">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+                                                <Label Grid.Row="0"
+                                                       Text="{Binding Path=BadCar.Number}"
+                                                       FontSize="Title"
+                                                       HorizontalTextAlignment="Center"
+                                                       TextColor="Black" />
+                                                <StackLayout Grid.Row="1"
+                                                             Orientation="Horizontal"
+                                                             VerticalOptions="Start"
+                                                             HorizontalOptions="Center">
+                                                    <Label Text="{Binding Path=BadCar.Region}"
+                                                           TextColor="Black"
+                                                           VerticalTextAlignment="Center"
+                                                           FontSize="Subtitle" />
+                                                    <Label Text="{Binding Path=BadCar.Country}"
+                                                           VerticalTextAlignment="Center"
+                                                           TextColor="Black"
+                                                           FontSize="Subtitle" />
+                                                    <Image Source="russia.png"
+                                                           HorizontalOptions="Center"
+                                                           VerticalOptions="Center"
+                                                           HeightRequest="30"
+                                                           WidthRequest="30" />
+                                                </StackLayout>
+                                                <Label Grid.Row="2"
+                                                       Text="{Binding Path=TextStatus, Mode=OneWay}"
+                                                       TextColor="{Binding Path=ColorStatus, Mode=OneWay}"
+                                                       FontSize="Title"
+                                                       VerticalOptions="Center"
+                                                       HorizontalOptions="Center" />
+                                                <Label Grid.Row="3" Text="{Binding Path=DateReported}"
+                                                       TextColor="Gray"
+                                                       VerticalTextAlignment="End"
+                                                       HorizontalOptions="Center"
+                                                       HorizontalTextAlignment="End"
+                                                       FontSize="Medium" />
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                    </Frame>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+                    </ScrollView>
                 </RefreshView>
             </Grid>
             <ImageButton Margin="15"
@@ -101,8 +138,8 @@
                          BackgroundColor="{StaticResource Primary1}"
                          CornerRadius="100"
                          Padding="10"
-                         AbsoluteLayout.LayoutBounds=".95, .95, 90, 90" 
-                         AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                         AbsoluteLayout.LayoutBounds=".95, .95, 90, 90"
+                         AbsoluteLayout.LayoutFlags="PositionProportional" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
