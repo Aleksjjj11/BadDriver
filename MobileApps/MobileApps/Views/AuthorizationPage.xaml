@@ -9,23 +9,28 @@
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="200" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="100" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            <Grid Grid.Row="0"
+                  BackgroundColor="{StaticResource SecondaryB1}" />
             <Frame Grid.Row="0"
+                   Grid.RowSpan="2"
                    BackgroundColor="{StaticResource SecondaryB1}">
                 <Label x:Name="AuthLabel"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
-                       FontSize="40"
+                       FontSize="Title"
                        TextColor="White"
-                       Text="Авторизация" />
+                       Text="{Binding Title}" />
             </Frame>
-            <Frame Grid.Row="1"
+
+            <Frame Grid.Row="2"
                    CornerRadius="20"
                    BackgroundColor="#44D3D3D3"
                    Margin="30">
-                <ScrollView>
+                <ScrollView VerticalScrollBarVisibility="Never">
                     <Grid>
                         <StackLayout x:Name="AuthLayout"
                                      IsVisible="{Binding IsAuthorization, Mode=OneWay}"

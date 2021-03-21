@@ -35,8 +35,15 @@ namespace MobileApps.ViewModels
                 _isAuthorization = value;
                 OnPropertyChanged(nameof(IsAuthorization));
                 OnPropertyChanged(nameof(IsRegistration));
+                OnPropertyChanged(nameof(Title));
             }
         }
+
+        public string Title => IsAuthorization switch
+        {
+            true => "Авторизация",
+            false => "Регистрация"
+        };
 
         public bool IsRegistration => !IsAuthorization;
 
