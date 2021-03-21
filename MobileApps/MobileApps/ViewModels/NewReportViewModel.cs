@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 using Android.Graphics;
@@ -18,6 +19,7 @@ namespace MobileApps.ViewModels
         private  IUser _user => App.CurrentUser;
         public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
         public ObservableCollection<string> ImagesPathsCollection { get; }
+        private BackgroundWorker _bwSenderReport;
 
         private bool _isBusy;
         public bool IsBusy
@@ -35,6 +37,22 @@ namespace MobileApps.ViewModels
             _ownPage = page;
             CompressedImagesPathsCollection = new ObservableCollection<ImageSource>();
             ImagesPathsCollection = new ObservableCollection<string>();
+            _bwSenderReport = new BackgroundWorker
+            {
+                WorkerReportsProgress = true
+            };
+            _bwSenderReport.DoWork += BwSenderReportOnDoWork;
+            _bwSenderReport.RunWorkerCompleted += BwSenderReportOnRunWorkerCompleted;
+        }
+
+        private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            
+        }
+
+        private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
+        {
+            
         }
 
         private string _countryCar;
