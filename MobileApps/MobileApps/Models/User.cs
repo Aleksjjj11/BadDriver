@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using MobileApps.Interfaces;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Xamarin.Forms;
@@ -22,6 +25,7 @@ namespace MobileApps.Models
         public User()
         {
             Reports = new ObservableCollection<IReport>();
+            Achievements = new ObservableCollection<IAchievement>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -86,25 +90,16 @@ namespace MobileApps.Models
         public int CountProcessing => Reports.Count(report => report.Status == StatusReport.Processing);
         public void Update(string ipUrl = "http://188.225.83.42:7000")
         {
-            //Получеам токены 
-            var client = new RestClient($"{ipUrl}/auth/login/");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("username", this.Username);
-            request.AddParameter("password", this.Password);
-            IRestResponse response = client.Execute(request);
-            JObject responseJson = new JObject(JObject.Parse(response.Content));
-            string accessToken = responseJson["access"]?.ToString();
+            string accessToken = GetAccessesToken(ipUrl);
 
             if (accessToken is null)
                 throw new Exception("Ошибка авторизации");
             //Если токены успешно получены, необходимо получить полную информацию о юзере
-            client = new RestClient($"{ipUrl}/reports/user-info/");
+            var client = new RestClient($"{ipUrl}/reports/user-info/");
             client.Timeout = -1;
-            request = new RestRequest(Method.GET);
+            var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
-            response = client.Execute(request);
+            var response = client.Execute(request);
             string content = response.Content.Replace("\\", "");
             JObject userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
             try
@@ -122,25 +117,16 @@ namespace MobileApps.Models
 
         public void UpdateReports(string ipUrl = "http://188.225.83.42:7000")
         {
-            //Получеам токены 
-            var client = new RestClient($"{ipUrl}/auth/login/");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("username", this.Username);
-            request.AddParameter("password", this.Password);
-            IRestResponse response = client.Execute(request);
-            JObject responseJson = new JObject(JObject.Parse(response.Content));
-            string accessToken = responseJson["access"]?.ToString();
+            string accessToken = GetAccessesToken(ipUrl);
 
             if (accessToken is null)
                 throw new Exception("Ошибка авторизации");
 
-            client = new RestClient($"{ipUrl}/reports/user-reports/");
+            var client = new RestClient($"{ipUrl}/reports/user-reports/");
             client.Timeout = -1;
-            request = new RestRequest(Method.GET);
+            var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
-            response = client.Execute(request);
+            var response = client.Execute(request);
             JArray reportsJArray = new JArray(JArray.Parse(response.Content));
             try
             {
@@ -167,25 +153,59 @@ namespace MobileApps.Models
             }
         }
 
+        public ObservableCollection<IAchievement> Achievements { get; set; }
+        public void GetAllAchievements(string ipUrl = "http://188.225.83.42:7000")
+        {
+            string accessToken = GetAccessesToken();
+            
+            if (accessToken is null)
+                throw new Exception("Ошибка авторизации");
+
+            var achievementCollection = new ObservableCollection<IAchievement>();
+
+            var client = new RestClient($"{ipUrl}/achivments/all_achivments/");
+            client.Timeout = -1;
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("Authorization", $"Bearer {accessToken}");
+            IRestResponse response = client.Execute(request);
+            JArray achievementsJArray = JArray.Parse(response.Content);
+            for (int i = 0; i < achievementsJArray.Count; i++)
+            {
+                string name = achievementsJArray[i]["achivment_name"]?.ToString();
+                if (name is null) continue;
+
+                string description = achievementsJArray[i]["achivment_description"]?.ToString();
+                if (description is null) continue;
+
+                string bigImage = ipUrl + achievementsJArray[i]["big_image"]?.ToString();
+                if (bigImage is null) continue;
+
+                string smallImage = ipUrl + achievementsJArray[i]["small_image"]?.ToString();
+                if (smallImage is null) continue;
+
+                var achieve = new Achievement
+                {
+                    Name = name,
+                    Description = description,
+                    SmallImage = smallImage,
+                    BigImage = bigImage
+                };
+                achievementCollection.Add(achieve);
+            }
+
+            Achievements = achievementCollection;
+        }
+
         public void SendReport(IReport report, string ipUrl = "http://188.225.83.42:7000")
         {
-            //Получеам токены 
-            var client = new RestClient($"{ipUrl}/auth/login/");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("username", this.Username);
-            request.AddParameter("password", this.Password);
-            IRestResponse response = client.Execute(request);
-            JObject responseJson = new JObject(JObject.Parse(response.Content));
-            string accessToken = responseJson["access"]?.ToString();
+            string accessToken = GetAccessesToken(ipUrl);
 
             if (accessToken is null)
                 throw new Exception("Access token is null!");
 
-            client = new RestClient($"{ipUrl}/reports/send/");
+            var client = new RestClient($"{ipUrl}/reports/send/");
             client.Timeout = -1;
-            request = new RestRequest(Method.POST);
+            var request = new RestRequest(Method.POST);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
             request.AddParameter("user_name", this.Username);
             request.AddParameter("car_number", report.BadCar.Number);
@@ -197,7 +217,27 @@ namespace MobileApps.Models
             request.AddFile("image_1", report.ImagesPaths[0]);
             request.AddFile("image_2", report.ImagesPaths[1]);
             request.AddFile("image_3", report.ImagesPaths[2]);
-            response = client.Execute(request);
+            var response = client.Execute(request);
+        }
+        /// <summary>
+        /// Метод отправляет запрос на авторизацию и получает токен доступа. При провальной авторизации возвращает null.
+        /// </summary>
+        /// <param name="ipUrl">Ссылка на сервер формата http://xxxx.xxxx.xxxx.xxxx:xxxx</param>
+        /// <returns></returns>
+        private string GetAccessesToken(string ipUrl = "http://188.225.83.42:7000")
+        {
+            string accessToken;
+            //Получеам токены 
+            var client = new RestClient($"{ipUrl}/auth/login/");
+            client.Timeout = -1;
+            var request = new RestRequest(Method.POST);
+            request.AlwaysMultipartFormData = true;
+            request.AddParameter("username", this.Username);
+            request.AddParameter("password", this.Password);
+            IRestResponse response = client.Execute(request);
+            JObject responseJson = new JObject(JObject.Parse(response.Content));
+            accessToken = responseJson["access"]?.ToString();
+            return accessToken;
         }
     }
 }

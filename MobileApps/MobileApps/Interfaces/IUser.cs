@@ -15,5 +15,7 @@ namespace MobileApps.Interfaces
         int CountProcessing { get; }
         void Update(string ipUrl);
         void UpdateReports(string ipUrl);
+        ObservableCollection<IAchievement> Achievements { get; set; }
+        void GetAllAchievements(string ipUrl);
     }
 }

@@ -1,34 +1,100 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             BackgroundColor="White"
+             BackgroundColor="#F1F1F1"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
+             xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             x:DataType="viewModels:AchievementsViewModel"
              x:Class="MobileApps.Views.AchievementsPage">
     <ContentPage.Resources>
-        <ResourceDictionary>
-        </ResourceDictionary>
+        <ResourceDictionary />
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0"
-                   Text="Бойся каждого у кого в руках телефон или примкни к нам"
-                   TextColor="Brown"
-                   HorizontalOptions="Center"
-                   LineBreakMode="WordWrap"
-                   HorizontalTextAlignment="Center"></Label>
-            <StackLayout Grid.Row="1">
-                <Frame BackgroundColor="#BBFBBF3C">
-                    <Label Text="Крысьи заказы"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center"
-                           TextColor="Black"
-                           FontSize="Title"></Label>
-                </Frame>
-                <Frame></Frame>
-            </StackLayout>
-        </Grid>
+        <RefreshView IsRefreshing="{Binding Path=IsBusy, Mode=TwoWay}"
+                     Command="{Binding Path=RefreshUser}"
+                     RefreshColor="{StaticResource Primary1}">
+            <ScrollView>
+                <StackLayout Grid.Row="2" Padding="10">
+                    <BindableLayout.ItemsSource>
+                        <Binding Path="ArrayAchievements" />
+                    </BindableLayout.ItemsSource>
+                    <BindableLayout.EmptyView>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="3*" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0"
+                                   Text="Кажется тут пусто"
+                                   VerticalOptions="End"
+                                   HorizontalOptions="Center"
+                                   FontSize="Title"
+                                   TextColor="{StaticResource SecondaryB1}" />
+                            <forms:AnimationView
+                                Grid.Row="1"
+                                Animation="_19314_sequis_empty_state.json"
+                                IsAnimating="True"
+                                AnimationSource="AssetOrBundle"
+                                AutoPlay="True"
+                                RepeatMode="Infinite"
+                                HeightRequest="300"
+                                WidthRequest="300"
+                                VerticalOptions="Start"
+                                HorizontalOptions="Center"
+                                forms:CacheComposition="True" />
+                        </Grid>
+                    </BindableLayout.EmptyView>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="interfaces:IAchievement">
+                            <Frame>
+                                <Grid HeightRequest="170">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="3*" />
+                                        <RowDefinition Height="4*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="3*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Frame Grid.Row="0"
+                                           Grid.RowSpan="2"
+                                           Grid.Column="0" 
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Center"
+                                           Padding="0"
+                                           HeightRequest="120"
+                                           WidthRequest="120"
+                                           IsClippedToBounds="True"
+                                           CornerRadius="200">
+                                        <Image Source="{Binding SmallImage}"
+                                               Aspect="Fill"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="Center"
+                                               Margin="10" />
+                                    </Frame>
+
+                                    <Label Grid.Column="1"
+                                           Grid.Row="0"
+                                           Text="{Binding Name}"
+                                           Margin="10, 0"
+                                            LineBreakMode="WordWrap"
+                                           FontSize="Large" />
+                                    <Label Grid.Column="1"
+                                           Grid.Row="1"
+                                           FontSize="Subtitle"
+                                           TextColor="Gray"
+                                           VerticalOptions="Start"
+                                           Margin="10"
+                                           Text="{Binding Description}" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </ScrollView>
+        </RefreshView>
     </ContentPage.Content>
 </ContentPage>

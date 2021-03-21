@@ -4,13 +4,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ext="clr-namespace:MobileApps.Models"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              BackgroundColor="#f1f1f1"
              x:DataType="viewModels:ProfileViewModel"
              x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
     <ContentPage.Resources>
-        <ResourceDictionary>
-            
-        </ResourceDictionary>
+        <ResourceDictionary />
     </ContentPage.Resources>
     <ContentPage.Content>
         <RefreshView RefreshColor="{StaticResource Primary1}"
@@ -58,14 +57,44 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*" />
-                                <RowDefinition Height="8*" />
+                                <RowDefinition Height="12*" />
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0"
                                    Text="Ваши достижения"
                                    HorizontalTextAlignment="Center"
                                    FontSize="Large"
                                    TextColor="Black" />
-                            <CarouselView Grid.Row="1" />
+                            <StackLayout Grid.Row="1"
+                                         Orientation="Horizontal">
+                                <BindableLayout.ItemsSource>
+                                    <Binding Path="User.Achievements" />
+                                </BindableLayout.ItemsSource>
+                                <BindableLayout.EmptyView>
+                                    <Grid HorizontalOptions="CenterAndExpand">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="2*" />
+                                            <RowDefinition Height="3*" />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0"
+                                               Text="Кажется тут пусто"
+                                               VerticalOptions="End"
+                                               FontSize="Medium"
+                                               TextColor="{StaticResource SecondaryB1}" />
+                                        <forms:AnimationView
+                                            Grid.Row="1"
+                                            Animation="_19314_sequis_empty_state.json"
+                                            IsAnimating="True"
+                                            AnimationSource="AssetOrBundle"
+                                            AutoPlay="True"
+                                            RepeatMode="Infinite"
+                                            HeightRequest="200"
+                                            WidthRequest="200"
+                                            VerticalOptions="Start"
+                                            HorizontalOptions="Center"
+                                            forms:CacheComposition="True" />
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                            </StackLayout>
                         </Grid>
                     </Frame>
                     <Frame Padding="10">
@@ -87,7 +116,7 @@
                                    FontSize="Title"
                                    Text="Статистика"
                                    TextColor="Black"
-                                   HorizontalOptions="Center"></Label>
+                                   HorizontalOptions="Center" />
                             <Label Grid.Row="1"
                                    Grid.Column="0"
                                    FontSize="Medium"
@@ -138,7 +167,7 @@
                             CornerRadius="20"
                             BackgroundColor="#55CD5C5C"
                             TextColor="IndianRed"
-                            Command="{Binding LogoutCommand}"></Button>
+                            Command="{Binding LogoutCommand}" />
                 </StackLayout>
             </ScrollView>
         </RefreshView>

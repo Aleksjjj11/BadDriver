@@ -11,7 +11,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <ScrollView>
+        <ScrollView VerticalScrollBarVisibility="Never">
             <StackLayout CompressedLayout.IsHeadless="true"
                          Padding="10">
                 <Frame MinimumHeightRequest="400">

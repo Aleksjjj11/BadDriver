@@ -4,6 +4,7 @@ using System.Windows.Input;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -55,6 +56,13 @@ namespace MobileApps.ViewModels
         public ICommand LogoutCommand => new Command(() =>
         {
             App.CurrentUser = null;
+            
+            if (Preferences.ContainsKey("username"))
+                Preferences.Clear("username");
+            
+            if (Preferences.ContainsKey("password"))
+                Preferences.Clear("password");
+            
             App.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
         });
     }

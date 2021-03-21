@@ -19,7 +19,7 @@ namespace MobileApps.Droid
 
             base.OnCreate(savedInstanceState);
 
-            Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
+            Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#2A8EC3"));
             //Lottie.Forms.AnimationView.Init();
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);

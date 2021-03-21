@@ -34,6 +34,7 @@ namespace MobileApps
                     };
                     CurrentUser.Update("http://188.225.83.42:7000");
                     CurrentUser.UpdateReports("http://188.225.83.42:7000");
+                    CurrentUser.GetAllAchievements("http://188.225.83.42:7000");
                 }
             }
             else
