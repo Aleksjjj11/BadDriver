@@ -100,6 +100,8 @@ namespace MobileApps.Models
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
             var response = client.Execute(request);
+            if (response.StatusCode == 0)
+                throw new Exception("Сервер не отвечает");
             string content = response.Content.Replace("\\", "");
             JObject userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
             try
@@ -127,6 +129,8 @@ namespace MobileApps.Models
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
             var response = client.Execute(request);
+            if (response.StatusCode == 0)
+                throw new Exception("Сервер не отвечает");
             JArray reportsJArray = new JArray(JArray.Parse(response.Content));
             try
             {
@@ -168,6 +172,8 @@ namespace MobileApps.Models
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
             IRestResponse response = client.Execute(request);
+            if (response.StatusCode == 0)
+                throw new Exception("Сервер не отвечает");
             JArray achievementsJArray = JArray.Parse(response.Content);
             for (int i = 0; i < achievementsJArray.Count; i++)
             {
@@ -235,6 +241,8 @@ namespace MobileApps.Models
             request.AddParameter("username", this.Username);
             request.AddParameter("password", this.Password);
             IRestResponse response = client.Execute(request);
+            if (response.StatusCode == 0)
+                throw new Exception("Сервер не отвечает");
             JObject responseJson = new JObject(JObject.Parse(response.Content));
             accessToken = responseJson["access"]?.ToString();
             return accessToken;
