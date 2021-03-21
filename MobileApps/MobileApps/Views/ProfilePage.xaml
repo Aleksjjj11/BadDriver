@@ -56,7 +56,7 @@
                     <Frame HeightRequest="200">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="3*" />
                                 <RowDefinition Height="12*" />
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0"

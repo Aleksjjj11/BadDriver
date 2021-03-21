@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 using Android.Graphics;
+using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using SkiaSharp;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Application = Android.App.Application;
 using Path = System.IO.Path;
 
 namespace MobileApps.ViewModels
@@ -43,16 +45,42 @@ namespace MobileApps.ViewModels
             };
             _bwSenderReport.DoWork += BwSenderReportOnDoWork;
             _bwSenderReport.RunWorkerCompleted += BwSenderReportOnRunWorkerCompleted;
+            _bwSenderReport.ProgressChanged += BwSenderReportOnProgressChanged;
+        }
+
+        private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            Toast.MakeText(Application.Context, (string)e.UserState, ToastLength.Long)?.Show();
         }
 
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            
+            IsBusy = false;
+            Toast.MakeText(Application.Context, "Жалоба отправлена!", ToastLength.Long);
+            _ownPage.SendBackButtonPressed();
         }
 
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
+            IsBusy = true;
+            //Проверка верно введённых данных
+            if (IsCorrectData() == false)
+            {
+                _bwSenderReport.ReportProgress(1, "Вы ввели номер машины неверного формата");
+                return;
+            }
             
+            //Проверка выбранных картинок
+            if (CompressedImagesPathsCollection.Count != 3)
+            {
+                //Toast.MakeText(Application.Context, "Не были выбрана или сделаны фотографии нарушения.", ToastLength.Long);
+                _bwSenderReport.ReportProgress(2, "Не были выбрана или сделаны фотографии нарушения.");
+                return;
+            }
+            //Toast.MakeText(Application.Context, "Всё верно, отправляем жалобу!", ToastLength.Long);
+            _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
+            //Дальше будет отправка запроса на сервер
+            (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
         }
 
         private string _countryCar;
@@ -210,7 +238,10 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand SendReportCommand => new Command(SendReportToServer);
+        public ICommand SendReportCommand => new Command(() =>
+        {
+            _bwSenderReport.RunWorkerAsync();
+        });
 
         private async void SendReportToServer()
         {
