@@ -481,6 +481,7 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\_19314_sequis_empty_state.json" />
     <AndroidAsset Include="Assets\_52055_sending_confirmation.json" />
+    <AndroidAsset Include="Assets\_8359_loading_animation.json" />
     <EmbeddedResource Include="Assets\_53175_ball_spinner.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
