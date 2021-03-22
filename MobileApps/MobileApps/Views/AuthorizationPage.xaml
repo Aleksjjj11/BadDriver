@@ -24,11 +24,12 @@
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"
                                  FontSize="Title"
-                                 TextColor="{Binding TitleColor}"
+                                 TextColor="White"
+                                 IsVisible="{Binding VisibleTitle}"
                                  Text="{Binding Title}" />
                           <forms:AnimationView 
                                  Margin="10"
-                                 Animation="_52055_sending_confirmation.json"
+                                 Animation="_8359_loading_animation.json"
                                  IsAnimating="{Binding IsBusy}"
                                  IsVisible="{Binding IsBusy}"
                                  AnimationSource="AssetOrBundle"

@@ -35,16 +35,12 @@ namespace MobileApps.ViewModels
             {
                 _isBusy = value;
                 OnPropertyChanged(nameof(IsBusy));
-                OnPropertyChanged(nameof(TitleColor));
+                OnPropertyChanged(nameof(VisibleTitle));
             }
         }
 
-        public Color TitleColor => IsBusy switch
-        {
-            true => Color.FromHex("#2A8EC3"),
-            false => Color.White
-        };
-
+        public bool VisibleTitle => !IsBusy;
+        
         public bool IsAuthorization
         {
             get => _isAuthorization;
@@ -85,7 +81,6 @@ namespace MobileApps.ViewModels
                     if (e?.Result is User)
                     {
                         var user = e.Result as IUser;
-                        (user as User)?.Update();
                         App.CurrentUser = user;
                         (_ownPage as AuthorizationPage).BackPressed();
                         Preferences.Set("username", App.CurrentUser?.Username);
@@ -109,6 +104,12 @@ namespace MobileApps.ViewModels
         private void BwAuthOnDoWork(object sender, DoWorkEventArgs e)
         {
             e.Result = IsAuthorization ? AuthorizationRequest() : RegistrationRequest();
+            if (e.Result is User user)
+            {
+                user?.Update();
+                user?.UpdateReports();
+                user?.GetAllAchievements();
+            }
         }
 
         public string Username  
