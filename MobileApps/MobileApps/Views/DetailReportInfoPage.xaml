@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             x:Class="MobileApps.Views.DetailReportInfoPage"
+             x:DataType="viewModels:DetailReportInfoViewModel"
+             BackgroundColor="#f1f1f1">
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <ScrollView>
+                <StackLayout CompressedLayout.IsHeadless="true">
+                    <Frame MinimumHeightRequest="400" 
+                           Padding="0"
+                           CornerRadius="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Label Grid.Row="0"
+                                       FontSize="50"
+                                       VerticalOptions="Start"
+                                       HorizontalOptions="Center"
+                                       Text="{Binding Report.TextStatus}"
+                                       TextColor="{Binding Report.ColorStatus}"></Label>
+                            </Grid>
+                            <Entry Grid.Row="1"
+                                   Margin="15"
+                                   Text="{Binding Report.BadCar.Number, Mode=TwoWay}"
+                                   TextColor="Black" 
+                                   HorizontalTextAlignment="Center"
+                                   IsTextPredictionEnabled="False"
+                                   Placeholder="A123BC"
+                                   IsReadOnly="True"
+                                   PlaceholderColor="Gray"
+                                   MaxLength="6"
+                                   FontSize="Title"/>
+                            <Grid Grid.Row="2"
+                                   Margin="15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Entry Grid.Column="0"
+                                       Text="{Binding Report.BadCar.Region, Mode=TwoWay}"
+                                       TextColor="Black" 
+                                       HorizontalTextAlignment="Center"
+                                       IsTextPredictionEnabled="False"
+                                       Placeholder="777"
+                                       IsReadOnly="True"
+                                       PlaceholderColor="Gray"
+                                       MaxLength="3"
+                                       Keyboard="Numeric"
+                                       FontSize="Title"></Entry>
+                                <Entry Grid.Column="1"
+                                       Text="{Binding Report.BadCar.Country, Mode=TwoWay}"
+                                       TextColor="Black" 
+                                       HorizontalTextAlignment="Center"
+                                       IsTextPredictionEnabled="False"
+                                       Placeholder="RUS"
+                                       IsReadOnly="True"
+                                       PlaceholderColor="Gray"
+                                       MaxLength="3"
+                                       FontSize="Title"></Entry>
+                            </Grid>
+                            <Image Grid.Row="3"
+                                   Margin="15"
+                                   HorizontalOptions="Center"
+                                   HeightRequest="70"
+                                   WidthRequest="100"
+                                   Source="{Binding Path=CountryFlag}"></Image>
+                        </Grid>
+                    </Frame>
+                    <Frame HeightRequest="200"
+                           CornerRadius="20">
+                        <ScrollView>
+                            <Editor Text="{Binding Description, Mode=TwoWay}"
+                                    IsReadOnly="True"
+                                    FontSize="Large"
+                                    Placeholder="Описание жалобы"
+                                    PlaceholderColor="Gray"
+                                    TextColor="Black"
+                                    MinimumHeightRequest="150"/>
+                        </ScrollView>
+                    </Frame>
+                    <Frame MinimumHeightRequest="500"
+                           CornerRadius="20">
+                        <CarouselView ItemsSource="{Binding Path=ImageSources}"
+                                      PeekAreaInsets="20"
+                                      HeightRequest="400">
+                            <CarouselView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal"
+                                                   ItemSpacing="10"/>
+                            </CarouselView.ItemsLayout>
+                            <CarouselView.ItemTemplate>
+                                <DataTemplate x:DataType="UriImageSource">
+                                    <Frame Padding="0"
+                                           Margin="10"
+                                           IsClippedToBounds="True"
+                                           CornerRadius="5">
+                                        <Image Source="{Binding Path=.}"
+                                               Aspect="AspectFill"></Image>
+                                    </Frame>
+                                </DataTemplate>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
+                    </Frame>
+                    <Frame>
+                        <StackLayout>
+                            <Label TextColor="Black"
+                                   FontSize="Title"
+                                   Text="Дата и время отправки"></Label>
+                            <Label TextColor="Gray"
+                                   FontSize="Title"
+                                   Text="{Binding Report.DateReported}"></Label>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

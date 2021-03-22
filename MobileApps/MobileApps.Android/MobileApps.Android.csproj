@@ -480,6 +480,7 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\_19314_sequis_empty_state.json" />
+    <AndroidAsset Include="Assets\_52055_sending_confirmation.json" />
     <EmbeddedResource Include="Assets\_53175_ball_spinner.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>

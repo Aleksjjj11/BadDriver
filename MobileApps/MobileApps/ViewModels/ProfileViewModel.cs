@@ -25,6 +25,10 @@ namespace MobileApps.ViewModels
             };
             _bwUpdater.DoWork += BwUpdaterOnDoWork;
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
+            _ownPage.Appearing += (sender, args) =>
+            {
+                OnPropertyChanged(nameof(User));
+            };
             IsBusy = true;
             _bwUpdater.RunWorkerAsync();
         }

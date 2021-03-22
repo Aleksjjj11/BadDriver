@@ -26,6 +26,24 @@ namespace MobileApps.ViewModels
         private BackgroundWorker _bwAuth;
 
         private bool _isAuthorization = true;
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged(nameof(IsBusy));
+                OnPropertyChanged(nameof(TitleColor));
+            }
+        }
+
+        public Color TitleColor => IsBusy switch
+        {
+            true => Color.FromHex("#2A8EC3"),
+            false => Color.White
+        };
 
         public bool IsAuthorization
         {
@@ -59,6 +77,7 @@ namespace MobileApps.ViewModels
 
         private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            IsBusy = false;
             switch (Device.RuntimePlatform)
             {
                 case Device.Android:
@@ -159,6 +178,7 @@ namespace MobileApps.ViewModels
         public ICommand SendForm => new Command(() =>
         {
             //Добавить отправку в background worker
+            IsBusy = true;
             _bwAuth.RunWorkerAsync();
         });
 
@@ -194,6 +214,7 @@ namespace MobileApps.ViewModels
             try
             {
                 (user as User)?.Update();
+                (user as User)?.UpdateReports();
                 App.CurrentUser = user;
                 (_ownPage as AuthorizationPage).BackPressed();
                 Preferences.Set("username", App.CurrentUser?.Username);
