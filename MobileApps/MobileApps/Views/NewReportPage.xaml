@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              BackgroundColor="#f1f1f1"
              x:DataType="viewModels:NewReportViewModel"
              x:Class="MobileApps.Views.NewReportPage">
     <ContentPage.Resources>
-        <ResourceDictionary>
-            
-        </ResourceDictionary>
+        <ResourceDictionary />
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView VerticalScrollBarVisibility="Never">
@@ -17,49 +17,49 @@
                 <Frame MinimumHeightRequest="400">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Entry Grid.Row="0"
-                           Text="{Binding NumberCar, Mode=TwoWay}"
-                           TextColor="Black" 
-                           HorizontalTextAlignment="Center"
-                           IsTextPredictionEnabled="False"
-                           Placeholder="A123BC"
-                           PlaceholderColor="Gray"
-                           MaxLength="6"
-                           FontSize="Title"></Entry>
+                               Text="{Binding NumberCar, Mode=TwoWay}"
+                               TextColor="Black"
+                               HorizontalTextAlignment="Center"
+                               IsTextPredictionEnabled="False"
+                               Placeholder="A123BC"
+                               PlaceholderColor="Gray"
+                               MaxLength="6"
+                               FontSize="Title" />
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Entry Grid.Column="0"
-                               Text="{Binding RegionCar, Mode=TwoWay}"
-                               TextColor="Black" 
-                               HorizontalTextAlignment="Center"
-                               IsTextPredictionEnabled="False"
-                               Placeholder="777"
-                               PlaceholderColor="Gray"
-                               MaxLength="3"
-                               Keyboard="Numeric"
-                               FontSize="Title"></Entry>
+                                   Text="{Binding RegionCar, Mode=TwoWay}"
+                                   TextColor="Black"
+                                   HorizontalTextAlignment="Center"
+                                   IsTextPredictionEnabled="False"
+                                   Placeholder="777"
+                                   PlaceholderColor="Gray"
+                                   MaxLength="3"
+                                   Keyboard="Numeric"
+                                   FontSize="Title" />
                             <Entry Grid.Column="1"
-                               Text="{Binding CountryCar, Mode=TwoWay}"
-                               TextColor="Black" 
-                               HorizontalTextAlignment="Center"
-                               IsTextPredictionEnabled="False"
-                               Placeholder="RUS"
-                               PlaceholderColor="Gray"
-                               MaxLength="3"
-                               FontSize="Title"></Entry>
+                                   Text="{Binding CountryCar, Mode=TwoWay}"
+                                   TextColor="Black"
+                                   HorizontalTextAlignment="Center"
+                                   IsTextPredictionEnabled="False"
+                                   Placeholder="RUS"
+                                   PlaceholderColor="Gray"
+                                   MaxLength="3"
+                                   FontSize="Title" />
                         </Grid>
                         <Image Grid.Row="2"
-                           HorizontalOptions="Center"
-                           HeightRequest="70"
-                           WidthRequest="100"
-                           Source="{Binding Path=CountryFlag}"></Image>
+                               HorizontalOptions="Center"
+                               HeightRequest="70"
+                               WidthRequest="100"
+                               Source="{Binding Path=CountryFlag}" />
                     </Grid>
                 </Frame>
                 <Frame HeightRequest="200">
@@ -69,31 +69,30 @@
                                 Placeholder="Описание жалобы"
                                 PlaceholderColor="Gray"
                                 TextColor="Black"
-                                MinimumHeightRequest="150"/>
+                                MinimumHeightRequest="150" />
                     </ScrollView>
                 </Frame>
                 <Frame MinimumHeightRequest="500">
                     <StackLayout Orientation="Vertical">
-                        <StackLayout Grid.Row="0" 
-                                 Orientation="Horizontal"
-                                 HorizontalOptions="Center">
+                        <StackLayout Orientation="Horizontal"
+                                     HorizontalOptions="Center">
                             <ImageButton Source="_0__camera.png"
-                                     Command="{Binding TakePhotosCommand}"
-                                     BackgroundColor="Transparent"
-                                     HeightRequest="80"
-                                     WidthRequest="55"></ImageButton>
+                                         Command="{Binding TakePhotosCommand}"
+                                         BackgroundColor="Transparent"
+                                         HeightRequest="80"
+                                         WidthRequest="55" />
                             <ImageButton Source="_0__image.png"
-                                     Command="{Binding PickPhotoCommand}"
-                                     BackgroundColor="Transparent"
-                                     HeightRequest="80"
-                                     WidthRequest="55"></ImageButton>
+                                         Command="{Binding PickPhotoCommand}"
+                                         BackgroundColor="Transparent"
+                                         HeightRequest="80"
+                                         WidthRequest="55" />
                         </StackLayout>
                         <CarouselView ItemsSource="{Binding CompressedImagesPathsCollection}"
                                       PeekAreaInsets="30"
                                       HeightRequest="350">
                             <CarouselView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal"
-                                                   ItemSpacing="20"/>
+                                                   ItemSpacing="20" />
                             </CarouselView.ItemsLayout>
                             <CarouselView.ItemTemplate>
                                 <DataTemplate x:DataType="ImageSource">
@@ -101,24 +100,28 @@
                                            CornerRadius="10"
                                            Margin="10">
                                         <Image Source="{Binding Path=.}"
-                                               Aspect="Fill"></Image>
+                                               Aspect="Fill" />
                                     </Frame>
                                 </DataTemplate>
                             </CarouselView.ItemTemplate>
                         </CarouselView>
-                        <ActivityIndicator IsRunning="{Binding IsBusy, Mode=TwoWay}"
-                                           HeightRequest="100"
-                                           WidthRequest="100"
-                                           Color="{StaticResource Primary1}"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center"/>
-                        <Button Grid.Row="2" 
-                            TextColor="White"
-                            FontSize="Title"
-                            CornerRadius="10"
-                            BackgroundColor="#ee2A8EC3"
-                            Command="{Binding SendReportCommand}"
-                            Text="Отправить жалобу"></Button>
+                        <forms:AnimationView
+                            Margin="10"
+                            Animation="_52055_sending_confirmation.json"
+                            IsAnimating="{Binding IsBusy}"
+                            IsVisible="{Binding IsBusy}"
+                            AnimationSource="AssetOrBundle"
+                            AutoPlay="True"
+                            RepeatMode="Infinite"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Center"
+                            forms:CacheComposition="True" />
+                        <Button TextColor="White"
+                                FontSize="Title"
+                                CornerRadius="10"
+                                BackgroundColor="#ee2A8EC3"
+                                Command="{Binding SendReportCommand}"
+                                Text="Отправить жалобу" />
                     </StackLayout>
                 </Frame>
             </StackLayout>

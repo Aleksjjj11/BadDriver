@@ -28,11 +28,6 @@ namespace MobileApps.ViewModels
             _bwUpdater.DoWork += BwUpdaterOnDoWork;
             _bwUpdater.ProgressChanged += BwUpdaterOnProgressChanged;
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
-            _ownPage.Appearing += (sender, args) =>
-            {
-                OnPropertyChanged(nameof(Reports));
-                OnPropertyChanged(nameof(ArrayReports));
-            };
             IsBusy = true;
             _bwUpdater.RunWorkerAsync();
         }

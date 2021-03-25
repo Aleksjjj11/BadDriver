@@ -70,10 +70,9 @@
                                            IsClippedToBounds="True"
                                            CornerRadius="200">
                                         <Image Source="{Binding SmallImage}"
-                                               Aspect="Fill"
+                                               Aspect="AspectFill"
                                                VerticalOptions="Center"
-                                               HorizontalOptions="Center"
-                                               Margin="10" />
+                                               HorizontalOptions="Center"/>
                                     </Frame>
 
                                     <Label Grid.Column="1"

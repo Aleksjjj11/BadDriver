@@ -83,7 +83,7 @@
                                             </Frame>
                                             <Grid Grid.Column="1" Padding="0, 20">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="35" />
                                                     <RowDefinition Height="30" />
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="*" />
