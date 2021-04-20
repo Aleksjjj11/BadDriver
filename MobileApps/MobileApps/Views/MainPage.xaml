@@ -5,14 +5,16 @@
              xmlns:views="clr-namespace:MobileApps.Views;assembly=MobileApps"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
+             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+             android:TabbedPage.ToolbarPlacement="Top"
              x:Class="MobileApps.MainPage"
              mc:Ignorable="d"
-             BarBackgroundColor="{StaticResource SecondaryB1}"
-             UnselectedTabColor="{StaticResource SecondaryBShade1_2}"
-             SelectedTabColor="{StaticResource Primary1}">
+             BarBackgroundColor="#ebe2ff"
+             UnselectedTabColor="#c3bde1"
+             SelectedTabColor="#f97cbe">
     <TabbedPage.Children>
-        <views:ReportsPage IconImageSource="_0__house.png"/>
-        <views:AchievementsPage IconImageSource="_0__movies_app.png"/>
-        <views:ProfilePage IconImageSource="_0__mortarboard.png"/>
+        <views:ReportsPage IconImageSource="{FontImage FontFamily=Glyphter, Glyph=Y, Size=Title}"/>
+        <views:AchievementsPage IconImageSource="{FontImage FontFamily=Glyphter, Glyph=k, Size=Title}"/>
+        <views:ProfilePage IconImageSource="{FontImage FontFamily=Glyphter, Glyph=r, Size=Title}"/>
     </TabbedPage.Children>
 </TabbedPage>

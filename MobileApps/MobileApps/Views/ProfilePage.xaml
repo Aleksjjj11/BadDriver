@@ -6,11 +6,15 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
-             BackgroundColor="#f1f1f1"
+             BackgroundColor="#ebe2ff"
              x:DataType="viewModels:ProfileViewModel"
              x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
     <ContentPage.Resources>
-        <ResourceDictionary />
+        <ResourceDictionary>
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#f3efff"></Setter>
+            </Style>
+        </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
         <RefreshView RefreshColor="{StaticResource Primary1}"
@@ -30,8 +34,9 @@
                                    IsClippedToBounds="True"
                                    HeightRequest="100"
                                    WidthRequest="100">
-                                <ImageButton Source="_0__settings.png"
+                                <ImageButton Source="{FontImage Color=White, FontFamily=Glyphter, Size=Header, Glyph=g}"
                                              Command="{Binding OpenSettings}"
+                                             Padding="10"
                                              HeightRequest="150"
                                              WidthRequest="150"
                                              HorizontalOptions="Center"
@@ -177,8 +182,8 @@
                     </Frame>
                     <Button Text="Покинуть нас"
                             CornerRadius="20"
-                            BackgroundColor="#55CD5C5C"
-                            TextColor="IndianRed"
+                            BackgroundColor="#55f381ac"
+                            TextColor="White"
                             Command="{Binding LogoutCommand}" />
                 </StackLayout>
             </ScrollView>

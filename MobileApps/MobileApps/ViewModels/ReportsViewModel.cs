@@ -32,6 +32,15 @@ namespace MobileApps.ViewModels
             _bwUpdater.RunWorkerAsync();
         }
 
+        public LinearGradientBrush FrameBrush(StatusReport statusReport)
+        {
+            return statusReport switch
+            {
+                StatusReport.Processing => Application.Current.Resources["BlueGradientBrush"] as LinearGradientBrush,
+                _ => Application.Current.Resources["BlueGradientBrush"] as LinearGradientBrush
+            };
+        }
+
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
@@ -65,6 +74,7 @@ namespace MobileApps.ViewModels
             //App.CurrentUser.UpdateReports("http://188.225.83.42:7000");
             _bwUpdater.RunWorkerAsync();
         });
+        
 
         public ICommand MoreInfoReportCommand => new Command(() =>
         {

@@ -76,12 +76,12 @@
                     <StackLayout Orientation="Vertical">
                         <StackLayout Orientation="Horizontal"
                                      HorizontalOptions="Center">
-                            <ImageButton Source="_0__camera.png"
+                            <ImageButton Source="{FontImage Color=Black, Size=Title, FontFamily=Glyphter, Glyph=D}"
                                          Command="{Binding TakePhotosCommand}"
                                          BackgroundColor="Transparent"
                                          HeightRequest="80"
                                          WidthRequest="55" />
-                            <ImageButton Source="_0__image.png"
+                            <ImageButton Source="{FontImage Color=Black, Size=Title, FontFamily=Glyphter, Glyph=e}"
                                          Command="{Binding PickPhotoCommand}"
                                          BackgroundColor="Transparent"
                                          HeightRequest="80"

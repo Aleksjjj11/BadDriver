@@ -9,7 +9,7 @@
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              x:DataType="viewModels:ReportsViewModel"
              mc:Ignorable="d"
-             BackgroundColor="#f1f1f1"
+             BackgroundColor="#ebe2ff"
              x:Class="MobileApps.Views.ReportsPage">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -59,7 +59,8 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="interfaces:IReport">
                                     <Frame Margin="10, 5"
-                                           Padding="15">
+                                           Padding="10, 5"
+                                           BackgroundColor="#f3efff">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
@@ -81,12 +82,12 @@
                                                        WidthRequest="150"
                                                        BackgroundColor="Bisque" />
                                             </Frame>
-                                            <Grid Grid.Column="1" Padding="0, 20">
+                                            <Grid Grid.Column="1">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="35" />
                                                     <RowDefinition Height="30" />
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
                                                 </Grid.RowDefinitions>
                                                 <Label Grid.Row="0"
                                                        Text="{Binding Path=BadCar.Number}"
@@ -98,7 +99,7 @@
                                                              VerticalOptions="Start"
                                                              HorizontalOptions="Center">
                                                     <Label Text="{Binding Path=BadCar.Region}"
-                                                           TextColor="Black"
+                                                           TextColor=" Black"
                                                            VerticalTextAlignment="Center"
                                                            FontSize="Subtitle" />
                                                     <Label Text="{Binding Path=BadCar.Country}"
@@ -114,11 +115,11 @@
                                                 <Label Grid.Row="2"
                                                        Text="{Binding Path=TextStatus, Mode=OneWay}"
                                                        TextColor="{Binding Path=ColorStatus, Mode=OneWay}"
-                                                       FontSize="Title"
+                                                       FontSize="Subtitle"
                                                        VerticalOptions="Center"
                                                        HorizontalOptions="Center" />
                                                 <Label Grid.Row="3" Text="{Binding Path=DateReported}"
-                                                       TextColor="Gray"
+                                                       TextColor="DimGray"
                                                        VerticalTextAlignment="End"
                                                        HorizontalOptions="Center"
                                                        HorizontalTextAlignment="End"
@@ -133,11 +134,11 @@
                 </RefreshView>
             </Grid>
             <ImageButton Margin="15"
-                         Source="plus.png"
+                         Source="{FontImage FontFamily=Glyphter, Color=White, Size=Large, Glyph=c}"
                          Command="{Binding OpenNewReportPageCommand}"
                          BackgroundColor="{StaticResource Primary1}"
                          CornerRadius="100"
-                         Padding="10"
+                         Padding="15"
                          AbsoluteLayout.LayoutBounds=".95, .95, 90, 90"
                          AbsoluteLayout.LayoutFlags="PositionProportional" />
         </AbsoluteLayout>

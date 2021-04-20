@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Com.Airbnb.Xamarin.Forms.Lottie" Version="4.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="RestSharp" Version="105.2.3" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="2.80.2" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.0.1821" />
@@ -42,11 +42,7 @@
     <None Remove="Fonts\Nunito-Black.ttf" />
     <EmbeddedResource Include="Fonts\Nunito-Black.ttf" />
     <None Remove="Animations\19314-sequis-empty-state.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Mono.Android">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v9.0\Mono.Android.dll</HintPath>
-    </Reference>
+    <None Remove="Fonts\Glyphter.ttf" />
+    <EmbeddedResource Include="Fonts\Glyphter.ttf" />
   </ItemGroup>
 </Project>

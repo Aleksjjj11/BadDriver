@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Input;
-using Android.Widget;
+//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
@@ -10,7 +10,7 @@ using RestSharp;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using Application = Android.App.Application;
+//using Application = Android.App.Application;
 
 namespace MobileApps.ViewModels
 {
@@ -85,11 +85,11 @@ namespace MobileApps.ViewModels
                         (_ownPage as AuthorizationPage).BackPressed();
                         Preferences.Set("username", App.CurrentUser?.Username);
                         Preferences.Set("password", App.CurrentUser?.Password);
-                        Toast.MakeText(Application.Context, "Вы успешно зарегистрировались", ToastLength.Long)?.Show();
+                        //Toast.MakeText(Application.Context, "Вы успешно зарегистрировались", ToastLength.Long)?.Show();
                     }
 
-                    if (e?.Result is string)
-                        Toast.MakeText(Application.Context, e.Result as string, ToastLength.Long)?.Show();
+                    //if (e?.Result is string)
+                    //    Toast.MakeText(Application.Context, e.Result as string, ToastLength.Long)?.Show();
                     
                     break;
                 }

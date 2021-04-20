@@ -44,7 +44,7 @@
 
             <Frame Grid.Row="2"
                    CornerRadius="20"
-                   BackgroundColor="#44D3D3D3"
+                   BackgroundColor="#AAAAAA"
                    Margin="30">
                 <ScrollView VerticalScrollBarVisibility="Never">
                     <Grid>

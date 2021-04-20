@@ -4,6 +4,7 @@ using System.Linq;
 
 using Foundation;
 using UIKit;
+using Xamarin.Forms;
 
 namespace MobileApps.iOS
 {
@@ -22,6 +23,7 @@ namespace MobileApps.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            Forms.SetFlags("Brush_Experimental");
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 

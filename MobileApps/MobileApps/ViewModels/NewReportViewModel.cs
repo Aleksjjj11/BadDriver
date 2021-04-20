@@ -3,14 +3,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
-using Android.Graphics;
-using Android.Widget;
+//using Android.Graphics;
+//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using SkiaSharp;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Application = Android.App.Application;
+//using Application = Android.App.Application;
 using Path = System.IO.Path;
 
 namespace MobileApps.ViewModels
@@ -50,13 +50,13 @@ namespace MobileApps.ViewModels
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            Toast.MakeText(Application.Context, (string)e.UserState, ToastLength.Long)?.Show();
+            //Toast.MakeText(Application.Context, (string)e.UserState, ToastLength.Long)?.Show();
         }
 
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            Toast.MakeText(Application.Context, "Жалоба отправлена!", ToastLength.Long);
+            //Toast.MakeText(Application.Context, "Жалоба отправлена!", ToastLength.Long);
             _ownPage.SendBackButtonPressed();
         }
 

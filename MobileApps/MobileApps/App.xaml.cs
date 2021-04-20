@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using Android.Widget;
+//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
@@ -31,8 +31,8 @@ namespace MobileApps
                 {
                     CurrentUser = new User
                     {
-                        Username = Preferences.Get("username", "Annonim"),
-                        Password = Preferences.Get("password", "123")
+                        Username = Preferences.Get("username", ""),
+                        Password = Preferences.Get("password", "")
                     };
                     try
                     {
@@ -43,7 +43,7 @@ namespace MobileApps
                     catch (Exception ex)
                     {
                         Log.Warning("Error Update User Info", ex.Message);
-                        Toast.MakeText(Android.App.Application.Context, ex.Message, ToastLength.Long);
+                        //Toast.MakeText(Android.App.Application.Context, ex.Message, ToastLength.Long);
                     }
                 }
             }

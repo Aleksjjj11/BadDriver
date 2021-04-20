@@ -6,17 +6,18 @@
     There is the color theme for app on the link https://colorscheme.ru/#4K61TUCODw0w0
     -->
     <Application.Resources>
-        <Color x:Key="Primary1">#FBBF3C</Color>
-        <Color x:Key="PrimaryShade1_1">#FFCD60</Color>
-        <Color x:Key="PrimaryShade1_2">#FFDA8B</Color>
+        <Color x:Key="Primary1">#c661cf</Color>
+        <Color x:Key="PrimaryShade1_1">#d76ed5</Color>
+        <Color x:Key="PrimaryShade1_2">#daadf6</Color>
 
-        <Color x:Key="SecondaryA1">#5138CC</Color>
-        <Color x:Key="SecondaryAShade1_1">#544699</Color>
-        <Color x:Key="SecondaryAShade1_2">#251285</Color>
-        <Color x:Key="SecondaryAShade1_3">#7E69E6</Color>
+        <Color x:Key="SecondaryA1">#daadf6</Color>
+        <Color x:Key="SecondaryAShade1_1">#9e8bfd</Color>
+        <Color x:Key="SecondaryAShade1_2">#b8aedb</Color>
+        <Color x:Key="SecondaryAShade1_3">#ebd8f9</Color>
+        
         <Color x:Key="SecondaryAShade1_4">#998AE6</Color>
 
-        <Color x:Key="SecondaryB1">#2A8EC3</Color>
+        <Color x:Key="SecondaryB1">#6089ee</Color>
         <Color x:Key="SecondaryBShade1_1">#3C7492</Color>
         <Color x:Key="SecondaryBShade1_2">#0E577F</Color>
         <Color x:Key="SecondaryBShade1_3">#5CB3E1</Color>
@@ -47,5 +48,35 @@
         <Style TargetType="ContentPage">
             <Setter Property="BackgroundColor" Value="#F1F1F1"></Setter>
         </Style>
+        <!--
+        <OnPlatform x:Key="GlyphterFontFamily" x:TypeArguments="x:String">
+            <On Platform="iOS" Value="Glyphter" />
+            <On Platform="Android" Value="Glyphter.ttf#GlyphterFont" />
+        </OnPlatform>
+        -->
+        <LinearGradientBrush x:Key="GrayGradientBrush"
+                             StartPoint="0, 0"
+                             EndPoint="1, 1">
+            <GradientStop Color="LightGray" Offset="0.0"></GradientStop>
+            <GradientStop Color="White" Offset="1.0"></GradientStop>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="BlueGradientBrush" x:Name="BlueGradientBrus">
+            <GradientStop Color="#9fb7fd" Offset="0.0"></GradientStop>
+            <GradientStop Color="#c9a7ff" Offset="0.3"></GradientStop>
+            <GradientStop Color="#e494ee" Offset="0.7"></GradientStop>
+            <GradientStop Color="#fc7fba" Offset="1.0"></GradientStop>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="GreenGradientBrush" x:Name="GreenGradientBrus"
+                             StartPoint="0, 0"
+                             EndPoint="1, 1">
+            <GradientStop Color="DarkGreen" Offset="0.0"></GradientStop>
+            <GradientStop Color="LightGreen" Offset="1.0"></GradientStop>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="RedGradientBrush" x:Name="RedGradientBrus"
+                             StartPoint="0, 0"
+                             EndPoint="1, 1">
+            <GradientStop Color="DarkRed" Offset="0.0"></GradientStop>
+            <GradientStop Color="Red" Offset="1.1"></GradientStop>
+        </LinearGradientBrush>
     </Application.Resources>
 </Application>

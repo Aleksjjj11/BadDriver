@@ -106,10 +106,10 @@ namespace MobileApps.Models
             JObject userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
             try
             {
-                Username = userInfoJson["username"].ToString();
-                Email = userInfoJson["email"].ToString();
-                FirstName = userInfoJson["first_name"].ToString();
-                LastName = userInfoJson["last_name"].ToString();
+                Username = userInfoJson["username"]?.ToString();
+                Email = userInfoJson["email"]?.ToString();
+                FirstName = userInfoJson["first_name"]?.ToString();
+                LastName = userInfoJson["last_name"]?.ToString();
             } catch (Exception ex)
             {
                 Log.Warning("Update", $"Info wasn't updated.\n{ex.Message}");
@@ -137,16 +137,16 @@ namespace MobileApps.Models
                 Reports.Clear();
                 for (int i = 0; i < reportsJArray.Count; i++)
                 {
-                    string carNumber = reportsJArray[i]["car_number"].ToString();
-                    string carRegion = reportsJArray[i]["car_region"].ToString();
-                    string carCountry = reportsJArray[i]["car_country"].ToString();
-                    string description = reportsJArray[i]["description"].ToString();
-                    var dateTime = DateTime.Parse(reportsJArray[i]["data"].ToString());
+                    string carNumber = reportsJArray[i]["car_number"]?.ToString();
+                    string carRegion = reportsJArray[i]["car_region"]?.ToString();
+                    string carCountry = reportsJArray[i]["car_country"]?.ToString();
+                    string description = reportsJArray[i]["description"]?.ToString();
+                    var dateTime = DateTime.Parse(reportsJArray[i]["data"]?.ToString());
                     var images = new ObservableCollection<string>();
                     StatusReport statusReport = (StatusReport)reportsJArray[i]["status"].ToObject<int>();
-                    images.Add(reportsJArray[i]["image_1"].ToString());
-                    images.Add(reportsJArray[i]["image_2"].ToString());
-                    images.Add(reportsJArray[i]["image_3"].ToString());
+                    images.Add(reportsJArray[i]["image_1"]?.ToString());
+                    images.Add(reportsJArray[i]["image_2"]?.ToString());
+                    images.Add(reportsJArray[i]["image_3"]?.ToString());
                     var report = new Report(new Car(carNumber, carRegion, carCountry), images, dateTime, description, statusReport);
                     Reports.Add(report);
                 }
