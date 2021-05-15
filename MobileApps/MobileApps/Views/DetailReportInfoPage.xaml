@@ -4,7 +4,14 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              x:Class="MobileApps.Views.DetailReportInfoPage"
              x:DataType="viewModels:DetailReportInfoViewModel"
-             BackgroundColor="#f1f1f1">
+             BackgroundColor="#ebe2ff">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#f3efff"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout Padding="10">
             <ScrollView>
@@ -14,14 +21,14 @@
                            CornerRadius="20">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="50"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
                                 <Label Grid.Row="0"
-                                       FontSize="50"
+                                       FontSize="Title"
                                        VerticalOptions="Start"
                                        HorizontalOptions="Center"
                                        Text="{Binding Report.TextStatus}"
@@ -77,7 +84,7 @@
                     <Frame HeightRequest="200"
                            CornerRadius="20">
                         <ScrollView>
-                            <Editor Text="{Binding Description, Mode=TwoWay}"
+                            <Editor Text="{Binding Report.Description, Mode=TwoWay}"
                                     IsReadOnly="True"
                                     FontSize="Large"
                                     Placeholder="Описание жалобы"
@@ -88,33 +95,35 @@
                     </Frame>
                     <Frame MinimumHeightRequest="500"
                            CornerRadius="20">
-                        <CarouselView ItemsSource="{Binding Path=ImageSources}"
-                                      PeekAreaInsets="20"
-                                      HeightRequest="400">
-                            <CarouselView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"
-                                                   ItemSpacing="10"/>
-                            </CarouselView.ItemsLayout>
-                            <CarouselView.ItemTemplate>
+                        <FlexLayout Direction="Row"
+                                    AlignContent="Center"
+                                    Wrap="Wrap">
+                            <BindableLayout.ItemsSource>
+                                <Binding Path="ImageSources"></Binding>
+                            </BindableLayout.ItemsSource>
+                            <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="UriImageSource">
-                                    <Frame Padding="0"
+                                    <Image Source="{Binding Path=.}"
                                            Margin="10"
-                                           IsClippedToBounds="True"
-                                           CornerRadius="5">
-                                        <Image Source="{Binding Path=.}"
-                                               Aspect="AspectFill"></Image>
-                                    </Frame>
+                                           HeightRequest="100">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource 
+                                                                  AncestorType={x:Type viewModels:DetailReportInfoViewModel}}, 
+                                                                  Path=OpenImageFullScreenCommand}"
+                                                                  CommandParameter="{Binding .}"/>
+                                        </Image.GestureRecognizers>
+                                    </Image>
                                 </DataTemplate>
-                            </CarouselView.ItemTemplate>
-                        </CarouselView>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
                     </Frame>
                     <Frame>
                         <StackLayout>
                             <Label TextColor="Black"
-                                   FontSize="Title"
+                                   FontSize="Subtitle"
                                    Text="Дата и время отправки"></Label>
                             <Label TextColor="Gray"
-                                   FontSize="Title"
+                                   FontSize="Subtitle"
                                    Text="{Binding Report.DateReported}"></Label>
                         </StackLayout>
                     </Frame>

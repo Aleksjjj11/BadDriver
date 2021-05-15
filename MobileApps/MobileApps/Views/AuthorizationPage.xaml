@@ -7,7 +7,17 @@
              BackgroundColor="#F1F1F1"
              x:DataType="viewModels:AuthorizationViewModel"
              x:Class="MobileApps.Views.AuthorizationPage">
-    <ContentPage.Content>
+       <ContentPage.Resources>
+              <ResourceDictionary>
+                     <Style TargetType="Entry">
+                            <Setter Property="PlaceholderColor" Value="White"></Setter>
+                            <Setter Property="TextColor" Value="Black"></Setter>
+                            <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
+                            <Setter Property="FontSize" Value="Title"></Setter>
+                     </Style>
+              </ResourceDictionary>
+       </ContentPage.Resources>
+       <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="100" />
@@ -52,17 +62,9 @@
                                      IsVisible="{Binding IsAuthorization, Mode=OneWay}"
                                      Spacing="30">
                             <Entry Placeholder="Логин"
-                                   Text="{Binding Username, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   Text="{Binding Username, Mode=TwoWay}"/>
                             <Entry Placeholder="Пароль"
                                    Text="{Binding Password, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Button Text="Авторизоваться"
                                     Command="{Binding SendForm}"
@@ -83,43 +85,19 @@
                                      Spacing="30"
                                      IsVisible="{Binding IsRegistration, Mode=OneWay}">
                             <Entry Placeholder="Логин"
-                                   Text="{Binding Username, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   Text="{Binding Username, Mode=TwoWay}"/>
                             <Entry Placeholder="Пароль"
                                    Text="{Binding Password, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Entry Placeholder="Повторим пароль"
                                    Text="{Binding RepeatPassword, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Entry Placeholder="Имя"
-                                   Text="{Binding FirstName, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   Text="{Binding FirstName, Mode=TwoWay}"/>
                             <Entry Placeholder="Фамилия"
-                                   Text="{Binding LastName, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   Text="{Binding LastName, Mode=TwoWay}"/>
                             <Entry Placeholder="Почта"
-                                   Text="{Binding Email, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   Text="{Binding Email, Mode=TwoWay}"/>
                             <Button Text="Зарегистрироваться"
                                     Command="{Binding SendForm}"
                                     TextColor="White"

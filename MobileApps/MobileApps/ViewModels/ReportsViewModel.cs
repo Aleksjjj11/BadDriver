@@ -76,14 +76,18 @@ namespace MobileApps.ViewModels
         });
         
 
-        public ICommand MoreInfoReportCommand => new Command(() =>
+        public ICommand MoreInfoReportCommand => new Command<IReport>(x =>
         {
-            _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(SelectedReport));
+            _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(x));
             SelectedReport = null;
         });
 
         public ICommand OpenNewReportPageCommand => new Command(() =>
         {
+            // _ownPage.Navigation.PushModalAsync(new NavigationPage(new NewReportPage())
+            // {
+            //     BarBackgroundColor = Color.FromHex("#ebe2ff")
+            // });
             _ownPage.Navigation.PushModalAsync(new NewReportPage());
         });
 

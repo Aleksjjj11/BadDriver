@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Xamarin.Forms;
+using Color = Android.Graphics.Color;
 
 namespace MobileApps.Droid
 {
@@ -20,7 +21,7 @@ namespace MobileApps.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
-
+            Window.SetTitleColor(Color.Black);
             Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#ebe2ff"));
             //Lottie.Forms.AnimationView.Init();
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);

@@ -7,7 +7,9 @@ using System.Windows.Input;
 //using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
+using MobileApps.Popups;
 using SkiaSharp;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 //using Application = Android.App.Application;
@@ -19,20 +21,7 @@ namespace MobileApps.ViewModels
     {
         private readonly Page _ownPage;
         private  IUser _user => App.CurrentUser;
-        public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
-        public ObservableCollection<string> ImagesPathsCollection { get; }
-        private BackgroundWorker _bwSenderReport;
-
-        private bool _isBusy;
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set
-            {
-                _isBusy = value;
-                OnPropertyChanged(nameof(IsBusy));
-            }
-        }
+        private readonly BackgroundWorker _bwSenderReport;
         
         public NewReportViewModel(Page page)
         {
@@ -46,6 +35,34 @@ namespace MobileApps.ViewModels
             _bwSenderReport.DoWork += BwSenderReportOnDoWork;
             _bwSenderReport.RunWorkerCompleted += BwSenderReportOnRunWorkerCompleted;
             _bwSenderReport.ProgressChanged += BwSenderReportOnProgressChanged;
+            CompressedImagesPathsCollection.CollectionChanged += (sender, args) =>
+            {
+                OnPropertyChanged(nameof(IsFullBlank));
+            };
+        }
+
+        public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
+        public ObservableCollection<string> ImagesPathsCollection { get; }
+        
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+
+        public bool IsFullBlank => ValidateData();
+
+        private bool ValidateData()
+        {
+            bool result = true;
+            //Проверка верно введённых данных
+            result = IsCorrectData() && CompressedImagesPathsCollection.Count == 3;
+            return result;
         }
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -63,25 +80,16 @@ namespace MobileApps.ViewModels
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
             IsBusy = true;
-            //Проверка верно введённых данных
-            if (IsCorrectData() == false)
-            {
-                _bwSenderReport.ReportProgress(1, "Вы ввели номер машины неверного формата");
-                return;
-            }
-            
-            //Проверка выбранных картинок
-            if (CompressedImagesPathsCollection.Count != 3)
-            {
-                //Toast.MakeText(Application.Context, "Не были выбрана или сделаны фотографии нарушения.", ToastLength.Long);
-                _bwSenderReport.ReportProgress(2, "Не были выбрана или сделаны фотографии нарушения.");
-                return;
-            }
             //Toast.MakeText(Application.Context, "Всё верно, отправляем жалобу!", ToastLength.Long);
             _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
             //Дальше будет отправка запроса на сервер
             (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
         }
+        
+        public Command OpenImageFullScreenCommand => new Command<ImageSource>(image =>
+        {
+            _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
+        });
 
         private string _countryCar;
 
@@ -93,6 +101,7 @@ namespace MobileApps.ViewModels
                 _countryCar = value.ToUpper();
                 OnPropertyChanged(nameof(CountryFlag));
                 OnPropertyChanged(nameof(CountryCar));
+                OnPropertyChanged(nameof(IsFullBlank));
             }
         }
 
@@ -105,6 +114,7 @@ namespace MobileApps.ViewModels
             {
                 _numberCar = value.ToUpper();
                 OnPropertyChanged(nameof(NumberCar));
+                OnPropertyChanged(nameof(IsFullBlank));
             }
         }
 
@@ -116,6 +126,7 @@ namespace MobileApps.ViewModels
             {
                 _description = value;
                 OnPropertyChanged(nameof(Description));
+                OnPropertyChanged(nameof(IsFullBlank));
             }
         }
 
@@ -128,6 +139,7 @@ namespace MobileApps.ViewModels
             {
                 _regionCar = value.ToUpper();
                 OnPropertyChanged(nameof(RegionCar));
+                OnPropertyChanged(nameof(IsFullBlank));
             }
         }
         
@@ -148,6 +160,8 @@ namespace MobileApps.ViewModels
         {
             PickPhoto();
             OnPropertyChanged(nameof(CompressedImagesPathsCollection));
+            OnPropertyChanged(nameof(IsFullBlank));
+            _ownPage.ForceLayout();
         });
 
         private async void PickPhoto()
@@ -164,27 +178,30 @@ namespace MobileApps.ViewModels
 
                 });
 
-                string pathResizedPhoto = ResizeImage(1024, 100, photo);
+                string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                ImagesPathsCollection.Add(photo.FullPath);
+                // ImagesPathsCollection.Add(photo.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto);
 
                 var photo2 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 2 фото",
                 });
 
-                string pathResizedPhoto2 = ResizeImage(1024, 100, photo2);
+                string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                ImagesPathsCollection.Add(photo2.FullPath);
+                // ImagesPathsCollection.Add(photo2.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto2);
 
                 var photo3 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 3 фото",
                 });
 
-                string pathResizedPhoto3 = ResizeImage(1024, 100, photo3);
+                string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                ImagesPathsCollection.Add(photo3.FullPath);
+                // ImagesPathsCollection.Add(photo3.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto3);
             }
             catch (Exception ex)
             {
@@ -196,6 +213,8 @@ namespace MobileApps.ViewModels
         {
             TakePhoto();
             OnPropertyChanged(nameof(CompressedImagesPathsCollection));
+            OnPropertyChanged(nameof(IsFullBlank));
+            _ownPage.ForceLayout();
         });
 
         private async void TakePhoto()
@@ -209,27 +228,30 @@ namespace MobileApps.ViewModels
                     Title = "Сделайте 1 фото",
                 });
 
-                string pathResizedPhoto = ResizeImage(1024, 100, photo);
+                string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                ImagesPathsCollection.Add(photo.FullPath);
+                // ImagesPathsCollection.Add(photo.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto);
 
                 var photo2 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 2 фото",
                 });
 
-                string pathResizedPhoto2 = ResizeImage(1024, 100, photo2);
+                string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                ImagesPathsCollection.Add(photo2.FullPath);
+                // ImagesPathsCollection.Add(photo2.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto2);
 
                 var photo3 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 3 фото",
                 });
 
-                string pathResizedPhoto3 = ResizeImage(1024, 100, photo3);
+                string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                ImagesPathsCollection.Add(photo3.FullPath);
+                // ImagesPathsCollection.Add(photo3.FullPath);
+                ImagesPathsCollection.Add(pathResizedPhoto3);
 
             }
             catch (Exception ex)
@@ -286,46 +308,6 @@ namespace MobileApps.ViewModels
                     break;
             }
             return result;
-        }
-
-        private string ResizeImage(int size, int quality, FileResult streamImage)
-        {
-            using (var input = streamImage.OpenReadAsync().Result)
-            {
-                using (var inputStream = new SKManagedStream(input))
-                {
-                    using (var original = SKBitmap.Decode(inputStream))
-                    {
-                        int width, height;
-                        if (original.Width > original.Height)
-                        {
-                            width = size;
-                            height = original.Height * size / original.Width;
-                        }
-                        else
-                        {
-                            width = original.Width * size / original.Height;
-                            height = size;
-                        }
-
-                        using (var resized = original.Resize(new SKImageInfo(width, height), SKBitmapResizeMethod.Lanczos3))
-                        {
-                            if (resized == null) throw new Exception("Error resized.");
-
-                            using (var image = SKImage.FromBitmap(resized))
-                            {
-                                string outputPath = streamImage.FullPath.Remove(streamImage.FullPath.Length - streamImage.FileName.Length, streamImage.FileName.Length);
-                                using (var output =
-                                File.OpenWrite($"{outputPath}/{DateTime.Now:O}_BadDrive.jpg"))
-                                {
-                                    image.Encode(SKEncodedImageFormat.Jpeg, quality).SaveTo(output);
-                                    return output.Name;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

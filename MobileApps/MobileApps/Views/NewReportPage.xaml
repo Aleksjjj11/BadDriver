@@ -1,19 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
-             BackgroundColor="#f1f1f1"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             BackgroundColor="#ebe2ff"
              x:DataType="viewModels:NewReportViewModel"
              x:Class="MobileApps.Views.NewReportPage">
     <ContentPage.Resources>
-        <ResourceDictionary />
+        <ResourceDictionary>
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#f3efff"></Setter>
+            </Style>
+        </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView VerticalScrollBarVisibility="Never">
-            <StackLayout CompressedLayout.IsHeadless="true"
-                         Padding="10">
+            <StackLayout Padding="10">
                 <Frame MinimumHeightRequest="400">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -63,14 +66,12 @@
                     </Grid>
                 </Frame>
                 <Frame HeightRequest="200">
-                    <ScrollView>
-                        <Editor Text="{Binding Description, Mode=TwoWay}"
-                                FontSize="Large"
-                                Placeholder="Описание жалобы"
-                                PlaceholderColor="Gray"
-                                TextColor="Black"
-                                MinimumHeightRequest="150" />
-                    </ScrollView>
+                    <Editor Text="{Binding Description, Mode=TwoWay}"
+                            FontSize="Large"
+                            Placeholder="Описание жалобы"
+                            PlaceholderColor="Gray"
+                            TextColor="Black"
+                            MinimumHeightRequest="150" />
                 </Frame>
                 <Frame MinimumHeightRequest="500">
                     <StackLayout Orientation="Vertical">
@@ -87,24 +88,28 @@
                                          HeightRequest="80"
                                          WidthRequest="55" />
                         </StackLayout>
-                        <CarouselView ItemsSource="{Binding CompressedImagesPathsCollection}"
-                                      PeekAreaInsets="30"
-                                      HeightRequest="350">
-                            <CarouselView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"
-                                                   ItemSpacing="20" />
-                            </CarouselView.ItemsLayout>
-                            <CarouselView.ItemTemplate>
+                        <FlexLayout Direction="Row"
+                                    Wrap="Wrap"
+                                    AlignContent="Center">
+                            <BindableLayout.ItemsSource>
+                                <Binding Path="CompressedImagesPathsCollection"
+                                         Mode="OneWay"></Binding>
+                            </BindableLayout.ItemsSource>
+                            <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="ImageSource">
-                                    <Frame Padding="0"
-                                           CornerRadius="10"
-                                           Margin="10">
-                                        <Image Source="{Binding Path=.}"
-                                               Aspect="Fill" />
-                                    </Frame>
+                                    <Image Source="{Binding Path=.}"
+                                           Margin="10, 0"
+                                           HeightRequest="100">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource 
+                                                                  AncestorType={x:Type viewModels:NewReportViewModel}}, 
+                                                                  Path=OpenImageFullScreenCommand}"
+                                                                  CommandParameter="{Binding .}"/>
+                                        </Image.GestureRecognizers>
+                                    </Image>
                                 </DataTemplate>
-                            </CarouselView.ItemTemplate>
-                        </CarouselView>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
                         <forms:AnimationView
                             Margin="10"
                             Animation="_52055_sending_confirmation.json"
@@ -116,14 +121,15 @@
                             VerticalOptions="Start"
                             HorizontalOptions="Center"
                             forms:CacheComposition="True" />
-                        <Button TextColor="White"
-                                FontSize="Title"
-                                CornerRadius="10"
-                                BackgroundColor="#ee2A8EC3"
-                                Command="{Binding SendReportCommand}"
-                                Text="Отправить жалобу" />
                     </StackLayout>
                 </Frame>
+                <Button TextColor="White"
+                        FontSize="Subtitle"
+                        CornerRadius="5"
+                        BackgroundColor="{StaticResource Primary1}"
+                        Command="{Binding SendReportCommand}"
+                        IsVisible="{Binding IsFullBlank, Mode=OneWay}"
+                        Text="Отправить жалобу" />
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>
