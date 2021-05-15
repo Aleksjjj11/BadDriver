@@ -37,13 +37,18 @@
                                  TextColor="White"
                                  IsVisible="{Binding VisibleTitle}"
                                  Text="{Binding Title}" />
+                          <Label Text="{Binding TextError}"
+                                 IsVisible="{Binding VisibleTitle}"
+                                 VerticalTextAlignment="End"
+                                 TextColor="Firebrick"></Label>
                           <forms:AnimationView 
                                  Margin="10"
-                                 Animation="_8359_loading_animation.json"
+                                 Animation="_9811_loading.json"
                                  IsAnimating="{Binding IsBusy}"
                                  IsVisible="{Binding IsBusy}"
                                  AnimationSource="AssetOrBundle"
                                  AutoPlay="True"
+                                 Speed="2"
                                  RepeatMode="Infinite"
                                  VerticalOptions="Start"
                                  HorizontalOptions="Center" 

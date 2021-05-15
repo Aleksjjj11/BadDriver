@@ -24,6 +24,7 @@ namespace MobileApps.ViewModels
         private string _firstName;
         private string _lastName;
         private BackgroundWorker _bwAuth;
+        private string _textError;
 
         private bool _isAuthorization = true;
         private bool _isBusy;
@@ -88,6 +89,10 @@ namespace MobileApps.ViewModels
                         //Toast.MakeText(Application.Context, "Вы успешно зарегистрировались", ToastLength.Long)?.Show();
                     }
 
+                    if (e?.Result is string)
+                    {
+                        TextError = e?.Result.ToString();
+                    } 
                     //if (e?.Result is string)
                     //    Toast.MakeText(Application.Context, e.Result as string, ToastLength.Long)?.Show();
                     
@@ -182,6 +187,16 @@ namespace MobileApps.ViewModels
             IsBusy = true;
             _bwAuth.RunWorkerAsync();
         });
+
+        public string TextError
+        {
+            get => _textError;
+            set
+            {
+                _textError = value;
+                OnPropertyChanged(nameof(TextError));
+            }
+        }
 
         private bool IsCorrectData()
         {

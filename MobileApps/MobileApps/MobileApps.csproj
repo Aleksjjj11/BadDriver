@@ -45,5 +45,7 @@
     <None Remove="Animations\19314-sequis-empty-state.json" />
     <None Remove="Fonts\Glyphter.ttf" />
     <EmbeddedResource Include="Fonts\Glyphter.ttf" />
+    <None Remove="Animations\_9825_loading_screen_loader_spinning_circle.json" />
+    <None Remove="Animations\_9811-loading.json" />
   </ItemGroup>
 </Project>
