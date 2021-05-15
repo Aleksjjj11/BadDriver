@@ -2,6 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 //using Android.Graphics;
 //using Android.Widget;
@@ -28,6 +31,10 @@ namespace MobileApps.ViewModels
             _ownPage = page;
             CompressedImagesPathsCollection = new ObservableCollection<ImageSource>();
             ImagesPathsCollection = new ObservableCollection<string>();
+            SendReportCommand = new Command(() =>
+            {
+                _bwSenderReport.RunWorkerAsync();
+            }, () => IsFullBlank);
             _bwSenderReport = new BackgroundWorker
             {
                 WorkerReportsProgress = true
@@ -38,6 +45,12 @@ namespace MobileApps.ViewModels
             CompressedImagesPathsCollection.CollectionChanged += (sender, args) =>
             {
                 OnPropertyChanged(nameof(IsFullBlank));
+                SendReportCommand.ChangeCanExecute();
+                _ownPage.ForceLayout();
+            };
+            this.PropertyChanged += (_, __) =>
+            {
+                SendReportCommand.ChangeCanExecute();
             };
         }
 
@@ -61,7 +74,8 @@ namespace MobileApps.ViewModels
         {
             bool result = true;
             //Проверка верно введённых данных
-            result = IsCorrectData() && CompressedImagesPathsCollection.Count == 3;
+            result = IsCorrectData() && CompressedImagesPathsCollection.Count >= 3
+                && string.IsNullOrWhiteSpace(Description) == false;
             return result;
         }
 
@@ -156,13 +170,7 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand PickPhotoCommand => new Command(() =>
-        {
-            PickPhoto();
-            OnPropertyChanged(nameof(CompressedImagesPathsCollection));
-            OnPropertyChanged(nameof(IsFullBlank));
-            _ownPage.ForceLayout();
-        });
+        public Command PickPhotoCommand => new Command(PickPhoto);
 
         private async void PickPhoto()
         {
@@ -202,6 +210,10 @@ namespace MobileApps.ViewModels
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
                 // ImagesPathsCollection.Add(photo3.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto3);
+                
+                OnPropertyChanged(nameof(CompressedImagesPathsCollection));
+                OnPropertyChanged(nameof(IsFullBlank));
+                _ownPage.ForceLayout();
             }
             catch (Exception ex)
             {
@@ -209,13 +221,7 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand TakePhotosCommand => new Command(() =>
-        {
-            TakePhoto();
-            OnPropertyChanged(nameof(CompressedImagesPathsCollection));
-            OnPropertyChanged(nameof(IsFullBlank));
-            _ownPage.ForceLayout();
-        });
+        public Command TakePhotosCommand => new Command(TakePhoto);
 
         private async void TakePhoto()
         {
@@ -252,6 +258,10 @@ namespace MobileApps.ViewModels
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
                 // ImagesPathsCollection.Add(photo3.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto3);
+                
+                OnPropertyChanged(nameof(CompressedImagesPathsCollection));
+                OnPropertyChanged(nameof(IsFullBlank));
+                _ownPage.ForceLayout();
 
             }
             catch (Exception ex)
@@ -260,10 +270,7 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand SendReportCommand => new Command(() =>
-        {
-            _bwSenderReport.RunWorkerAsync();
-        });
+        public Command SendReportCommand { get; }
 
         private async void SendReportToServer()
         {
@@ -290,18 +297,19 @@ namespace MobileApps.ViewModels
         private bool IsCorrectData()
         {
             bool result = false;
-            switch (CountryCar)
+            switch (CountryCar?.ToUpper())
             {
                 case "RUS":
                 {
                     result = char.IsDigit(NumberCar[1]) && char.IsDigit(NumberCar[2]) &&
                              char.IsDigit(NumberCar[3]) && char.IsLetter(NumberCar[0]) &&
                              char.IsLetter(NumberCar[4]) && char.IsLetter(NumberCar[5]) &&
-                             int.TryParse(RegionCar, out _);
+                             RegionCar.All(char.IsDigit);
                     break;
                 }
                 case "UA":
                 {
+                    result = true;
                     break;
                 }
                 default:

@@ -17,6 +17,23 @@
     <ContentPage.Content>
         <ScrollView VerticalScrollBarVisibility="Never">
             <StackLayout Padding="10">
+                <Button TextColor="White"
+                        Margin="10, 0"
+                        FontSize="Subtitle"
+                        CornerRadius="5"
+                        BackgroundColor="{StaticResource Primary1}"
+                        Command="{Binding SendReportCommand}"
+                        Text="Отправить жалобу">
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                                    <Setter Property="BackgroundColor" Value="#44c661cf"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
                 <Frame MinimumHeightRequest="400">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -123,13 +140,6 @@
                             forms:CacheComposition="True" />
                     </StackLayout>
                 </Frame>
-                <Button TextColor="White"
-                        FontSize="Subtitle"
-                        CornerRadius="5"
-                        BackgroundColor="{StaticResource Primary1}"
-                        Command="{Binding SendReportCommand}"
-                        IsVisible="{Binding IsFullBlank, Mode=OneWay}"
-                        Text="Отправить жалобу" />
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>
