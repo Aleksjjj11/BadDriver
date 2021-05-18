@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Collections.ObjectModel;
 using MobileApps.Interfaces;
-using MobileApps.Models;
 using MobileApps.Popups;
-using SkiaSharp;
-using SkiaSharp.Views.Forms;
 using Xamarin.CommunityToolkit.Extensions;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace MobileApps.ViewModels

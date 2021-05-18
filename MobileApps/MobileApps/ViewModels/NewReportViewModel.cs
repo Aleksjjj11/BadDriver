@@ -1,22 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-//using Android.Graphics;
-//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Popups;
-using SkiaSharp;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-//using Application = Android.App.Application;
-using Path = System.IO.Path;
 
 namespace MobileApps.ViewModels
 {
@@ -81,20 +72,20 @@ namespace MobileApps.ViewModels
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //Toast.MakeText(Application.Context, (string)e.UserState, ToastLength.Long)?.Show();
+            _ownPage.DisplayToastAsync((string)e.UserState, 1000);
         }
 
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            //Toast.MakeText(Application.Context, "Жалоба отправлена!", ToastLength.Long);
+            _ownPage.DisplayToastAsync("Жалоба отправлена!", 2000);
             _ownPage.SendBackButtonPressed();
         }
 
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
             IsBusy = true;
-            //Toast.MakeText(Application.Context, "Всё верно, отправляем жалобу!", ToastLength.Long);
+            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!", 1000);
             _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
             //Дальше будет отправка запроса на сервер
             (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
@@ -188,7 +179,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                // ImagesPathsCollection.Add(photo.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto);
 
                 var photo2 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
@@ -198,7 +188,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                // ImagesPathsCollection.Add(photo2.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto2);
 
                 var photo3 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
@@ -208,7 +197,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                // ImagesPathsCollection.Add(photo3.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto3);
                 
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));
@@ -236,7 +224,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                // ImagesPathsCollection.Add(photo.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto);
 
                 var photo2 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
@@ -246,7 +233,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                // ImagesPathsCollection.Add(photo2.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto2);
 
                 var photo3 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
@@ -256,7 +242,6 @@ namespace MobileApps.ViewModels
 
                 string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
                 CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                // ImagesPathsCollection.Add(photo3.FullPath);
                 ImagesPathsCollection.Add(pathResizedPhoto3);
                 
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));

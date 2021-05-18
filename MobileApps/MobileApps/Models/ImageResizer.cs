@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using SkiaSharp;
-using SkiaSharp.Views.Forms;
-using Xamarin.CommunityToolkit.UI.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 

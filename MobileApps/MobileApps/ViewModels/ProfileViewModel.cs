@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 using System.Windows.Input;
 using MobileApps.Interfaces;
-using MobileApps.Models;
 using MobileApps.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -44,7 +42,6 @@ namespace MobileApps.ViewModels
         {
             User.Update("http://188.225.83.42:7000");
             User.UpdateReports("http://188.225.83.42:7000");
-            Log.Warning("INFO", "SCROLL!!!!!!!!!!!!!!!!!!");
         }
 
         public ICommand UpdateUserCommand => new Command(() =>

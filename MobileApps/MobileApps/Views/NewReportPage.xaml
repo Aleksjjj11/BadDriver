@@ -17,6 +17,17 @@
     <ContentPage.Content>
         <ScrollView VerticalScrollBarVisibility="Never">
             <StackLayout Padding="10">
+                <forms:AnimationView
+                    Margin="10"
+                    Animation="_12651_letter.json"
+                    IsAnimating="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    AnimationSource="AssetOrBundle"
+                    AutoPlay="True"
+                    RepeatMode="Infinite"
+                    VerticalOptions="Start"
+                    HorizontalOptions="Center"
+                    forms:CacheComposition="True" />
                 <Button TextColor="White"
                         Margin="10, 0"
                         FontSize="Subtitle"
@@ -127,17 +138,6 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </FlexLayout>
-                        <forms:AnimationView
-                            Margin="10"
-                            Animation="_52055_sending_confirmation.json"
-                            IsAnimating="{Binding IsBusy}"
-                            IsVisible="{Binding IsBusy}"
-                            AnimationSource="AssetOrBundle"
-                            AutoPlay="True"
-                            RepeatMode="Infinite"
-                            VerticalOptions="Start"
-                            HorizontalOptions="Center"
-                            forms:CacheComposition="True" />
                     </StackLayout>
                 </Frame>
             </StackLayout>

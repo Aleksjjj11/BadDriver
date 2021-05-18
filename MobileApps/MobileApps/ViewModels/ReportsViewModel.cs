@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using MobileApps.Interfaces;
-using MobileApps.Models;
 using MobileApps.Views;
 using Xamarin.Forms;
 
@@ -71,7 +70,6 @@ namespace MobileApps.ViewModels
         }
         public ICommand RefreshInfoCommand => new Command(() =>
         {
-            //App.CurrentUser.UpdateReports("http://188.225.83.42:7000");
             _bwUpdater.RunWorkerAsync();
         });
         
@@ -84,10 +82,6 @@ namespace MobileApps.ViewModels
 
         public ICommand OpenNewReportPageCommand => new Command(() =>
         {
-            // _ownPage.Navigation.PushModalAsync(new NavigationPage(new NewReportPage())
-            // {
-            //     BarBackgroundColor = Color.FromHex("#ebe2ff")
-            // });
             _ownPage.Navigation.PushModalAsync(new NewReportPage());
         });
 

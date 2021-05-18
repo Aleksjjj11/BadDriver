@@ -3,12 +3,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-//using Application = Android.App.Application;
 
 namespace MobileApps.ViewModels
 {
@@ -69,11 +68,8 @@ namespace MobileApps.ViewModels
         private void BwAchievementUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            //if(e.Error is null)
-            //    Toast.MakeText(Application.Context, "Успех, вот ачивки!", ToastLength.Long)?.Show();
-            //else
-            //    Toast.MakeText(Application.Context, $"Крах! Вот ошибка\n{e.Error.Message}", ToastLength.Long)?.Show();
-            
+            _ownPage.DisplayToastAsync(e.Error is null ? "Успех, вот ачивки!" : $"Крах! Вот ошибка\n{e.Error.Message}");
+
             OnPropertyChanged(nameof(Achievements));
             OnPropertyChanged(nameof(ArrayAchievements));
         }

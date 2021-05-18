@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using MobileApps.ViewModels;
 using SkiaSharp;
-using Xamarin.CommunityToolkit.UI.Views;
 using Xamarin.Forms;
 
 namespace MobileApps.PopupViewModels

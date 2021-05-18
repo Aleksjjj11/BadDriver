@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using MobileApps.Interfaces;
 using SkiaSharp;
 using Xamarin.Forms;
@@ -53,8 +52,6 @@ namespace MobileApps.Models
             ImagesSources = new ObservableCollection<ImageSource>();
             foreach (var imagesPath in ImagesPaths)
             {
-                /*ImagesSources.Add(ImageSource.FromStream(() => 
-                    ResizeImage(1024, 100, new Uri($"http://188.225.83.42:7000{imagesPath}"))));*/
                 ImagesSources.Add(ImageSource.FromUri(new Uri($"http://188.225.83.42:7000{imagesPath}")));
             }
 

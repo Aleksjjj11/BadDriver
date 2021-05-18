@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
-using Newtonsoft.Json.Linq;
-using RestSharp;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
 
 namespace MobileApps
 {
@@ -43,7 +39,7 @@ namespace MobileApps
                     catch (Exception ex)
                     {
                         Log.Warning("Error Update User Info", ex.Message);
-                        //Toast.MakeText(Android.App.Application.Context, ex.Message, ToastLength.Long);
+                        App.Current.MainPage.DisplayToastAsync(ex.Message, 2500);
                     }
                 }
             }
