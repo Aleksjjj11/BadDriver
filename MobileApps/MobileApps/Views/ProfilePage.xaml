@@ -70,23 +70,22 @@
                                    HorizontalTextAlignment="Center"
                                    FontSize="Large"
                                    TextColor="Black" />
-                            <ScrollView Grid.Row="1">
-                                <StackLayout Orientation="Horizontal">
-                                    <BindableLayout.ItemsSource>
-                                        <Binding Path="User.Achievements" />
-                                    </BindableLayout.ItemsSource>
-                                    <BindableLayout.EmptyView>
-                                        <Grid HorizontalOptions="CenterAndExpand">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="2*" />
-                                                <RowDefinition Height="3*" />
-                                            </Grid.RowDefinitions>
-                                            <Label Grid.Row="0"
+                            <StackLayout Grid.Row="1" Orientation="Horizontal">
+                                <BindableLayout.ItemsSource>
+                                    <Binding Path="User.Achievements" />
+                                </BindableLayout.ItemsSource>
+                                <BindableLayout.EmptyView>
+                                    <Grid HorizontalOptions="CenterAndExpand">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="2*" />
+                                            <RowDefinition Height="3*" />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0"
                                                    Text="Кажется тут пусто"
                                                    VerticalOptions="End"
                                                    FontSize="Medium"
                                                    TextColor="{StaticResource SecondaryB1}" />
-                                            <forms:AnimationView
+                                        <forms:AnimationView
                                                 Grid.Row="1"
                                                 Animation="_19314_sequis_empty_state.json"
                                                 IsAnimating="True"
@@ -98,20 +97,19 @@
                                                 VerticalOptions="Start"
                                                 HorizontalOptions="Center"
                                                 forms:CacheComposition="True" />
-                                        </Grid>
-                                    </BindableLayout.EmptyView>
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate x:DataType="interfaces:IAchievement">
-                                            <ImageButton Source="{Binding Path=SmallImage}"
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="interfaces:IAchievement">
+                                        <ImageButton Source="{Binding Path=SmallImage}"
                                                          VerticalOptions="Center"
                                                          HorizontalOptions="Center"
                                                          CornerRadius="100"
                                                          HeightRequest="100"
                                                          WidthRequest="100"/>
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </StackLayout>
-                            </ScrollView>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
                         </Grid>
                     </Frame>
                     <Frame Padding="10">

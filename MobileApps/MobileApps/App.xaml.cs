@@ -39,7 +39,7 @@ namespace MobileApps
                     catch (Exception ex)
                     {
                         Log.Warning("Error Update User Info", ex.Message);
-                        App.Current.MainPage.DisplayToastAsync(ex.Message, 2500);
+                        App.Current.MainPage.DisplayToastAsync(ex.Message);
                     }
                 }
             }

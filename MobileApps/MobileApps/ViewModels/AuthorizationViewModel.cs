@@ -74,37 +74,44 @@ namespace MobileApps.ViewModels
         private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            switch (Device.RuntimePlatform)
+            try
             {
-                case Device.Android:
+                switch (Device.RuntimePlatform)
                 {
-                    if (e?.Result is User)
+                    case Device.Android:
                     {
-                        var user = e.Result as IUser;
-                        App.CurrentUser = user;
-                        (_ownPage as AuthorizationPage).BackPressed();
-                        Preferences.Set("username", App.CurrentUser?.Username);
-                        Preferences.Set("password", App.CurrentUser?.Password);
-                        _ownPage.DisplayToastAsync("Вы успешно зарегистрировались");
-                    }
+                        if (e?.Result is User)
+                        {
+                            var user = e.Result as IUser;
+                            App.CurrentUser = user;
+                            (_ownPage as AuthorizationPage).BackPressed();
+                            Preferences.Set("username", App.CurrentUser?.Username);
+                            Preferences.Set("password", App.CurrentUser?.Password);
+                            _ownPage.DisplayToastAsync("Вы успешно зарегистрировались");
+                        }
 
-                    if (e?.Result is string)
+                        if (e?.Result is string)
+                        {
+                            TextError = e?.Result.ToString();
+                        }
+
+                        if (e?.Result is string result)
+                        {
+                            _ownPage.DisplayToastAsync(result);
+                        }
+
+                        break;
+                    }
+                    case Device.iOS:
                     {
-                        TextError = e?.Result.ToString();
+                        break;
                     }
-
-                    if (e?.Result is string result)
-                    {
-                        _ownPage.DisplayToastAsync(result);
-                    }
-
-                    break;
+                    default: break;
                 }
-                case Device.iOS:
-                {
-                    break;
-                }
-                default: break;
+            }
+            catch (Exception exception)
+            {
+                _ownPage.DisplayToastAsync(exception.Message);
             }
         }
 

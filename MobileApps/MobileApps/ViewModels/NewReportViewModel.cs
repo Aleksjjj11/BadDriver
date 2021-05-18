@@ -72,20 +72,20 @@ namespace MobileApps.ViewModels
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            _ownPage.DisplayToastAsync((string)e.UserState, 1000);
+            _ownPage.DisplayToastAsync((string)e.UserState);
         }
 
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            _ownPage.DisplayToastAsync("Жалоба отправлена!", 2000);
+            _ownPage.DisplayToastAsync("Жалоба отправлена!");
             _ownPage.SendBackButtonPressed();
         }
 
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
             IsBusy = true;
-            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!", 1000);
+            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!");
             _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
             //Дальше будет отправка запроса на сервер
             (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
