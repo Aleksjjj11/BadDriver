@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
@@ -15,8 +16,13 @@ namespace MobileApps
         public App()
         {
             InitializeComponent();
-
+            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
             MainPage = new MainPage();
+        }
+
+        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            App.Current.MainPage.DisplayToastAsync(e.Exception.Message);
         }
 
         protected override void OnStart()

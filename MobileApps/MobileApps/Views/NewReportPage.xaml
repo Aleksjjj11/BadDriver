@@ -16,7 +16,7 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView VerticalScrollBarVisibility="Never">
-            <StackLayout Padding="10">
+            <StackLayout VerticalOptions="Start" Padding="10">
                 <forms:AnimationView
                     Margin="10"
                     Animation="_12651_letter.json"

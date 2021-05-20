@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Windows.Input;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
@@ -15,19 +14,10 @@ namespace MobileApps.ViewModels
 {
     public class AuthorizationViewModel : BaseViewModel
     {
-        private string _username;
-        private Page _ownPage;
-        private string _password;
-        private string _repeatPassword;
-        private string _email;
-        private string _firstName;
-        private string _lastName;
-        private BackgroundWorker _bwAuth;
-        private string _textError;
+        private readonly Page _ownPage;
+        private readonly BackgroundWorker _bwAuth;
 
-        private bool _isAuthorization = true;
         private bool _isBusy;
-
         public bool IsBusy
         {
             get => _isBusy;
@@ -40,7 +30,8 @@ namespace MobileApps.ViewModels
         }
 
         public bool VisibleTitle => !IsBusy;
-        
+
+        private bool _isAuthorization = true;
         public bool IsAuthorization
         {
             get => _isAuthorization;
@@ -66,9 +57,28 @@ namespace MobileApps.ViewModels
             _ownPage = page;
             Username = App.CurrentUser?.Username;
             Password = App.CurrentUser?.Password;
+
+            InitCommands();
+
             _bwAuth = new BackgroundWorker();
             _bwAuth.DoWork += BwAuthOnDoWork;
             _bwAuth.RunWorkerCompleted += BwAuthOnRunWorkerCompleted;
+        }
+
+        private void InitCommands()
+        {
+            ChangeFormCommand = new Command(() => { IsAuthorization = !IsAuthorization; });
+
+            SendFormCommand = new Command(() =>
+            {
+                IsBusy = true;
+                _bwAuth.RunWorkerAsync();
+            }, () => IsBusy == false);
+
+            PropertyChanged += (_, __) =>
+            {
+                SendFormCommand.ChangeCanExecute();
+            };
         }
 
         private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -126,6 +136,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _username;
         public string Username  
         {
             get => _username;
@@ -136,6 +147,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _password;
         public string Password
         {
             get => _password;
@@ -145,6 +157,8 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(Password));
             } 
         }
+
+        private string _repeatPassword;
         public string RepeatPassword
         {
             get => _repeatPassword;
@@ -155,6 +169,7 @@ namespace MobileApps.ViewModels
             } 
         }
 
+        private string _email;
         public string Email
         {
             get => _email;
@@ -165,6 +180,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _firstName;
         public string FirstName
         {
             get => _firstName;
@@ -175,6 +191,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _lastName;
         public string LastName  
         {
             get => _lastName;
@@ -185,18 +202,11 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand ChangeForm => new Command(() =>
-        {
-            IsAuthorization = !IsAuthorization;
-        });
+        public Command ChangeFormCommand { get; private set; }
 
-        public ICommand SendForm => new Command(() =>
-        {
-            //Добавить отправку в background worker
-            IsBusy = true;
-            _bwAuth.RunWorkerAsync();
-        });
+        public Command SendFormCommand { get; private set; }
 
+        private string _textError;
         public string TextError
         {
             get => _textError;

@@ -1,17 +1,12 @@
-﻿using System;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
 using Xamarin.Forms;
-using Color = Android.Graphics.Color;
 
 namespace MobileApps.Droid
 {
-    [Activity(Label = "MobileApps", Icon = "@drawable/log_badDriver", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "BadDriver", Icon = "@drawable/log_badDriver", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -21,9 +16,7 @@ namespace MobileApps.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
-            Window.SetTitleColor(Color.Black);
-            Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#ebe2ff"));
-            //Lottie.Forms.AnimationView.Init();
+            Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#d76ed5"));
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());

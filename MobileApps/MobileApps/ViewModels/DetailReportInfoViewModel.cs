@@ -10,7 +10,6 @@ namespace MobileApps.ViewModels
     {
         private readonly IReport _report;
         private readonly Page _ownPage;
-        private ObservableCollection<ImageSource> _imageSources;
 
         public IReport Report => _report;
         public ObservableCollection<ImageSource> ImageSources => Report?.ImagesSources;
@@ -19,6 +18,16 @@ namespace MobileApps.ViewModels
         {
             _report = report;
             _ownPage = ownPage;
+
+            InitCommands();
+        }
+
+        private void InitCommands()
+        {
+            OpenImageFullScreenCommand = new Command<ImageSource>(image =>
+            {
+                _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
+            });
         }
 
         public ImageSource CountryFlag
@@ -45,9 +54,6 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public Command OpenImageFullScreenCommand => new Command<ImageSource>(image =>
-        {
-            _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
-        });
+        public Command OpenImageFullScreenCommand { get; private set; }
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Popups;
@@ -14,7 +16,7 @@ namespace MobileApps.ViewModels
     public class NewReportViewModel : BaseViewModel
     {
         private readonly Page _ownPage;
-        private  IUser _user => App.CurrentUser;
+        private static IUser User => App.CurrentUser;
         private readonly BackgroundWorker _bwSenderReport;
         
         public NewReportViewModel(Page page)
@@ -22,10 +24,9 @@ namespace MobileApps.ViewModels
             _ownPage = page;
             CompressedImagesPathsCollection = new ObservableCollection<ImageSource>();
             ImagesPathsCollection = new ObservableCollection<string>();
-            SendReportCommand = new Command(() =>
-            {
-                _bwSenderReport.RunWorkerAsync();
-            }, () => IsFullBlank);
+
+            InitCommands();
+
             _bwSenderReport = new BackgroundWorker
             {
                 WorkerReportsProgress = true
@@ -39,6 +40,24 @@ namespace MobileApps.ViewModels
                 SendReportCommand.ChangeCanExecute();
                 _ownPage.ForceLayout();
             };
+        }
+
+        private void InitCommands()
+        {
+            SendReportCommand = new Command(() =>
+            {
+                _bwSenderReport.RunWorkerAsync();
+            }, () => IsFullBlank && IsCorrectData());
+
+            OpenImageFullScreenCommand = new Command<ImageSource>(image =>
+            {
+                _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
+            });
+
+            PickPhotoCommand = new Command(PickPhoto);
+
+            TakePhotosCommand = new Command(TakePhoto);
+
             this.PropertyChanged += (_, __) =>
             {
                 SendReportCommand.ChangeCanExecute();
@@ -61,40 +80,11 @@ namespace MobileApps.ViewModels
 
         public bool IsFullBlank => ValidateData();
 
-        private bool ValidateData()
-        {
-            bool result = true;
-            //Проверка верно введённых данных
-            result = IsCorrectData() && CompressedImagesPathsCollection.Count >= 3
-                && string.IsNullOrWhiteSpace(Description) == false;
-            return result;
-        }
+        public Command OpenImageFullScreenCommand { get; private set; }
+        public Command PickPhotoCommand { get; private set; }
+        public Command TakePhotosCommand { get; private set; }
+        public Command SendReportCommand { get; private set; }
 
-        private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            _ownPage.DisplayToastAsync((string)e.UserState);
-        }
-
-        private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            IsBusy = false;
-            _ownPage.DisplayToastAsync("Жалоба отправлена!");
-            _ownPage.SendBackButtonPressed();
-        }
-
-        private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
-        {
-            IsBusy = true;
-            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!");
-            _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
-            //Дальше будет отправка запроса на сервер
-            (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
-        }
-        
-        public Command OpenImageFullScreenCommand => new Command<ImageSource>(image =>
-        {
-            _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
-        });
 
         private string _countryCar;
 
@@ -161,7 +151,35 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public Command PickPhotoCommand => new Command(PickPhoto);
+        private bool ValidateData()
+        {
+            bool result = true;
+            //Проверка верно введённых данных
+            result = IsCorrectData() && CompressedImagesPathsCollection.Count >= 3
+                                     && string.IsNullOrWhiteSpace(Description) == false;
+            return result;
+        }
+
+        private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            _ownPage.DisplayToastAsync((string)e.UserState);
+        }
+
+        private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            IsBusy = false;
+            _ownPage.DisplayToastAsync("Жалоба отправлена!");
+            _ownPage.SendBackButtonPressed();
+        }
+
+        private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
+        {
+            IsBusy = true;
+            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!");
+            _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
+            //Дальше будет отправка запроса на сервер
+            (User as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+        }
 
         private async void PickPhoto()
         {
@@ -202,14 +220,13 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));
                 OnPropertyChanged(nameof(IsFullBlank));
                 _ownPage.ForceLayout();
+                Thread.Sleep(10);
             }
             catch (Exception ex)
             {
                 await _ownPage.DisplayAlert("Ошибка", ex.Message, "Ok");
             }
         }
-
-        public Command TakePhotosCommand => new Command(TakePhoto);
 
         private async void TakePhoto()
         {
@@ -247,15 +264,13 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));
                 OnPropertyChanged(nameof(IsFullBlank));
                 _ownPage.ForceLayout();
-
+                Thread.Sleep(10);
             }
             catch (Exception ex)
             {
                 await _ownPage.DisplayAlert("Ошибка", ex.Message, "Ok");
             }
         }
-
-        public Command SendReportCommand { get; }
 
         private async void SendReportToServer()
         {
@@ -274,7 +289,7 @@ namespace MobileApps.ViewModels
             }
 
             //Дальше будет отправка запроса на сервер
-            (_user as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+            (User as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
             IsBusy = false;
             _ownPage.SendBackButtonPressed();
         }

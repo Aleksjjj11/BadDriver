@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             xmlns:views="http://xamarin.com/schemas/2020/toolkit"
              BackgroundColor="#ebe2ff"
              x:DataType="viewModels:ProfileViewModel"
              x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
@@ -35,7 +36,7 @@
                                    HeightRequest="100"
                                    WidthRequest="100">
                                 <ImageButton Source="{FontImage Color=White, FontFamily=Glyphter, Size=Header, Glyph=g}"
-                                             Command="{Binding OpenSettings}"
+                                             Command="{Binding OpenSettingsCommand}"
                                              Padding="10"
                                              HeightRequest="150"
                                              WidthRequest="150"
@@ -59,7 +60,7 @@
                             </StackLayout>
                         </Grid>
                     </Frame>
-                    <Frame HeightRequest="200">
+                    <Frame HeightRequest="250">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="3*" />
@@ -102,11 +103,15 @@
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="interfaces:IAchievement">
                                         <ImageButton Source="{Binding Path=SmallImage}"
-                                                         VerticalOptions="Center"
-                                                         HorizontalOptions="Center"
-                                                         CornerRadius="100"
-                                                         HeightRequest="100"
-                                                         WidthRequest="100"/>
+                                                     Padding="0"
+                                                     BorderWidth="0"
+                                                     Aspect="AspectFill"
+                                                     VerticalOptions="Center"
+                                                     HorizontalOptions="Center"
+                                                     BackgroundColor="{StaticResource PrimaryShade1_2}"
+                                                     CornerRadius="100"
+                                                     HeightRequest="95"
+                                                     WidthRequest="95"/>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </StackLayout>

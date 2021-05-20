@@ -59,7 +59,7 @@
 
             <Frame Grid.Row="2"
                    CornerRadius="20"
-                   BackgroundColor="#AAAAAA"
+                   BackgroundColor="Transparent"
                    Margin="30">
                 <ScrollView VerticalScrollBarVisibility="Never">
                     <Grid>
@@ -67,17 +67,19 @@
                                      IsVisible="{Binding IsAuthorization, Mode=OneWay}"
                                      Spacing="30">
                             <Entry Placeholder="Логин"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Username, Mode=TwoWay}"/>
                             <Entry Placeholder="Пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
                                    IsPassword="True" />
                             <Button Text="Авторизоваться"
-                                    Command="{Binding SendForm}"
+                                    Command="{Binding SendFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
                             <Button Text="Я новенький"
-                                    Command="{Binding ChangeForm}"
+                                    Command="{Binding ChangeFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource SecondaryAShade1_1}"
                                     CornerRadius="10" />
@@ -90,26 +92,32 @@
                                      Spacing="30"
                                      IsVisible="{Binding IsRegistration, Mode=OneWay}">
                             <Entry Placeholder="Логин"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Username, Mode=TwoWay}"/>
                             <Entry Placeholder="Пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
                                    IsPassword="True" />
                             <Entry Placeholder="Повторим пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding RepeatPassword, Mode=TwoWay}"
                                    IsPassword="True" />
                             <Entry Placeholder="Имя"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding FirstName, Mode=TwoWay}"/>
                             <Entry Placeholder="Фамилия"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding LastName, Mode=TwoWay}"/>
                             <Entry Placeholder="Почта"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Email, Mode=TwoWay}"/>
                             <Button Text="Зарегистрироваться"
-                                    Command="{Binding SendForm}"
+                                    Command="{Binding SendFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
                             <Button Text="Уже смешарик"
-                                    Command="{Binding ChangeForm}"
+                                    Command="{Binding ChangeFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource SecondaryAShade1_1}"
                                     CornerRadius="10" />

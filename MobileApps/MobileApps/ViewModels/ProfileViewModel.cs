@@ -12,11 +12,12 @@ namespace MobileApps.ViewModels
     {
         public IUser User => App.CurrentUser;
         public bool IsBusy { get; set; }
-        private BackgroundWorker _bwUpdater;
-        private Page _ownPage;
+        private readonly BackgroundWorker _bwUpdater;
+        private readonly Page _ownPage;
         public ProfileViewModel(Page page)
         {
             _ownPage = page;
+            InitCommands();
             _bwUpdater = new BackgroundWorker
             {
                 WorkerReportsProgress = true
@@ -29,6 +30,32 @@ namespace MobileApps.ViewModels
             };
             IsBusy = true;
             _bwUpdater.RunWorkerAsync();
+        }
+
+        private void InitCommands()
+        {
+            OpenSettingsCommand = new Command(() =>
+            {
+                _ownPage.Navigation.PushModalAsync(new AuthorizationPage());
+            });
+
+            UpdateUserCommand = new Command(() =>
+            {
+                _bwUpdater.RunWorkerAsync();
+            });
+
+            LogoutCommand = new Command(() =>
+            {
+                App.CurrentUser = null;
+
+                if (Preferences.ContainsKey("username"))
+                    Preferences.Clear("username");
+
+                if (Preferences.ContainsKey("password"))
+                    Preferences.Clear("password");
+
+                App.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
+            });
         }
 
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -44,27 +71,10 @@ namespace MobileApps.ViewModels
             User.UpdateReports("http://188.225.83.42:7000");
         }
 
-        public ICommand UpdateUserCommand => new Command(() =>
-        {
-            _bwUpdater.RunWorkerAsync();
-        });
+        public Command UpdateUserCommand { get; private set; }
 
-        public ICommand OpenSettings => new Command(() =>
-        {
-            _ownPage.Navigation.PushModalAsync(new AuthorizationPage());
-        });
+        public Command OpenSettingsCommand { get; private set; }
 
-        public ICommand LogoutCommand => new Command(() =>
-        {
-            App.CurrentUser = null;
-            
-            if (Preferences.ContainsKey("username"))
-                Preferences.Clear("username");
-            
-            if (Preferences.ContainsKey("password"))
-                Preferences.Clear("password");
-            
-            App.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
-        });
+        public Command LogoutCommand { get; private set; }
     }
 }

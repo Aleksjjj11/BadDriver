@@ -34,6 +34,7 @@ namespace MobileApps.ViewModels
         public AchievementsViewModel(Page page)
         {
             _ownPage = page;
+            InitCommand();
             _bwAchievementUpdater = new BackgroundWorker
             {
                 WorkerReportsProgress = true
@@ -43,15 +44,20 @@ namespace MobileApps.ViewModels
             _bwAchievementUpdater.RunWorkerCompleted += BwAchievementUpdaterOnRunWorkerCompleted;
         }
 
+        private void InitCommand()
+        {
+            RefreshUserCommand = new Command(() =>
+            {
+                _bwAchievementUpdater.RunWorkerAsync();
+            });
+        }
+
         private void BwAchievementUpdaterOnProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             
         }
 
-        public ICommand RefreshUser => new Command(() =>
-        {
-            _bwAchievementUpdater.RunWorkerAsync();
-        });
+        public Command RefreshUserCommand { get; private set; }
 
         private async void BwAchievementUpdaterOnDoWork(object sender, DoWorkEventArgs e)
         {

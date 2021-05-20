@@ -20,6 +20,9 @@ namespace MobileApps.ViewModels
         public ReportsViewModel(Page page)
         {
             _ownPage = page;
+
+            InitCommands();
+
             _bwUpdater = new BackgroundWorker
             {
                 WorkerReportsProgress = true,
@@ -29,6 +32,25 @@ namespace MobileApps.ViewModels
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
             IsBusy = true;
             _bwUpdater.RunWorkerAsync();
+        }
+
+        private void InitCommands()
+        {
+            RefreshInfoCommand = new Command(() =>
+            {
+                _bwUpdater.RunWorkerAsync();
+            });
+
+            MoreInfoReportCommand = new Command<IReport>(x =>
+            {
+                _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(x));
+                SelectedReport = null;
+            });
+
+            OpenNewReportPageCommand = new Command(() =>
+            {
+                _ownPage.Navigation.PushModalAsync(new NewReportPage());
+            });
         }
 
         public LinearGradientBrush FrameBrush(StatusReport statusReport)
@@ -68,22 +90,12 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(IsBusy));
             }
         }
-        public ICommand RefreshInfoCommand => new Command(() =>
-        {
-            _bwUpdater.RunWorkerAsync();
-        });
+        public Command RefreshInfoCommand { get; private set; }
         
 
-        public ICommand MoreInfoReportCommand => new Command<IReport>(x =>
-        {
-            _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(x));
-            SelectedReport = null;
-        });
+        public Command MoreInfoReportCommand { get; private set; }
 
-        public ICommand OpenNewReportPageCommand => new Command(() =>
-        {
-            _ownPage.Navigation.PushModalAsync(new NewReportPage());
-        });
+        public Command OpenNewReportPageCommand { get; private set; }
 
     }
 }
