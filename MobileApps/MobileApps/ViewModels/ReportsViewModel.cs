@@ -1,9 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Input;
 using MobileApps.Interfaces;
-using MobileApps.Models;
 using MobileApps.Views;
 using Xamarin.Forms;
 
@@ -11,24 +9,31 @@ namespace MobileApps.ViewModels
 {
     public class ReportsViewModel : BaseViewModel
     {
-        private Page _ownPage;
+        private readonly Page _ownPage;
+        private readonly BackgroundWorker _bwUpdater;
+
         public ObservableCollection<IReport> Reports => App.CurrentUser.Reports;
+
         public IReport[] ArrayReports => Reports.ToArray();
         public IReport SelectedReport { get; set; }
-
-        private BackgroundWorker _bwUpdater;
 
         public ReportsViewModel(Page page)
         {
             _ownPage = page;
+
+            InitCommands();
+
             _bwUpdater = new BackgroundWorker
             {
                 WorkerReportsProgress = true,
             };
+
             _bwUpdater.DoWork += BwUpdaterOnDoWork;
             _bwUpdater.ProgressChanged += BwUpdaterOnProgressChanged;
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
+
             IsBusy = true;
+
             _bwUpdater.RunWorkerAsync();
         }
 
@@ -44,6 +49,7 @@ namespace MobileApps.ViewModels
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
+
             OnPropertyChanged(nameof(Reports));
             OnPropertyChanged(nameof(ArrayReports));
         }
@@ -59,7 +65,6 @@ namespace MobileApps.ViewModels
         }
 
         private bool _isBusy;
-
         public bool IsBusy
         {
             get => _isBusy;
@@ -69,23 +74,28 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(IsBusy));
             }
         }
-        public ICommand RefreshInfoCommand => new Command(() =>
-        {
-            //App.CurrentUser.UpdateReports("http://188.225.83.42:7000");
-            _bwUpdater.RunWorkerAsync();
-        });
-        
 
-        public ICommand MoreInfoReportCommand => new Command(() =>
-        {
-            _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(SelectedReport));
-            SelectedReport = null;
-        });
+        public Command RefreshInfoCommand { get; private set; }
+        public Command MoreInfoReportCommand { get; private set; }
+        public Command OpenNewReportPageCommand { get; private set; }
 
-        public ICommand OpenNewReportPageCommand => new Command(() =>
+        private void InitCommands()
         {
-            _ownPage.Navigation.PushModalAsync(new NewReportPage());
-        });
+            RefreshInfoCommand = new Command(() =>
+            {
+                _bwUpdater.RunWorkerAsync();
+            });
 
+            MoreInfoReportCommand = new Command<IReport>(x =>
+            {
+                _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(x));
+                SelectedReport = null;
+            });
+
+            OpenNewReportPageCommand = new Command(() =>
+            {
+                _ownPage.Navigation.PushModalAsync(new NewReportPage());
+            });
+        }
     }
 }

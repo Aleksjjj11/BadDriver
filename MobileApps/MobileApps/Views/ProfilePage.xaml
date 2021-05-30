@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             xmlns:views="http://xamarin.com/schemas/2020/toolkit"
              BackgroundColor="#ebe2ff"
              x:DataType="viewModels:ProfileViewModel"
              x:Class="MobileApps.Views.ProfilePage" NavigationPage.HasNavigationBar="True">
@@ -22,7 +23,7 @@
                      Command="{Binding UpdateUserCommand}">
             <ScrollView>
                 <StackLayout Orientation="Vertical" Padding="10">
-                    <Frame>
+                    <Frame HeightRequest="120">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="120" />
@@ -35,7 +36,7 @@
                                    HeightRequest="100"
                                    WidthRequest="100">
                                 <ImageButton Source="{FontImage Color=White, FontFamily=Glyphter, Size=Header, Glyph=g}"
-                                             Command="{Binding OpenSettings}"
+                                             Command="{Binding OpenSettingsCommand}"
                                              Padding="10"
                                              HeightRequest="150"
                                              WidthRequest="150"
@@ -52,14 +53,14 @@
                                        FontSize="Title" />
                                 <Label Text="{Binding Path=User.FirstName}"
                                        TextColor="DimGray"
-                                       FontSize="Large" />
+                                       FontSize="Subtitle" />
                                 <Label Text="{Binding Path=User.LastName, Mode=OneWay}"
                                        TextColor="DimGray"
-                                       FontSize="Large" />
+                                       FontSize="Subtitle" />
                             </StackLayout>
                         </Grid>
                     </Frame>
-                    <Frame HeightRequest="200">
+                    <Frame HeightRequest="250">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="3*" />
@@ -70,23 +71,22 @@
                                    HorizontalTextAlignment="Center"
                                    FontSize="Large"
                                    TextColor="Black" />
-                            <ScrollView Grid.Row="1">
-                                <StackLayout Orientation="Horizontal">
-                                    <BindableLayout.ItemsSource>
-                                        <Binding Path="User.Achievements" />
-                                    </BindableLayout.ItemsSource>
-                                    <BindableLayout.EmptyView>
-                                        <Grid HorizontalOptions="CenterAndExpand">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="2*" />
-                                                <RowDefinition Height="3*" />
-                                            </Grid.RowDefinitions>
-                                            <Label Grid.Row="0"
-                                                   Text="Кажется тут пусто"
-                                                   VerticalOptions="End"
-                                                   FontSize="Medium"
-                                                   TextColor="{StaticResource SecondaryB1}" />
-                                            <forms:AnimationView
+                            <StackLayout Grid.Row="1" Orientation="Horizontal">
+                                <BindableLayout.ItemsSource>
+                                    <Binding Path="User.Achievements" />
+                                </BindableLayout.ItemsSource>
+                                <BindableLayout.EmptyView>
+                                    <Grid HorizontalOptions="CenterAndExpand">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="2*" />
+                                            <RowDefinition Height="3*" />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0"
+                                               Text="Кажется тут пусто"
+                                               VerticalOptions="End"
+                                               FontSize="Medium"
+                                               TextColor="{StaticResource SecondaryB1}" />
+                                        <forms:AnimationView
                                                 Grid.Row="1"
                                                 Animation="_19314_sequis_empty_state.json"
                                                 IsAnimating="True"
@@ -98,20 +98,23 @@
                                                 VerticalOptions="Start"
                                                 HorizontalOptions="Center"
                                                 forms:CacheComposition="True" />
-                                        </Grid>
-                                    </BindableLayout.EmptyView>
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate x:DataType="interfaces:IAchievement">
-                                            <ImageButton Source="{Binding Path=SmallImage}"
-                                                         VerticalOptions="Center"
-                                                         HorizontalOptions="Center"
-                                                         CornerRadius="100"
-                                                         HeightRequest="100"
-                                                         WidthRequest="100"/>
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </StackLayout>
-                            </ScrollView>
+                                    </Grid>
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="interfaces:IAchievement">
+                                        <ImageButton Source="{Binding Path=SmallImage}"
+                                                     Padding="0"
+                                                     BorderWidth="0"
+                                                     Aspect="AspectFill"
+                                                     VerticalOptions="Center"
+                                                     HorizontalOptions="Center"
+                                                     BackgroundColor="{StaticResource PrimaryShade1_2}"
+                                                     CornerRadius="100"
+                                                     HeightRequest="95"
+                                                     WidthRequest="95"/>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
                         </Grid>
                     </Frame>
                     <Frame Padding="10">

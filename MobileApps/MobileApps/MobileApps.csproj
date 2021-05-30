@@ -17,7 +17,8 @@
     <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="2.80.2" />
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1821" />
+    <PackageReference Include="Xamarin.CommunityToolkit" Version="1.1.0" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
 
@@ -44,5 +45,7 @@
     <None Remove="Animations\19314-sequis-empty-state.json" />
     <None Remove="Fonts\Glyphter.ttf" />
     <EmbeddedResource Include="Fonts\Glyphter.ttf" />
+    <None Remove="Animations\_9825_loading_screen_loader_spinning_circle.json" />
+    <None Remove="Animations\_9811-loading.json" />
   </ItemGroup>
 </Project>

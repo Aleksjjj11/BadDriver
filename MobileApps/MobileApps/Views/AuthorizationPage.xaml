@@ -7,6 +7,16 @@
              BackgroundColor="#F1F1F1"
              x:DataType="viewModels:AuthorizationViewModel"
              x:Class="MobileApps.Views.AuthorizationPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">
+                <Setter Property="PlaceholderColor" Value="White" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Title" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -14,122 +24,118 @@
                 <RowDefinition Height="100" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0"
-                  BackgroundColor="{StaticResource SecondaryB1}" />
             <Frame Grid.Row="0"
                    Grid.RowSpan="2"
+                   Margin="0,-20,0,0"
                    BackgroundColor="{StaticResource SecondaryB1}">
-                   <Grid>
-                          <Label x:Name="AuthLabel"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 FontSize="Title"
-                                 TextColor="White"
-                                 IsVisible="{Binding VisibleTitle}"
-                                 Text="{Binding Title}" />
-                          <forms:AnimationView 
-                                 Margin="10"
-                                 Animation="_8359_loading_animation.json"
-                                 IsAnimating="{Binding IsBusy}"
-                                 IsVisible="{Binding IsBusy}"
-                                 AnimationSource="AssetOrBundle"
-                                 AutoPlay="True"
-                                 RepeatMode="Infinite"
-                                 VerticalOptions="Start"
-                                 HorizontalOptions="Center" 
-                                 forms:CacheComposition="True"/>
-                   </Grid>
-                   
+                <Grid>
+                    <Label x:Name="AuthLabel"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           FontSize="Title"
+                           TextColor="White"
+                           IsVisible="{Binding VisibleTitle}"
+                           Text="{Binding Title}" />
+                    <Label Text="{Binding TextError}"
+                           IsVisible="{Binding VisibleTitle}"
+                           VerticalTextAlignment="End"
+                           TextColor="Firebrick" />
+                    <forms:AnimationView
+                        Margin="10"
+                        Animation="_8836_loading.json"
+                        IsVisible="{Binding IsBusy}"
+                        AnimationSource="AssetOrBundle"
+                        AutoPlay="True"
+                        Speed="1"
+                        RepeatMode="Infinite"
+                        VerticalOptions="Start"
+                        HorizontalOptions="Center"
+                        forms:CacheComposition="True" />
+                </Grid>
+
             </Frame>
 
             <Frame Grid.Row="2"
                    CornerRadius="20"
-                   BackgroundColor="#AAAAAA"
-                   Margin="30">
+                   BackgroundColor="Transparent"
+                   Margin="5">
                 <ScrollView VerticalScrollBarVisibility="Never">
                     <Grid>
                         <StackLayout x:Name="AuthLayout"
+                                     Orientation="Vertical"
                                      IsVisible="{Binding IsAuthorization, Mode=OneWay}"
                                      Spacing="30">
                             <Entry Placeholder="Логин"
-                                   Text="{Binding Username, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   PlaceholderColor="Gray"
+                                   Text="{Binding Username, Mode=TwoWay}" />
                             <Entry Placeholder="Пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Button Text="Авторизоваться"
-                                    Command="{Binding SendForm}"
+                                    Command="{Binding SendFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
-                            <Button Text="Я новенький"
-                                    Command="{Binding ChangeForm}"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryAShade1_1}"
-                                    CornerRadius="10" />
-                            <Button Text="Забыл пароль"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryB1}"
-                                    CornerRadius="10" />
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="Я новенький"
+                                       HorizontalOptions="Start"
+                                       FontSize="Subtitle"
+                                       TextColor="{StaticResource SecondaryAShade1_1}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ChangeFormCommand}"
+                                                              NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Text="Забыл пароль"
+                                       HorizontalOptions="EndAndExpand"
+                                       FontSize="Subtitle"
+                                       TextColor="{StaticResource SecondaryB1}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}"
+                                                              NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </StackLayout>
                         </StackLayout>
                         <StackLayout x:Name="RegStackLayout"
                                      Spacing="30"
                                      IsVisible="{Binding IsRegistration, Mode=OneWay}">
                             <Entry Placeholder="Логин"
-                                   Text="{Binding Username, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   PlaceholderColor="Gray"
+                                   Text="{Binding Username, Mode=TwoWay}" />
                             <Entry Placeholder="Пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Entry Placeholder="Повторим пароль"
+                                   PlaceholderColor="Gray"
                                    Text="{Binding RepeatPassword, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
                                    IsPassword="True" />
                             <Entry Placeholder="Имя"
-                                   Text="{Binding FirstName, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   PlaceholderColor="Gray"
+                                   Text="{Binding FirstName, Mode=TwoWay}" />
                             <Entry Placeholder="Фамилия"
-                                   Text="{Binding LastName, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   PlaceholderColor="Gray"
+                                   Text="{Binding LastName, Mode=TwoWay}" />
                             <Entry Placeholder="Почта"
-                                   Text="{Binding Email, Mode=TwoWay}"
-                                   PlaceholderColor="DarkGray"
-                                   TextColor="Black"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center" />
+                                   PlaceholderColor="Gray"
+                                   Text="{Binding Email, Mode=TwoWay}" />
                             <Button Text="Зарегистрироваться"
-                                    Command="{Binding SendForm}"
+                                    Command="{Binding SendFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
-                            <Button Text="Уже смешарик"
-                                    Command="{Binding ChangeForm}"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryAShade1_1}"
-                                    CornerRadius="10" />
+                            <Label Text="Уже смешарик"
+                                   FontSize="Subtitle"
+                                   Margin="0, -25, 0,0"
+                                   HorizontalOptions="CenterAndExpand"
+                                   TextColor="{StaticResource SecondaryAShade1_1}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ChangeFormCommand}"
+                                                          NumberOfTapsRequired="1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
                         </StackLayout>
                     </Grid>
                 </ScrollView>

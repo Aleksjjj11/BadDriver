@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              xmlns:interfaces="clr-namespace:MobileApps.Interfaces;assembly=MobileApps"
+             xmlns:views="http://xamarin.com/schemas/2020/toolkit"
              x:DataType="viewModels:AchievementsViewModel"
              x:Class="MobileApps.Views.AchievementsPage">
     <ContentPage.Resources>
@@ -13,7 +14,7 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <RefreshView IsRefreshing="{Binding Path=IsBusy, Mode=TwoWay}"
-                     Command="{Binding Path=RefreshUser}"
+                     Command="{Binding Path=RefreshUserCommand}"
                      RefreshColor="{StaticResource Primary1}">
             <ScrollView>
                 <StackLayout Grid.Row="2" Padding="10">
@@ -59,7 +60,7 @@
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
                                     
-                                    <Frame Grid.Row="0"
+                                    <!--<Frame Grid.Row="0"
                                            Grid.RowSpan="2"
                                            Grid.Column="0" 
                                            VerticalOptions="Center"
@@ -73,7 +74,11 @@
                                                Aspect="AspectFill"
                                                VerticalOptions="Center"
                                                HorizontalOptions="Center"/>
-                                    </Frame>
+                                    </Frame>-->
+                                    <views:AvatarView Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                      Size="120"
+                                                      Aspect="Fill"
+                                                      Source="{Binding SmallImage}"></views:AvatarView>
 
                                     <Label Grid.Column="1"
                                            Grid.Row="0"

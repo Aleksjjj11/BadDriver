@@ -78,5 +78,15 @@
             <GradientStop Color="DarkRed" Offset="0.0"></GradientStop>
             <GradientStop Color="Red" Offset="1.1"></GradientStop>
         </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PointedGradientBrush" StartPoint="0,0" EndPoint=".2,0">
+            <GradientStopCollection>
+                <GradientStop Color="Transparent" Offset="0" />
+                <GradientStop Color="Transparent" Offset="0.3" />
+                <GradientStop Color="Red" Offset="0.3" />
+                <GradientStop Color="Red" Offset="0.6" />
+                <GradientStop Color="Transparent" Offset="0.6" />
+                <GradientStop Color="Transparent" Offset="1" />
+            </GradientStopCollection>
+        </LinearGradientBrush>
     </Application.Resources>
 </Application>

@@ -1,27 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using MobileApps.Interfaces;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace MobileApps.Models
 {
     public class User: INotifyPropertyChanged, IUser
     {
-        private string _username;
-        private string _password;
-        private string _email;
-        private string _firstName;
-        private string _lastName;
-
         public User()
         {
             Reports = new ObservableCollection<IReport>();
@@ -34,6 +24,7 @@ namespace MobileApps.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        private string _username;
         public string Username
         {
             get => _username;
@@ -44,6 +35,7 @@ namespace MobileApps.Models
             }
         }
 
+        private string _password;
         public string Password
         {
             get => _password;
@@ -54,6 +46,7 @@ namespace MobileApps.Models
             }
         }
 
+        private string _email;
         public string Email
         {
             get => _email;
@@ -64,6 +57,7 @@ namespace MobileApps.Models
             }
         }
 
+        private string _firstName;
         public string FirstName
         {
             get => _firstName;
@@ -74,6 +68,7 @@ namespace MobileApps.Models
             }
         }
 
+        private string _lastName;
         public string LastName
         {
             get => _lastName;
@@ -85,32 +80,43 @@ namespace MobileApps.Models
         }
 
         public ObservableCollection<IReport> Reports { get; }
+
         public int CountDeclined => Reports.Count(report => report.Status == StatusReport.Declined);
         public int CountAccepted => Reports.Count(report => report.Status == StatusReport.Accepted);
         public int CountProcessing => Reports.Count(report => report.Status == StatusReport.Processing);
+
         public void Update(string ipUrl = "http://188.225.83.42:7000")
         {
             string accessToken = GetAccessesToken(ipUrl);
 
             if (accessToken is null)
                 throw new Exception("Ошибка авторизации");
-            //Если токены успешно получены, необходимо получить полную информацию о юзере
-            var client = new RestClient($"{ipUrl}/reports/user-info/");
-            client.Timeout = -1;
+
+            var client = new RestClient($"{ipUrl}/reports/user-info/")
+            {
+                Timeout = -1
+            };
+
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
+
             var response = client.Execute(request);
+
             if (response.StatusCode == 0)
                 throw new Exception("Сервер не отвечает");
+
             string content = response.Content.Replace("\\", "");
-            JObject userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
+
+            var userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
+
             try
             {
                 Username = userInfoJson["username"]?.ToString();
                 Email = userInfoJson["email"]?.ToString();
                 FirstName = userInfoJson["first_name"]?.ToString();
                 LastName = userInfoJson["last_name"]?.ToString();
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 Log.Warning("Update", $"Info wasn't updated.\n{ex.Message}");
             }
@@ -124,30 +130,42 @@ namespace MobileApps.Models
             if (accessToken is null)
                 throw new Exception("Ошибка авторизации");
 
-            var client = new RestClient($"{ipUrl}/reports/user-reports/");
-            client.Timeout = -1;
+            var client = new RestClient($"{ipUrl}/reports/user-reports/")
+            {
+                Timeout = -1
+            };
+
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
+
             var response = client.Execute(request);
+
             if (response.StatusCode == 0)
                 throw new Exception("Сервер не отвечает");
-            JArray reportsJArray = new JArray(JArray.Parse(response.Content));
+            
+            var reportsJArray = new JArray(JArray.Parse(response.Content));
+            
             try
             {
                 Reports.Clear();
+
                 for (int i = 0; i < reportsJArray.Count; i++)
                 {
-                    string carNumber = reportsJArray[i]["car_number"]?.ToString();
-                    string carRegion = reportsJArray[i]["car_region"]?.ToString();
-                    string carCountry = reportsJArray[i]["car_country"]?.ToString();
-                    string description = reportsJArray[i]["description"]?.ToString();
+                    var carNumber = reportsJArray[i]["car_number"]?.ToString();
+                    var carRegion = reportsJArray[i]["car_region"]?.ToString();
+                    var carCountry = reportsJArray[i]["car_country"]?.ToString();
+                    var description = reportsJArray[i]["description"]?.ToString();
                     var dateTime = DateTime.Parse(reportsJArray[i]["data"]?.ToString());
                     var images = new ObservableCollection<string>();
-                    StatusReport statusReport = (StatusReport)reportsJArray[i]["status"].ToObject<int>();
+                    var statusReport = (StatusReport)reportsJArray[i]["status"]?.ToObject<int>();
+
                     images.Add(reportsJArray[i]["image_1"]?.ToString());
                     images.Add(reportsJArray[i]["image_2"]?.ToString());
                     images.Add(reportsJArray[i]["image_3"]?.ToString());
-                    var report = new Report(new Car(carNumber, carRegion, carCountry), images, dateTime, description, statusReport);
+
+                    var car = new Car(carNumber, carRegion, carCountry);
+                    var report = new Report(car, images, dateTime, description, statusReport);
+
                     Reports.Add(report);
                 }
             }
@@ -158,6 +176,7 @@ namespace MobileApps.Models
         }
 
         public ObservableCollection<IAchievement> Achievements { get; set; }
+
         public void GetAllAchievements(string ipUrl = "http://188.225.83.42:7000")
         {
             string accessToken = GetAccessesToken();
@@ -167,26 +186,37 @@ namespace MobileApps.Models
 
             var achievementCollection = new ObservableCollection<IAchievement>();
 
-            var client = new RestClient($"{ipUrl}/achivments/all_achivments/");
-            client.Timeout = -1;
+            var client = new RestClient($"{ipUrl}/achivments/all_achivments/")
+            {
+                Timeout = -1
+            };
+
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", $"Bearer {accessToken}");
-            IRestResponse response = client.Execute(request);
+            
+            var response = client.Execute(request);
+            
             if (response.StatusCode == 0)
                 throw new Exception("Сервер не отвечает");
-            JArray achievementsJArray = JArray.Parse(response.Content);
+            
+            var achievementsJArray = JArray.Parse(response.Content);
+            
             for (int i = 0; i < achievementsJArray.Count; i++)
             {
-                string name = achievementsJArray[i]["achivment_name"]?.ToString();
+                var name = achievementsJArray[i]["achivment_name"]?.ToString();
+                
                 if (name is null) continue;
 
-                string description = achievementsJArray[i]["achivment_description"]?.ToString();
+                var description = achievementsJArray[i]["achivment_description"]?.ToString();
+                
                 if (description is null) continue;
 
-                string bigImage = ipUrl + achievementsJArray[i]["big_image"]?.ToString();
+                var bigImage = ipUrl + achievementsJArray[i]["big_image"];
+                
                 if (bigImage is null) continue;
 
-                string smallImage = ipUrl + achievementsJArray[i]["small_image"]?.ToString();
+                var smallImage = ipUrl + achievementsJArray[i]["small_image"];
+                
                 if (smallImage is null) continue;
 
                 var achieve = new Achievement
@@ -196,6 +226,7 @@ namespace MobileApps.Models
                     SmallImage = smallImage,
                     BigImage = bigImage
                 };
+                
                 achievementCollection.Add(achieve);
             }
 
@@ -209,9 +240,13 @@ namespace MobileApps.Models
             if (accessToken is null)
                 throw new Exception("Access token is null!");
 
-            var client = new RestClient($"{ipUrl}/reports/send/");
-            client.Timeout = -1;
+            var client = new RestClient($"{ipUrl}/reports/send/")
+            {
+                Timeout = -1
+            };
+
             var request = new RestRequest(Method.POST);
+            
             request.AddHeader("Authorization", $"Bearer {accessToken}");
             request.AddParameter("user_name", this.Username);
             request.AddParameter("car_number", report.BadCar.Number);
@@ -223,6 +258,7 @@ namespace MobileApps.Models
             request.AddFile("image_1", report.ImagesPaths[0]);
             request.AddFile("image_2", report.ImagesPaths[1]);
             request.AddFile("image_3", report.ImagesPaths[2]);
+            
             var response = client.Execute(request);
         }
         /// <summary>
@@ -232,19 +268,28 @@ namespace MobileApps.Models
         /// <returns></returns>
         private string GetAccessesToken(string ipUrl = "http://188.225.83.42:7000")
         {
-            string accessToken;
-            //Получеам токены 
-            var client = new RestClient($"{ipUrl}/auth/login/");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AlwaysMultipartFormData = true;
+            var client = new RestClient($"{ipUrl}/auth/login/")
+            {
+                Timeout = -1
+            };
+
+            var request = new RestRequest(Method.POST)
+            {
+                AlwaysMultipartFormData = true
+            };
+
             request.AddParameter("username", this.Username);
             request.AddParameter("password", this.Password);
-            IRestResponse response = client.Execute(request);
+
+            var response = client.Execute(request);
+
             if (response.StatusCode == 0)
                 throw new Exception("Сервер не отвечает");
-            JObject responseJson = new JObject(JObject.Parse(response.Content));
-            accessToken = responseJson["access"]?.ToString();
+
+            var responseJson = new JObject(JObject.Parse(response.Content));
+
+            var accessToken = responseJson["access"]?.ToString();
+
             return accessToken;
         }
     }

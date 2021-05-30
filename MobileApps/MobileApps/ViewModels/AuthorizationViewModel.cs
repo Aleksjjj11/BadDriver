@@ -1,33 +1,24 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Windows.Input;
-//using Android.Widget;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.CommunityToolkit.UI.Views.Options;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-//using Application = Android.App.Application;
 
 namespace MobileApps.ViewModels
 {
     public class AuthorizationViewModel : BaseViewModel
     {
-        private string _username;
-        private Page _ownPage;
-        private string _password;
-        private string _repeatPassword;
-        private string _email;
-        private string _firstName;
-        private string _lastName;
-        private BackgroundWorker _bwAuth;
+        private readonly Page _ownPage;
+        private readonly BackgroundWorker _bwAuth;
 
-        private bool _isAuthorization = true;
         private bool _isBusy;
-
         public bool IsBusy
         {
             get => _isBusy;
@@ -40,7 +31,8 @@ namespace MobileApps.ViewModels
         }
 
         public bool VisibleTitle => !IsBusy;
-        
+
+        private bool _isAuthorization = true;
         public bool IsAuthorization
         {
             get => _isAuthorization;
@@ -64,46 +56,104 @@ namespace MobileApps.ViewModels
         public AuthorizationViewModel(Page page)
         {
             _ownPage = page;
+
             Username = App.CurrentUser?.Username;
             Password = App.CurrentUser?.Password;
+
+            InitCommands();
+
             _bwAuth = new BackgroundWorker();
             _bwAuth.DoWork += BwAuthOnDoWork;
             _bwAuth.RunWorkerCompleted += BwAuthOnRunWorkerCompleted;
         }
 
+        private void InitCommands()
+        {
+            ChangeFormCommand = new Command(() =>
+            {
+                IsAuthorization = !IsAuthorization;
+            });
+
+            SendFormCommand = new Command(() =>
+            {
+                IsBusy = true;
+                _bwAuth.RunWorkerAsync();
+            }, () => IsBusy == false);
+
+            ForgotPasswordCommand = new Command(() =>
+            {
+                var toastOption = new ToastOptions
+                {
+                    BackgroundColor = Color.Transparent,
+                    MessageOptions = new MessageOptions
+                    {
+                        Message = "Данная функция пока не работает(",
+                        Foreground = Color.Black
+                    }
+                };
+
+                _ownPage.DisplayToastAsync(toastOption);
+            });
+
+            PropertyChanged += (_, __) =>
+            {
+                SendFormCommand.ChangeCanExecute();
+            };
+        }
+
         private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
-            switch (Device.RuntimePlatform)
-            {
-                case Device.Android:
-                {
-                    if (e?.Result is User)
-                    {
-                        var user = e.Result as IUser;
-                        App.CurrentUser = user;
-                        (_ownPage as AuthorizationPage).BackPressed();
-                        Preferences.Set("username", App.CurrentUser?.Username);
-                        Preferences.Set("password", App.CurrentUser?.Password);
-                        //Toast.MakeText(Application.Context, "Вы успешно зарегистрировались", ToastLength.Long)?.Show();
-                    }
 
-                    //if (e?.Result is string)
-                    //    Toast.MakeText(Application.Context, e.Result as string, ToastLength.Long)?.Show();
-                    
-                    break;
-                }
-                case Device.iOS:
+            try
+            {
+                switch (Device.RuntimePlatform)
                 {
-                    break;
+                    case Device.Android:
+                    {
+                        if (e?.Result is User)
+                        {
+                            var user = e.Result as IUser;
+
+                            App.CurrentUser = user;
+
+                            (_ownPage as AuthorizationPage)?.BackPressed();
+
+                            Preferences.Set("username", App.CurrentUser?.Username);
+                            Preferences.Set("password", App.CurrentUser?.Password);
+
+                            _ownPage.DisplayToastAsync("Вы успешно зарегистрировались");
+                        }
+
+                        if (e?.Result is string)
+                        {
+                            TextError = e?.Result.ToString();
+                        }
+
+                        if (e?.Result is string result)
+                        {
+                            _ownPage.DisplayToastAsync(result);
+                        }
+
+                        break;
+                    }
+                    case Device.iOS:
+                    {
+                        break;
+                    }
+                    default: break;
                 }
-                default: break;
+            }
+            catch (Exception exception)
+            {
+                _ownPage.DisplayToastAsync(exception.Message);
             }
         }
 
         private void BwAuthOnDoWork(object sender, DoWorkEventArgs e)
         {
             e.Result = IsAuthorization ? AuthorizationRequest() : RegistrationRequest();
+
             if (e.Result is User user)
             {
                 user?.Update();
@@ -112,6 +162,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _username;
         public string Username  
         {
             get => _username;
@@ -122,6 +173,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _password;
         public string Password
         {
             get => _password;
@@ -131,6 +183,8 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(Password));
             } 
         }
+
+        private string _repeatPassword;
         public string RepeatPassword
         {
             get => _repeatPassword;
@@ -141,6 +195,7 @@ namespace MobileApps.ViewModels
             } 
         }
 
+        private string _email;
         public string Email
         {
             get => _email;
@@ -151,6 +206,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _firstName;
         public string FirstName
         {
             get => _firstName;
@@ -161,6 +217,7 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private string _lastName;
         public string LastName  
         {
             get => _lastName;
@@ -171,17 +228,20 @@ namespace MobileApps.ViewModels
             }
         }
 
-        public ICommand ChangeForm => new Command(() =>
-        {
-            IsAuthorization = !IsAuthorization;
-        });
+        public Command ForgotPasswordCommand { get; private set; }
+        public Command ChangeFormCommand { get; private set; }
+        public Command SendFormCommand { get; private set; }
 
-        public ICommand SendForm => new Command(() =>
+        private string _textError;
+        public string TextError
         {
-            //Добавить отправку в background worker
-            IsBusy = true;
-            _bwAuth.RunWorkerAsync();
-        });
+            get => _textError;
+            set
+            {
+                _textError = value;
+                OnPropertyChanged(nameof(TextError));
+            }
+        }
 
         private bool IsCorrectData()
         {
@@ -206,31 +266,38 @@ namespace MobileApps.ViewModels
             {
                 return "Проверьте логин и пароль";
             }
-            
+
             IUser user = new User
             {
                 Username = Username,
                 Password = Password
             };
+
             try
             {
                 (user as User)?.Update();
                 (user as User)?.UpdateReports();
+
                 App.CurrentUser = user;
-                (_ownPage as AuthorizationPage).BackPressed();
+
+                (_ownPage as AuthorizationPage)?.BackPressed();
+
                 Preferences.Set("username", App.CurrentUser?.Username);
                 Preferences.Set("password", App.CurrentUser?.Password);
+
                 return "Вы успешно авторизировались!";
             }
             catch (InvalidOperationException ex)
             {
                 Preferences.Set("username", App.CurrentUser?.Username);
                 Preferences.Set("password", App.CurrentUser?.Password);
+
                 return "Вы успешно авторизировались!";
             }
             catch (Exception ex)
             {
                 Log.Warning("AuthError", ex.Message);
+
                 return "Проверьте логин и пароль";
             }
         }
@@ -241,51 +308,66 @@ namespace MobileApps.ViewModels
             {
                 return "Проверьте введённые данные";
             }
-            
-            var client = new RestClient($"{ipUrl}/auth/register/");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AlwaysMultipartFormData = true;
+
+            var client = new RestClient($"{ipUrl}/auth/register/")
+            {
+                Timeout = -1
+            };
+
+            var request = new RestRequest(Method.POST)
+            {
+                AlwaysMultipartFormData = true
+            };
+
             request.AddParameter("username", Username);
             request.AddParameter("password", Password);
             request.AddParameter("password2", RepeatPassword);
             request.AddParameter("email", Email);
             request.AddParameter("first_name", FirstName);
             request.AddParameter("last_name", LastName);
+
             IRestResponse response = client.Execute(request);
-            JObject jObjectResponse = new JObject(JObject.Parse(response.Content));
-            string username = jObjectResponse["username"]?.ToString();
+
+            var jObjectResponse = new JObject(JObject.Parse(response.Content));
+
+            var username = jObjectResponse["username"]?.ToString();
             
             if (username != Username)
                 return username;
 
             JArray passwordErrors = null;
+
             if (jObjectResponse["password"]?.ToString() is not null)
             {
                 passwordErrors = new JArray(JArray.Parse(jObjectResponse["password"]?.ToString()));
             }
-            
+
             string password = "";
+
             for (int i = 0; i < passwordErrors?.Count; i++)
             {
                 password = passwordErrors[i].ToString();
                 if (password != "")
                     return password;
             }
-            
+
             string password2 = jObjectResponse["password2"]?.ToString();
+
             if (password2 != RepeatPassword && password2 is not null)
                 return password2;
 
             string email = jObjectResponse["email"]?.ToString();
+
             if (email != Email)
                 return email;
 
             string firstName = jObjectResponse["first_name"]?.ToString();
+
             if (firstName != FirstName)
                 return firstName;
 
             string lastName = jObjectResponse["last_name"]?.ToString();
+
             if (lastName != LastName)
                 return lastName;
 
@@ -296,6 +378,7 @@ namespace MobileApps.ViewModels
                     Username = Username,
                     Password = Password
                 };
+
                 return user;
             }
 

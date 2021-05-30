@@ -1,26 +1,31 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-//using Android.Widget;
+using System.Threading.Tasks;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
-using Newtonsoft.Json.Linq;
-using RestSharp;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
 
 namespace MobileApps
 {
     public partial class App : Application
     {
         public static IUser CurrentUser;
+
         public App()
         {
             InitializeComponent();
 
+            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+
             MainPage = new MainPage();
+        }
+
+        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            App.Current.MainPage.DisplayToastAsync(e.Exception.Message);
         }
 
         protected override void OnStart()
@@ -34,6 +39,7 @@ namespace MobileApps
                         Username = Preferences.Get("username", ""),
                         Password = Preferences.Get("password", "")
                     };
+
                     try
                     {
                         CurrentUser.Update("http://188.225.83.42:7000");
@@ -43,15 +49,18 @@ namespace MobileApps
                     catch (Exception ex)
                     {
                         Log.Warning("Error Update User Info", ex.Message);
-                        //Toast.MakeText(Android.App.Application.Context, ex.Message, ToastLength.Long);
+
+                        App.Current.MainPage.DisplayToastAsync(ex.Message);
                     }
                 }
             }
             else
             {
                 CurrentUser = null;
-                var page = new AuthorizationPage();
-                MainPage.Navigation.PushModalAsync(page);
+
+                var authorizationPage = new AuthorizationPage();
+
+                MainPage.Navigation.PushModalAsync(authorizationPage);
             }
         }
 

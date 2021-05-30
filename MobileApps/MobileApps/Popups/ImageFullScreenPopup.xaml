@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xct:Popup xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:popupViewModels="clr-namespace:MobileApps.PopupViewModels;assembly=MobileApps"
+             x:DataType="popupViewModels:ImageFullScreenViewModal"
+             x:Class="MobileApps.Popups.ImageFullScreenPopup"
+             Size="{Binding SizePopup}">
+    <Image Source="{Binding CurrentImage}"
+           VerticalOptions="CenterAndExpand"
+           HorizontalOptions="CenterAndExpand"
+           Aspect="AspectFit"></Image>
+</xct:Popup>

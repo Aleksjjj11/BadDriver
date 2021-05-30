@@ -1,65 +1,33 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.Collections.ObjectModel;
 using MobileApps.Interfaces;
-using SkiaSharp;
-using Xamarin.Essentials;
+using MobileApps.Popups;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 
 namespace MobileApps.ViewModels
 {
     public class DetailReportInfoViewModel : BaseViewModel
     {
-        private readonly IReport _report;
+        private readonly Page _ownPage;
 
-        public IReport Report => _report;
-        public ObservableCollection<ImageSource> ImageSources => Report.ImagesSources;
+        public IReport Report { get; }
 
-        public DetailReportInfoViewModel(IReport report)
+        public ObservableCollection<ImageSource> ImageSources => Report?.ImagesSources;
+
+        public DetailReportInfoViewModel(IReport report, Page ownPage)
         {
-            _report = report;
-            //_imageSources = new ObservableCollection<UriImageSource>();
+            Report = report;
+            _ownPage = ownPage;
+
+            InitCommands();
         }
 
-        private string ResizeImage(int size, int quality, FileResult streamImage)
+        private void InitCommands()
         {
-            
-            using (var input = streamImage.OpenReadAsync().Result)
+            OpenImageFullScreenCommand = new Command<ImageSource>(image =>
             {
-                using (var inputStream = new SKManagedStream(input))
-                {
-                    using (var original = SKBitmap.Decode(inputStream))
-                    {
-                        int width, height;
-                        if (original.Width > original.Height)
-                        {
-                            width = size;
-                            height = original.Height * size / original.Width;
-                        }
-                        else
-                        {
-                            width = original.Width * size / original.Height;
-                            height = size;
-                        }
-
-                        using (var resized = original.Resize(new SKImageInfo(width, height), SKBitmapResizeMethod.Lanczos3))
-                        {
-                            if (resized == null) throw new Exception("Error resized.");
-
-                            using (var image = SKImage.FromBitmap(resized))
-                            {
-                                string outputPath = streamImage.FullPath.Remove(streamImage.FullPath.Length - streamImage.FileName.Length, streamImage.FileName.Length);
-                                using (var output =
-                                    File.OpenWrite($"{outputPath}/{DateTime.Now:O}_BadDrive.jpg"))
-                                {
-                                    image.Encode(SKEncodedImageFormat.Jpeg, quality).SaveTo(output);
-                                    return output.Name;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
+            });
         }
 
         public ImageSource CountryFlag
@@ -85,5 +53,7 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(Description));
             }
         }
+
+        public Command OpenImageFullScreenCommand { get; private set; }
     }
 }
