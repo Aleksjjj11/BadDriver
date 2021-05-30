@@ -28,23 +28,6 @@
                     VerticalOptions="Start"
                     HorizontalOptions="Center"
                     forms:CacheComposition="True" />
-                <Button TextColor="White"
-                        Margin="10, 0"
-                        FontSize="Subtitle"
-                        CornerRadius="5"
-                        BackgroundColor="{StaticResource Primary1}"
-                        Command="{Binding SendReportCommand}"
-                        Text="Отправить жалобу">
-                    <Button.Resources>
-                        <Style TargetType="Button">
-                            <Style.Triggers>
-                                <Trigger TargetType="Button" Property="IsEnabled" Value="False">
-                                    <Setter Property="BackgroundColor" Value="#44c661cf"></Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Resources>
-                </Button>
                 <Frame MinimumHeightRequest="400">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -103,20 +86,134 @@
                 </Frame>
                 <Frame MinimumHeightRequest="500">
                     <StackLayout Orientation="Vertical">
-                        <StackLayout Orientation="Horizontal"
-                                     HorizontalOptions="Center">
-                            <ImageButton Source="{FontImage Color=Black, Size=Title, FontFamily=Glyphter, Glyph=D}"
-                                         Command="{Binding TakePhotosCommand}"
-                                         BackgroundColor="Transparent"
-                                         HeightRequest="80"
-                                         WidthRequest="55" />
-                            <ImageButton Source="{FontImage Color=Black, Size=Title, FontFamily=Glyphter, Glyph=e}"
-                                         Command="{Binding PickPhotoCommand}"
-                                         BackgroundColor="Transparent"
-                                         HeightRequest="80"
-                                         WidthRequest="55" />
-                        </StackLayout>
-                        <FlexLayout Direction="Row"
+                        <Frame HeightRequest="120" WidthRequest="120" BorderColor="#4cb8f2"
+                               HorizontalOptions="CenterAndExpand">
+                            <Grid>
+                                <StackLayout Orientation="Horizontal"
+                                             HorizontalOptions="CenterAndExpand"
+                                             VerticalOptions="CenterAndExpand"
+                                             IsVisible="{Binding IsVisibleTakeOrPickPhoto1}">
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=D}"
+                                                 Command="{Binding TakePhotosCommand}"
+                                                 CommandParameter="0"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=e}"
+                                                 Command="{Binding PickPhotoCommand}"
+                                                 CommandParameter="0"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                </StackLayout>
+                                <Image Source="{Binding Path=CompressedImagesPathsCollection[0]}"
+                                       HorizontalOptions="CenterAndExpand"
+                                       VerticalOptions="CenterAndExpand"
+                                       IsVisible="{Binding HasPhoto1}">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource 
+                                                                  AncestorType={x:Type viewModels:NewReportViewModel}}, 
+                                                                  Path=OpenImageFullScreenCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=30, FontFamily=Glyphter, Glyph=o}"
+                                             Command="{Binding DeletePhotoCommand}"
+                                             CommandParameter="0"
+                                             IsVisible="{Binding HasPhoto1}"
+                                             Padding="4"
+                                             CornerRadius="20"
+                                             BackgroundColor="White"
+                                             VerticalOptions="StartAndExpand"
+                                             HorizontalOptions="EndAndExpand"/>
+                            </Grid>
+                            
+                        </Frame>
+                        <Frame HeightRequest="120" WidthRequest="120" BorderColor="#4cb8f2"
+                               HorizontalOptions="CenterAndExpand">
+                            <Grid>
+                                <StackLayout Orientation="Horizontal"
+                                             HorizontalOptions="CenterAndExpand"
+                                             VerticalOptions="CenterAndExpand"
+                                             IsVisible="{Binding IsVisibleTakeOrPickPhoto2}">
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=D}"
+                                                 Command="{Binding TakePhotosCommand}"
+                                                 CommandParameter="1"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=e}"
+                                                 Command="{Binding PickPhotoCommand}"
+                                                 CommandParameter="1"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                </StackLayout>
+                                <Image Source="{Binding Path=CompressedImagesPathsCollection[1]}"
+                                       HorizontalOptions="CenterAndExpand"
+                                       VerticalOptions="CenterAndExpand"
+                                       IsVisible="{Binding HasPhoto2}">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource 
+                                                                  AncestorType={x:Type viewModels:NewReportViewModel}}, 
+                                                                  Path=OpenImageFullScreenCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=30, FontFamily=Glyphter, Glyph=o}"
+                                             Command="{Binding DeletePhotoCommand}"
+                                             CommandParameter="1"
+                                             IsVisible="{Binding HasPhoto2}"
+                                             Padding="4"
+                                             CornerRadius="20"
+                                             BackgroundColor="White"
+                                             VerticalOptions="StartAndExpand"
+                                             HorizontalOptions="EndAndExpand"/>
+                            </Grid>
+                        </Frame>
+                        <Frame HeightRequest="120" WidthRequest="120" BorderColor="#4cb8f2"
+                               HorizontalOptions="CenterAndExpand">
+                            <Grid>
+                                <StackLayout Orientation="Horizontal"
+                                             HorizontalOptions="CenterAndExpand"
+                                             VerticalOptions="CenterAndExpand"
+                                             IsVisible="{Binding IsVisibleTakeOrPickPhoto3}">
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=D}"
+                                                 Command="{Binding TakePhotosCommand}"
+                                                 CommandParameter="2"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                    <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=Title, FontFamily=Glyphter, Glyph=e}"
+                                                 Command="{Binding PickPhotoCommand}"
+                                                 CommandParameter="2"
+                                                 BackgroundColor="Transparent"
+                                                 HeightRequest="80"
+                                                 WidthRequest="55" />
+                                </StackLayout>
+                                <Image Source="{Binding Path=CompressedImagesPathsCollection[2]}"
+                                       HorizontalOptions="CenterAndExpand"
+                                       VerticalOptions="CenterAndExpand"
+                                       IsVisible="{Binding HasPhoto3}">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource 
+                                                                  AncestorType={x:Type viewModels:NewReportViewModel}}, 
+                                                                  Path=OpenImageFullScreenCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
+                                <ImageButton Source="{FontImage Color={StaticResource SecondaryB1}, Size=30, FontFamily=Glyphter, Glyph=o}"
+                                             Command="{Binding DeletePhotoCommand}"
+                                             CommandParameter="2"
+                                             IsVisible="{Binding HasPhoto3}"
+                                             Padding="4"
+                                             CornerRadius="20"
+                                             BackgroundColor="White"
+                                             VerticalOptions="StartAndExpand"
+                                             HorizontalOptions="EndAndExpand"/>
+                            </Grid>
+                        </Frame>
+                        <!--<FlexLayout Direction="Row"
                                     Wrap="Wrap"
                                     AlignContent="Center">
                             <BindableLayout.ItemsSource>
@@ -137,9 +234,25 @@
                                     </Image>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
-                        </FlexLayout>
+                        </FlexLayout>-->
                     </StackLayout>
                 </Frame>
+                <Button TextColor="White"
+                        FontSize="Subtitle"
+                        CornerRadius="5"
+                        BackgroundColor="{StaticResource Primary1}"
+                        Command="{Binding SendReportCommand}"
+                        Text="Отправить жалобу">
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                                    <Setter Property="BackgroundColor" Value="#44c661cf"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

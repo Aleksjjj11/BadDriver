@@ -2,28 +2,28 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Popups;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace MobileApps.ViewModels
 {
     public class NewReportViewModel : BaseViewModel
     {
         private readonly Page _ownPage;
-        private static IUser User => App.CurrentUser;
         private readonly BackgroundWorker _bwSenderReport;
+        private readonly IUser _user = App.CurrentUser;
         
         public NewReportViewModel(Page page)
         {
             _ownPage = page;
-            CompressedImagesPathsCollection = new ObservableCollection<ImageSource>();
-            ImagesPathsCollection = new ObservableCollection<string>();
+
+            CompressedImagesPathsCollection = new ObservableCollection<ImageSource>{ null, null, null };
+            ImagesPathsCollection = new ObservableCollection<string> { null, null, null };
 
             InitCommands();
 
@@ -31,14 +31,15 @@ namespace MobileApps.ViewModels
             {
                 WorkerReportsProgress = true
             };
+
             _bwSenderReport.DoWork += BwSenderReportOnDoWork;
             _bwSenderReport.RunWorkerCompleted += BwSenderReportOnRunWorkerCompleted;
             _bwSenderReport.ProgressChanged += BwSenderReportOnProgressChanged;
+
             CompressedImagesPathsCollection.CollectionChanged += (sender, args) =>
             {
                 OnPropertyChanged(nameof(IsFullBlank));
                 SendReportCommand.ChangeCanExecute();
-                _ownPage.ForceLayout();
             };
         }
 
@@ -54,9 +55,24 @@ namespace MobileApps.ViewModels
                 _ownPage.Navigation.ShowPopup(new ImageFullScreenPopup(image, _ownPage));
             });
 
-            PickPhotoCommand = new Command(PickPhoto);
+            PickPhotoCommand = new Command<string>(PickPhoto);
 
-            TakePhotosCommand = new Command(TakePhoto);
+            TakePhotosCommand = new Command<string>(TakePhoto);
+
+            DeletePhotoCommand = new Command<string>(x =>
+            {
+                int value = int.Parse(x);
+
+                CompressedImagesPathsCollection[value] = null;
+                ImagesPathsCollection[value] = null;
+
+                OnPropertyChanged(nameof(HasPhoto1));
+                OnPropertyChanged(nameof(HasPhoto2));
+                OnPropertyChanged(nameof(HasPhoto3));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto1));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto2));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto3));
+            });
 
             this.PropertyChanged += (_, __) =>
             {
@@ -84,10 +100,10 @@ namespace MobileApps.ViewModels
         public Command PickPhotoCommand { get; private set; }
         public Command TakePhotosCommand { get; private set; }
         public Command SendReportCommand { get; private set; }
+        public Command<string> DeletePhotoCommand { get; set; }
 
 
         private string _countryCar;
-
         public string CountryCar
         {
             get => _countryCar;
@@ -101,7 +117,6 @@ namespace MobileApps.ViewModels
         }
 
         private string _numberCar;
-
         public string NumberCar
         {
             get => _numberCar;
@@ -126,7 +141,6 @@ namespace MobileApps.ViewModels
         }
 
         private string _regionCar;
-
         public string RegionCar
         {
             get => _regionCar;
@@ -137,7 +151,19 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(IsFullBlank));
             }
         }
-        
+
+        public bool HasPhoto1 => CompressedImagesPathsCollection[0] != null;
+
+        public bool IsVisibleTakeOrPickPhoto1 => !HasPhoto1;
+
+        public bool HasPhoto2 => CompressedImagesPathsCollection[1] != null;
+
+        public bool IsVisibleTakeOrPickPhoto2 => !HasPhoto2;
+
+        public bool HasPhoto3 => CompressedImagesPathsCollection[2] != null;
+
+        public bool IsVisibleTakeOrPickPhoto3 => !HasPhoto3;
+
         public ImageSource CountryFlag 
         {
             get
@@ -153,11 +179,9 @@ namespace MobileApps.ViewModels
 
         private bool ValidateData()
         {
-            bool result = true;
-            //Проверка верно введённых данных
-            result = IsCorrectData() && CompressedImagesPathsCollection.Count >= 3
-                                     && string.IsNullOrWhiteSpace(Description) == false;
-            return result;
+            return IsCorrectData() &&
+                   CompressedImagesPathsCollection.Count >= 3 &&
+                   string.IsNullOrWhiteSpace(Description) == false;
         }
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -168,6 +192,7 @@ namespace MobileApps.ViewModels
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsBusy = false;
+
             _ownPage.DisplayToastAsync("Жалоба отправлена!");
             _ownPage.SendBackButtonPressed();
         }
@@ -175,128 +200,113 @@ namespace MobileApps.ViewModels
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
             IsBusy = true;
+
             _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!");
             _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
-            //Дальше будет отправка запроса на сервер
-            (User as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+
+            var car = new Car(NumberCar, RegionCar, CountryCar);
+            var report = new Report(car, ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing);
+
+            (_user as User)?.SendReport(report);
         }
 
-        private async void PickPhoto()
+        private async void PickPhoto(string index)
         {
             try
             {
-                string folder = Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures);
+                var intIndex = int.Parse(index);
 
-                CompressedImagesPathsCollection.Clear();
-                
                 var photo = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Выберите 1 фото",
 
                 });
 
-                string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                ImagesPathsCollection.Add(pathResizedPhoto);
+                var pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
 
-                var photo2 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
-                {
-                    Title = "Выберите 2 фото",
-                });
-
-                string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                ImagesPathsCollection.Add(pathResizedPhoto2);
-
-                var photo3 = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
-                {
-                    Title = "Выберите 3 фото",
-                });
-
-                string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                ImagesPathsCollection.Add(pathResizedPhoto3);
+                CompressedImagesPathsCollection[intIndex] = ImageSource.FromFile(pathResizedPhoto);
+                ImagesPathsCollection[intIndex] = pathResizedPhoto;
                 
+                OnPropertyChanged(nameof(HasPhoto1));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto1));
+                OnPropertyChanged(nameof(HasPhoto2));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto2));
+                OnPropertyChanged(nameof(HasPhoto3));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto3));
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));
                 OnPropertyChanged(nameof(IsFullBlank));
+
                 _ownPage.ForceLayout();
-                Thread.Sleep(10);
             }
             catch (Exception ex)
             {
-                await _ownPage.DisplayAlert("Ошибка", ex.Message, "Ok");
+                Log.Warning(ex.Message, "Error");
             }
         }
 
-        private async void TakePhoto()
+        private async void TakePhoto(string index)
         {
             try
             {
-                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                
+                int intIndex = int.Parse(index);
+
                 var photo = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
                     Title = "Сделайте 1 фото",
                 });
 
                 string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto));
-                ImagesPathsCollection.Add(pathResizedPhoto);
 
-                var photo2 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
-                {
-                    Title = "Сделайте 2 фото",
-                });
+                CompressedImagesPathsCollection[intIndex] = ImageSource.FromFile(pathResizedPhoto);
+                ImagesPathsCollection[intIndex] = pathResizedPhoto;
 
-                string pathResizedPhoto2 = ImageResizer.ResizeImage(1024, 100, photo2);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto2));
-                ImagesPathsCollection.Add(pathResizedPhoto2);
-
-                var photo3 = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
-                {
-                    Title = "Сделайте 3 фото",
-                });
-
-                string pathResizedPhoto3 = ImageResizer.ResizeImage(1024, 100, photo3);
-                CompressedImagesPathsCollection.Add(ImageSource.FromFile(pathResizedPhoto3));
-                ImagesPathsCollection.Add(pathResizedPhoto3);
-                
+                OnPropertyChanged(nameof(HasPhoto1));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto1));
+                OnPropertyChanged(nameof(HasPhoto2));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto2));
+                OnPropertyChanged(nameof(HasPhoto3));
+                OnPropertyChanged(nameof(IsVisibleTakeOrPickPhoto3));
                 OnPropertyChanged(nameof(CompressedImagesPathsCollection));
                 OnPropertyChanged(nameof(IsFullBlank));
+
                 _ownPage.ForceLayout();
-                Thread.Sleep(10);
             }
             catch (Exception ex)
             {
-                await _ownPage.DisplayAlert("Ошибка", ex.Message, "Ok");
+                Log.Warning(ex.Message, "Error");
             }
         }
 
         private async void SendReportToServer()
         {
             IsBusy = true;
-            //Проверка верно введённых данных
+            
             if (IsCorrectData() == false)
             {
                 await _ownPage.DisplayAlert("Неверный формат", "Вы ввели номер машины неверного формата", "Ok");
                 return;
             }
-            //Проверка выбранных картинок
+            
             if (CompressedImagesPathsCollection.Count != 3)
             {
                 await _ownPage.DisplayAlert("Нехватка данных", "Не были выбрана или сделаны фотографии нарушения.", "Исправить");
                 return;
             }
 
-            //Дальше будет отправка запроса на сервер
-            (User as User)?.SendReport(new Report(new Car(NumberCar, RegionCar, CountryCar), ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing));
+            var car = new Car(NumberCar, RegionCar, CountryCar);
+            var report = new Report(car, ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing);
+
+            (_user as User)?.SendReport(report);
+
             IsBusy = false;
+
             _ownPage.SendBackButtonPressed();
         }
 
         private bool IsCorrectData()
         {
             bool result = false;
+
             switch (CountryCar?.ToUpper())
             {
                 case "RUS":
@@ -315,6 +325,7 @@ namespace MobileApps.ViewModels
                 default:
                     break;
             }
+
             return result;
         }
     }

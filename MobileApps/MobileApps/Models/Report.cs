@@ -11,12 +11,18 @@ namespace MobileApps.Models
 {
     public class Report : IReport
     {
+        private readonly Stream _imagePreview;
+
         public DateTime DateReported { get; }
+
         public ICar BadCar { get; set; }
+
         public ObservableCollection<ImageSource> ImagesSources { get; }
         public ObservableCollection<string> ImagesPaths { get; }
+
         public StatusReport Status { get; set; }
-        private Stream _imagePreview;
+
+        public string Description { get; set; }
 
         public string TextStatus
         {
@@ -36,9 +42,9 @@ namespace MobileApps.Models
         {
             StatusReport.Processing => Color.DeepSkyBlue,
             StatusReport.Accepted => Color.ForestGreen,
-            StatusReport.Declined => Color.DarkRed
+            StatusReport.Declined => Color.DarkRed,
+            _ => throw new ArgumentOutOfRangeException()
         };
-        public string Description { get; set; }
 
         public ImageSource ImagePreview => _imagePreview is null ? null : ImageSource.FromStream(() => new StreamReader(_imagePreview).BaseStream);
 
@@ -50,12 +56,14 @@ namespace MobileApps.Models
             Status = status;
             Description = description;
             ImagesSources = new ObservableCollection<ImageSource>();
+
             foreach (var imagesPath in ImagesPaths)
             {
                 ImagesSources.Add(ImageSource.FromUri(new Uri($"http://188.225.83.42:7000{imagesPath}")));
             }
 
             _imagePreview = ResizeImage(256, 100, new Uri($"http://188.225.83.42:7000{this.ImagesPaths[0]}"));
+
             Log.Warning("f", "a");
         }
         
@@ -68,6 +76,7 @@ namespace MobileApps.Models
                     using (var original = SKBitmap.Decode(input))
                     {
                         int width, height;
+
                         if (original.Width > original.Height)
                         {
                             width = size;
@@ -81,12 +90,14 @@ namespace MobileApps.Models
 
                         using (var resized = original.Resize(new SKImageInfo(width, height), SKBitmapResizeMethod.Lanczos3))
                         {
-                            if (resized == null) throw new Exception("Error resized.");
+                            if (resized == null) 
+                                throw new Exception("Error resized.");
 
                             using (var image = SKImage.FromBitmap(resized))
                             {
                                 var data = image.Encode();
                                 var result = data.AsStream();
+
                                 return result;
                             }
                         }
@@ -96,6 +107,7 @@ namespace MobileApps.Models
             catch (Exception ex)
             {
                 Log.Warning("MyError", ex.Message);
+
                 return null;
             }
         }

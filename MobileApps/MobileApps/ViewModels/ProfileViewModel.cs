@@ -1,34 +1,41 @@
 ﻿using System.ComponentModel;
-using System.Windows.Input;
 using MobileApps.Interfaces;
 using MobileApps.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 namespace MobileApps.ViewModels
 {
     public class ProfileViewModel : BaseViewModel
     {
-        public IUser User => App.CurrentUser;
-        public bool IsBusy { get; set; }
         private readonly BackgroundWorker _bwUpdater;
         private readonly Page _ownPage;
+
+        public IUser User => App.CurrentUser;
+
+        public bool IsBusy { get; set; }
+
         public ProfileViewModel(Page page)
         {
             _ownPage = page;
+
             InitCommands();
+
             _bwUpdater = new BackgroundWorker
             {
                 WorkerReportsProgress = true
             };
+
             _bwUpdater.DoWork += BwUpdaterOnDoWork;
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
+
             _ownPage.Appearing += (sender, args) =>
             {
                 OnPropertyChanged(nameof(User));
             };
+
             IsBusy = true;
+
             _bwUpdater.RunWorkerAsync();
         }
 
@@ -36,7 +43,7 @@ namespace MobileApps.ViewModels
         {
             OpenSettingsCommand = new Command(() =>
             {
-                _ownPage.Navigation.PushModalAsync(new AuthorizationPage());
+                
             });
 
             UpdateUserCommand = new Command(() =>
@@ -49,19 +56,24 @@ namespace MobileApps.ViewModels
                 App.CurrentUser = null;
 
                 if (Preferences.ContainsKey("username"))
+                {
                     Preferences.Clear("username");
+                }
 
                 if (Preferences.ContainsKey("password"))
+                {
                     Preferences.Clear("password");
+                }
 
-                App.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
+                Application.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
             });
         }
 
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            OnPropertyChanged(nameof(User));
             IsBusy = false;
+
+            OnPropertyChanged(nameof(User));
             OnPropertyChanged(nameof(IsBusy));
         }
 

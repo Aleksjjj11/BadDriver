@@ -23,7 +23,7 @@
                      Command="{Binding UpdateUserCommand}">
             <ScrollView>
                 <StackLayout Orientation="Vertical" Padding="10">
-                    <Frame>
+                    <Frame HeightRequest="120">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="120" />
@@ -53,10 +53,10 @@
                                        FontSize="Title" />
                                 <Label Text="{Binding Path=User.FirstName}"
                                        TextColor="DimGray"
-                                       FontSize="Large" />
+                                       FontSize="Subtitle" />
                                 <Label Text="{Binding Path=User.LastName, Mode=OneWay}"
                                        TextColor="DimGray"
-                                       FontSize="Large" />
+                                       FontSize="Subtitle" />
                             </StackLayout>
                         </Grid>
                     </Frame>
@@ -82,10 +82,10 @@
                                             <RowDefinition Height="3*" />
                                         </Grid.RowDefinitions>
                                         <Label Grid.Row="0"
-                                                   Text="Кажется тут пусто"
-                                                   VerticalOptions="End"
-                                                   FontSize="Medium"
-                                                   TextColor="{StaticResource SecondaryB1}" />
+                                               Text="Кажется тут пусто"
+                                               VerticalOptions="End"
+                                               FontSize="Medium"
+                                               TextColor="{StaticResource SecondaryB1}" />
                                         <forms:AnimationView
                                                 Grid.Row="1"
                                                 Animation="_19314_sequis_empty_state.json"

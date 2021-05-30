@@ -13,10 +13,13 @@ namespace MobileApps
     public partial class App : Application
     {
         public static IUser CurrentUser;
+
         public App()
         {
             InitializeComponent();
+
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+
             MainPage = new MainPage();
         }
 
@@ -36,6 +39,7 @@ namespace MobileApps
                         Username = Preferences.Get("username", ""),
                         Password = Preferences.Get("password", "")
                     };
+
                     try
                     {
                         CurrentUser.Update("http://188.225.83.42:7000");
@@ -45,6 +49,7 @@ namespace MobileApps
                     catch (Exception ex)
                     {
                         Log.Warning("Error Update User Info", ex.Message);
+
                         App.Current.MainPage.DisplayToastAsync(ex.Message);
                     }
                 }
@@ -52,8 +57,10 @@ namespace MobileApps
             else
             {
                 CurrentUser = null;
-                var page = new AuthorizationPage();
-                MainPage.Navigation.PushModalAsync(page);
+
+                var authorizationPage = new AuthorizationPage();
+
+                MainPage.Navigation.PushModalAsync(authorizationPage);
             }
         }
 

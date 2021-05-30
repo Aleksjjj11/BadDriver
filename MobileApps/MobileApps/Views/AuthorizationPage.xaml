@@ -7,68 +7,67 @@
              BackgroundColor="#F1F1F1"
              x:DataType="viewModels:AuthorizationViewModel"
              x:Class="MobileApps.Views.AuthorizationPage">
-       <ContentPage.Resources>
-              <ResourceDictionary>
-                     <Style TargetType="Entry">
-                            <Setter Property="PlaceholderColor" Value="White"></Setter>
-                            <Setter Property="TextColor" Value="Black"></Setter>
-                            <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
-                            <Setter Property="FontSize" Value="Title"></Setter>
-                     </Style>
-              </ResourceDictionary>
-       </ContentPage.Resources>
-       <ContentPage.Content>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">
+                <Setter Property="PlaceholderColor" Value="White" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Title" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="100" />
                 <RowDefinition Height="100" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0"
-                  BackgroundColor="{StaticResource SecondaryB1}" />
             <Frame Grid.Row="0"
                    Grid.RowSpan="2"
+                   Margin="0,-20,0,0"
                    BackgroundColor="{StaticResource SecondaryB1}">
-                   <Grid>
-                          <Label x:Name="AuthLabel"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 FontSize="Title"
-                                 TextColor="White"
-                                 IsVisible="{Binding VisibleTitle}"
-                                 Text="{Binding Title}" />
-                          <Label Text="{Binding TextError}"
-                                 IsVisible="{Binding VisibleTitle}"
-                                 VerticalTextAlignment="End"
-                                 TextColor="Firebrick"></Label>
-                          <forms:AnimationView 
-                                 Margin="10"
-                                 Animation="_9811_loading.json"
-                                 IsAnimating="{Binding IsBusy}"
-                                 IsVisible="{Binding IsBusy}"
-                                 AnimationSource="AssetOrBundle"
-                                 AutoPlay="True"
-                                 Speed="2"
-                                 RepeatMode="Infinite"
-                                 VerticalOptions="Start"
-                                 HorizontalOptions="Center" 
-                                 forms:CacheComposition="True"/>
-                   </Grid>
-                   
+                <Grid>
+                    <Label x:Name="AuthLabel"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           FontSize="Title"
+                           TextColor="White"
+                           IsVisible="{Binding VisibleTitle}"
+                           Text="{Binding Title}" />
+                    <Label Text="{Binding TextError}"
+                           IsVisible="{Binding VisibleTitle}"
+                           VerticalTextAlignment="End"
+                           TextColor="Firebrick" />
+                    <forms:AnimationView
+                        Margin="10"
+                        Animation="_8836_loading.json"
+                        IsVisible="{Binding IsBusy}"
+                        AnimationSource="AssetOrBundle"
+                        AutoPlay="True"
+                        Speed="1"
+                        RepeatMode="Infinite"
+                        VerticalOptions="Start"
+                        HorizontalOptions="Center"
+                        forms:CacheComposition="True" />
+                </Grid>
+
             </Frame>
 
             <Frame Grid.Row="2"
                    CornerRadius="20"
                    BackgroundColor="Transparent"
-                   Margin="30">
+                   Margin="5">
                 <ScrollView VerticalScrollBarVisibility="Never">
                     <Grid>
                         <StackLayout x:Name="AuthLayout"
+                                     Orientation="Vertical"
                                      IsVisible="{Binding IsAuthorization, Mode=OneWay}"
                                      Spacing="30">
                             <Entry Placeholder="Логин"
                                    PlaceholderColor="Gray"
-                                   Text="{Binding Username, Mode=TwoWay}"/>
+                                   Text="{Binding Username, Mode=TwoWay}" />
                             <Entry Placeholder="Пароль"
                                    PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
@@ -78,22 +77,33 @@
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
-                            <Button Text="Я новенький"
-                                    Command="{Binding ChangeFormCommand}"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryAShade1_1}"
-                                    CornerRadius="10" />
-                            <Button Text="Забыл пароль"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryB1}"
-                                    CornerRadius="10" />
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="Я новенький"
+                                       HorizontalOptions="Start"
+                                       FontSize="Subtitle"
+                                       TextColor="{StaticResource SecondaryAShade1_1}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ChangeFormCommand}"
+                                                              NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Text="Забыл пароль"
+                                       HorizontalOptions="EndAndExpand"
+                                       FontSize="Subtitle"
+                                       TextColor="{StaticResource SecondaryB1}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}"
+                                                              NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </StackLayout>
                         </StackLayout>
                         <StackLayout x:Name="RegStackLayout"
                                      Spacing="30"
                                      IsVisible="{Binding IsRegistration, Mode=OneWay}">
                             <Entry Placeholder="Логин"
                                    PlaceholderColor="Gray"
-                                   Text="{Binding Username, Mode=TwoWay}"/>
+                                   Text="{Binding Username, Mode=TwoWay}" />
                             <Entry Placeholder="Пароль"
                                    PlaceholderColor="Gray"
                                    Text="{Binding Password, Mode=TwoWay}"
@@ -104,23 +114,28 @@
                                    IsPassword="True" />
                             <Entry Placeholder="Имя"
                                    PlaceholderColor="Gray"
-                                   Text="{Binding FirstName, Mode=TwoWay}"/>
+                                   Text="{Binding FirstName, Mode=TwoWay}" />
                             <Entry Placeholder="Фамилия"
                                    PlaceholderColor="Gray"
-                                   Text="{Binding LastName, Mode=TwoWay}"/>
+                                   Text="{Binding LastName, Mode=TwoWay}" />
                             <Entry Placeholder="Почта"
                                    PlaceholderColor="Gray"
-                                   Text="{Binding Email, Mode=TwoWay}"/>
+                                   Text="{Binding Email, Mode=TwoWay}" />
                             <Button Text="Зарегистрироваться"
                                     Command="{Binding SendFormCommand}"
                                     TextColor="White"
                                     BackgroundColor="{StaticResource Primary1}"
                                     CornerRadius="10" />
-                            <Button Text="Уже смешарик"
-                                    Command="{Binding ChangeFormCommand}"
-                                    TextColor="White"
-                                    BackgroundColor="{StaticResource SecondaryAShade1_1}"
-                                    CornerRadius="10" />
+                            <Label Text="Уже смешарик"
+                                   FontSize="Subtitle"
+                                   Margin="0, -25, 0,0"
+                                   HorizontalOptions="CenterAndExpand"
+                                   TextColor="{StaticResource SecondaryAShade1_1}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ChangeFormCommand}"
+                                                          NumberOfTapsRequired="1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
                         </StackLayout>
                     </Grid>
                 </ScrollView>

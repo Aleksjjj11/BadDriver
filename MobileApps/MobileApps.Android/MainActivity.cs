@@ -12,13 +12,17 @@ namespace MobileApps.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             Forms.SetFlags("Brush_Experimental");
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
+
             Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#d76ed5"));
+
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

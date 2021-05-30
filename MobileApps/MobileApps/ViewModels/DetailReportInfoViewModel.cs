@@ -8,15 +8,15 @@ namespace MobileApps.ViewModels
 {
     public class DetailReportInfoViewModel : BaseViewModel
     {
-        private readonly IReport _report;
         private readonly Page _ownPage;
 
-        public IReport Report => _report;
+        public IReport Report { get; }
+
         public ObservableCollection<ImageSource> ImageSources => Report?.ImagesSources;
 
         public DetailReportInfoViewModel(IReport report, Page ownPage)
         {
-            _report = report;
+            Report = report;
             _ownPage = ownPage;
 
             InitCommands();
