@@ -2,9 +2,14 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Popups;
+using RestSharp;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -17,11 +22,14 @@ namespace MobileApps.ViewModels
         private readonly Page _ownPage;
         private readonly BackgroundWorker _bwSenderReport;
         private readonly IUser _user = App.CurrentUser;
+        private RestClient _restClient;
         
         public NewReportViewModel(Page page)
         {
             _ownPage = page;
-
+            
+            GetCaptcha();
+            
             CompressedImagesPathsCollection = new ObservableCollection<ImageSource>{ null, null, null };
             ImagesPathsCollection = new ObservableCollection<string> { null, null, null };
 
@@ -41,6 +49,35 @@ namespace MobileApps.ViewModels
                 OnPropertyChanged(nameof(IsFullBlank));
                 SendReportCommand.ChangeCanExecute();
             };
+        }
+
+        private void GetCaptcha()
+        {
+            IsLoadingCaptcha = true;
+
+            Task<string>.Factory.StartNew(() =>
+            {
+                _restClient = new RestClient("https://xn--90adear.xn--p1ai/request_main")
+                {
+                    Timeout = -1
+                };
+
+                var request = new RestRequest(Method.POST);
+                request.AddParameter("agree", "on");
+                request.AddParameter("step", 2);
+
+                var response = _restClient.Execute(request);
+                var htmlParse = new HtmlParser();
+                var document = htmlParse.ParseDocument(response.Content);
+                var firstOrDefault = document.QuerySelectorAll("img.captcha-img").FirstOrDefault();
+                var shortCaptchaUrl = firstOrDefault?.GetAttribute("src");
+
+                return shortCaptchaUrl;
+            }).ContinueWith(result =>
+            {
+                CaptchaUrl = $"https://xn--90adear.xn--p1ai/{result.Result}";
+                IsLoadingCaptcha = false;
+            });
         }
 
         private void InitCommands()
@@ -82,6 +119,17 @@ namespace MobileApps.ViewModels
 
         public ObservableCollection<ImageSource> CompressedImagesPathsCollection { get; }
         public ObservableCollection<string> ImagesPathsCollection { get; }
+
+        private bool _isLoadingCaptcha;
+        public bool IsLoadingCaptcha
+        {
+            get => _isLoadingCaptcha;
+            set
+            {
+                _isLoadingCaptcha = value;
+                OnPropertyChanged(nameof(IsLoadingCaptcha));
+            }
+        }
         
         private bool _isBusy;
         public bool IsBusy
@@ -149,6 +197,28 @@ namespace MobileApps.ViewModels
                 _regionCar = value.ToUpper();
                 OnPropertyChanged(nameof(RegionCar));
                 OnPropertyChanged(nameof(IsFullBlank));
+            }
+        }
+
+        private string _captchaUrl;
+        public string CaptchaUrl
+        {
+            get => _captchaUrl;
+            set
+            {
+                _captchaUrl = value;
+                OnPropertyChanged(nameof(CaptchaUrl));
+            }
+        }
+
+        private string _enteredCaptcha;
+        public string EnteredCaptcha
+        {
+            get => _enteredCaptcha;
+            set
+            {
+                _enteredCaptcha = value;
+                OnPropertyChanged(nameof(EnteredCaptcha));
             }
         }
 

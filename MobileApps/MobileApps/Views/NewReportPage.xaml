@@ -4,11 +4,13 @@
              xmlns:viewModels="clr-namespace:MobileApps.ViewModels;assembly=MobileApps"
              xmlns:forms="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
              xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:converters="clr-namespace:MobileApps.Converters;assembly=MobileApps"
              BackgroundColor="#ebe2ff"
              x:DataType="viewModels:NewReportViewModel"
              x:Class="MobileApps.Views.NewReportPage">
     <ContentPage.Resources>
         <ResourceDictionary>
+            <converters:InversionBooleanConverter x:Key="InversionBooleanConverter"/>
             <Style TargetType="Frame">
                 <Setter Property="BackgroundColor" Value="#f3efff"></Setter>
             </Style>
@@ -213,28 +215,32 @@
                                              HorizontalOptions="EndAndExpand"/>
                             </Grid>
                         </Frame>
-                        <!--<FlexLayout Direction="Row"
-                                    Wrap="Wrap"
-                                    AlignContent="Center">
-                            <BindableLayout.ItemsSource>
-                                <Binding Path="CompressedImagesPathsCollection"
-                                         Mode="OneWay"></Binding>
-                            </BindableLayout.ItemsSource>
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="ImageSource">
-                                    <Image Source="{Binding Path=.}"
-                                           Margin="10, 0"
-                                           HeightRequest="100">
-                                        <Image.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource 
-                                                                  AncestorType={x:Type viewModels:NewReportViewModel}}, 
-                                                                  Path=OpenImageFullScreenCommand}"
-                                                                  CommandParameter="{Binding .}"/>
-                                        </Image.GestureRecognizers>
-                                    </Image>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </FlexLayout>-->
+                    </StackLayout>
+                </Frame>
+                <Frame>
+                    <StackLayout>
+                        <Label Text="Введите текст с картинки"
+                               FontSize="Subtitle"
+                               HorizontalTextAlignment="Center"></Label>
+                        <Image Source="{Binding CaptchaUrl}"
+                               IsVisible="{Binding IsLoadingCaptcha, Converter={StaticResource InversionBooleanConverter}}"
+                               HeightRequest="140"/>
+                        <forms:AnimationView 
+                            Animation="_55205_waiting.json"
+                            IsAnimating="True"
+                            AnimationSource="AssetOrBundle"
+                            IsVisible="{Binding IsLoadingCaptcha}"
+                            AutoPlay="True"
+                            RepeatMode="Infinite"
+                            HeightRequest="200"
+                            WidthRequest="200"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Center" 
+                            forms:CacheComposition="True"/>
+                        <Entry Text="{Binding EnteredCaptcha, Mode=TwoWay}"
+                               Placeholder="Тест капчи"
+                               HorizontalTextAlignment="Center"
+                               PlaceholderColor="Gray"></Entry>
                     </StackLayout>
                 </Frame>
                 <Button TextColor="White"

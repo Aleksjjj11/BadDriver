@@ -93,6 +93,7 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\_19314_sequis_empty_state.json" />
     <AndroidAsset Include="Assets\_8836_loading.json" />
+    <AndroidAsset Include="Assets\_55205_waiting.json" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
