@@ -49,8 +49,9 @@
                     </BindableLayout.EmptyView>
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="interfaces:IAchievement">
-                            <Frame BackgroundColor="#f3efff">
-                                <Grid HeightRequest="170">
+                            <Frame BackgroundColor="#f3efff"
+                                   HeightRequest="170">
+                                <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="3*" />
                                         <RowDefinition Height="4*" />
@@ -59,25 +60,10 @@
                                         <ColumnDefinition Width="2*" />
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <!--<Frame Grid.Row="0"
-                                           Grid.RowSpan="2"
-                                           Grid.Column="0" 
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="Center"
-                                           Padding="0"
-                                           HeightRequest="120"
-                                           WidthRequest="120"
-                                           IsClippedToBounds="True"
-                                           CornerRadius="200">
-                                        <Image Source="{Binding SmallImage}"
-                                               Aspect="AspectFill"
-                                               VerticalOptions="Center"
-                                               HorizontalOptions="Center"/>
-                                    </Frame>-->
                                     <views:AvatarView Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                                      Size="120"
+                                                      Size="140"
                                                       Aspect="Fill"
+                                                      VerticalOptions="Center"
                                                       Source="{Binding SmallImage}"></views:AvatarView>
 
                                     <Label Grid.Column="1"
