@@ -29,6 +29,7 @@
                     RepeatMode="Infinite"
                     VerticalOptions="Start"
                     HorizontalOptions="Center"
+                    HeightRequest="150"
                     forms:CacheComposition="True" />
                 <Frame MinimumHeightRequest="400">
                     <Grid>

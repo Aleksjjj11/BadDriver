@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xct:Popup xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:lottie="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
+             x:Class="MobileApps.Popups.DuckPopup"
+             HeightRequest="350"
+             BackgroundColor="Transparent">
+  <xct:Popup.Content>
+      <lottie:AnimationView 
+          Animation="_10237_your_kick_ass_anim.json"
+          IsAnimating="True"
+          AnimationSource="AssetOrBundle"
+          IsVisible="True"
+          AutoPlay="True"
+          RepeatMode="Infinite"
+          HeightRequest="200"
+          WidthRequest="200"
+          VerticalOptions="Start"
+          HorizontalOptions="Center" 
+          lottie:CacheComposition="True"/>
+    </xct:Popup.Content>
+</xct:Popup>

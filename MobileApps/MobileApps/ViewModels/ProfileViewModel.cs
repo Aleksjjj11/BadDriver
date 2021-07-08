@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using MobileApps.Interfaces;
+using MobileApps.Popups;
 using MobileApps.Views;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -67,6 +69,18 @@ namespace MobileApps.ViewModels
 
                 Application.Current.MainPage.Navigation.PushModalAsync(new AuthorizationPage());
             });
+
+            OpenDuckPopupCommand = new Command(() =>
+            {
+                var widthPopup = _ownPage.Width - 30;
+
+                var sizePopup = new Size(widthPopup, widthPopup * 0.75);
+
+                _ownPage.Navigation.ShowPopup(new DuckPopup
+                {
+                    Size = sizePopup
+                });
+            });
         }
 
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -88,5 +102,7 @@ namespace MobileApps.ViewModels
         public Command OpenSettingsCommand { get; private set; }
 
         public Command LogoutCommand { get; private set; }
+
+        public Command OpenDuckPopupCommand { get; private set; }
     }
 }

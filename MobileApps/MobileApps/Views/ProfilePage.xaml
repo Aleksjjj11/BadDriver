@@ -35,14 +35,17 @@
                                    IsClippedToBounds="True"
                                    HeightRequest="100"
                                    WidthRequest="100">
-                                <ImageButton Source="{FontImage Color=White, FontFamily=Glyphter, Size=Header, Glyph=g}"
-                                             Command="{Binding OpenSettingsCommand}"
-                                             Padding="10"
-                                             HeightRequest="150"
-                                             WidthRequest="150"
-                                             HorizontalOptions="Center"
-                                             VerticalOptions="Center"
-                                             BackgroundColor="{StaticResource SecondaryBShade1_3}" />
+                                <Image Source="{FontImage Color=White, FontFamily=Glyphter, Size=Header, Glyph=g}"
+                                       HeightRequest="150"
+                                       WidthRequest="150"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       BackgroundColor="{StaticResource SecondaryBShade1_3}">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                              Command="{Binding OpenDuckPopupCommand}"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
                             </Frame>
 
                             <StackLayout Grid.Column="1"
