@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using BadDriver.RestApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,20 +15,22 @@ namespace BadDriver.RestApi.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly List<User> _people = new()
-        {
-            new() {Username= "admin", Password="12345", Role = UserRole.Admin },
-            new() { Username= "qwerty", Password="55555", Role = UserRole.User }
-        };
-
+        
         [HttpGet]
         public ActionResult GetUsers()
         {
-            return Json(_people);
+            List<User> localCount;
+
+            using (var db = new ApplicationContext())
+            {
+                localCount = db.Users.ToList();
+            }
+
+            return Json(localCount);
         }
 
         [HttpPost("/token")]
-        public ActionResult Token(string username, string password)
+        public ActionResult Token([FromForm] string username, [FromForm] string password)
         {
             var identity = GetIdentity(username, password);
 
@@ -65,7 +68,7 @@ namespace BadDriver.RestApi.Controllers
             });
         }
 
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "admin", AuthenticationSchemes = "Bearer")]
         [HttpGet("/authAdmin")]
         public ActionResult AuthorizedAdminMethodTest()
         {
@@ -77,7 +80,9 @@ namespace BadDriver.RestApi.Controllers
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            var person = _people.FirstOrDefault(x => x.Username == username && x.Password == password);
+            using var db = new ApplicationContext();
+
+            var person = db.Users.SingleOrDefault(x => x.Username == username && x.Password == password);
 
             if (person == null) 
                 return null;
@@ -91,6 +96,16 @@ namespace BadDriver.RestApi.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
             return claimsIdentity;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }
