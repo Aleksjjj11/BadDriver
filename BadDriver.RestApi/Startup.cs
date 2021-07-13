@@ -1,6 +1,9 @@
+using BadDriver.RestApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +24,9 @@ namespace BadDriver.RestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -51,6 +57,15 @@ namespace BadDriver.RestApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BadDriver.RestApi", Version = "v1" });
             });
+
+            //services.AddIdentity<User, IdentityRole>(opts =>
+            //{
+            //    opts.Password.RequiredLength = 8;
+            //    opts.Password.RequireNonAlphanumeric = false;
+            //    opts.Password.RequireLowercase = true;
+            //    opts.Password.RequireUppercase = true;
+            //    opts.Password.RequireDigit = true;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,9 +4,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using BadDriver.RestApi.Models;
+using BadDriver.RestApi.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BadDriver.RestApi.Controllers
@@ -15,24 +18,18 @@ namespace BadDriver.RestApi.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        
-        [HttpGet]
-        public ActionResult GetUsers()
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+        [HttpGet("users")]
+        public IActionResult GetUsers()
         {
-            List<User> localCount;
-
-            using (var db = new ApplicationContext())
-            {
-                localCount = db.Users.ToList();
-            }
-
-            return Json(localCount);
+            using var db = new ApplicationContext();
+            return Json(db.Users.ToList());
         }
 
-        [HttpPost("/token")]
-        public ActionResult Token([FromForm] string username, [FromForm] string password)
+        [HttpPost("token")]
+        public IActionResult Token([FromForm] TokenRequest tokenRequest)
         {
-            var identity = GetIdentity(username, password);
+            var identity = GetIdentity(tokenRequest.Username, tokenRequest.Password);
 
             if (identity == null)
                 return BadRequest(new { errorText = "Invalid username or password." });
@@ -59,23 +56,51 @@ namespace BadDriver.RestApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("/auth")]
-        public ActionResult AuthorizedMethodTest()
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest userRequest)
         {
-            return Json(new
+            await using var repository = new ApplicationContext();
+            var duplicateUser = await repository.Users.FirstOrDefaultAsync(x => x.Username == userRequest.Username);
+
+            if (duplicateUser != null)
             {
-                text = "These all good"
-            });
+                return Problem("Пользователь с таким логином уже существует");
+            }
+
+            var newUser = new User
+            {
+                Username = userRequest.Username,
+                FirstName = userRequest.FirstName,
+                LastName = userRequest.LastName,
+                Password = userRequest.Password,
+                Email = userRequest.Email,
+                Role = "user"
+            };
+
+            await repository.Users.AddAsync(newUser);
+            var countLineChanged = await repository.SaveChangesAsync();
+
+            return countLineChanged > 0
+                ? Ok()
+                : ValidationProblem();
         }
 
-        [Authorize(Roles = "admin", AuthenticationSchemes = "Bearer")]
-        [HttpGet("/authAdmin")]
-        public ActionResult AuthorizedAdminMethodTest()
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("reports")]
+        public IActionResult GetReports([FromForm] int userId)
         {
-            return Json(new
-            {
-                text = "These all good"
-            });
+            using var db = new ApplicationContext();
+            var reports = db.Reports.Where(x => x.UserId == userId).ToList();
+            return Json(reports);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("cars")]
+        public IActionResult GetCars([FromForm] int userId)
+        {
+            using var db = new ApplicationContext();
+            var cars = db.Cars.Where(x => x.UserId == userId).ToList();
+            return Json(cars);
         }
 
         private ClaimsIdentity GetIdentity(string username, string password)
@@ -90,7 +115,7 @@ namespace BadDriver.RestApi.Controllers
             var claims = new List<Claim>
             {
                 new(ClaimsIdentity.DefaultNameClaimType, person.Username),
-                new(ClaimsIdentity.DefaultRoleClaimType, person.Role.ToString())
+                new(ClaimsIdentity.DefaultRoleClaimType, person.Role)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
