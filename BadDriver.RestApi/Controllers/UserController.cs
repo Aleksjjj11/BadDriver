@@ -20,10 +20,10 @@ namespace BadDriver.RestApi.Controllers
     {
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
         [HttpGet("users")]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            using var db = new ApplicationContext();
-            return Json(db.Users.ToList());
+            await using var repository = new ApplicationContext();
+            return Json(repository.Users.ToList());
         }
 
         [HttpPost("token")]
@@ -87,27 +87,57 @@ namespace BadDriver.RestApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("reports")]
-        public IActionResult GetReports([FromForm] int userId)
+        public async Task<IActionResult> GetReports([FromForm] int userId)
         {
-            using var db = new ApplicationContext();
-            var reports = db.Reports.Where(x => x.UserId == userId).ToList();
+            await using var repository = new ApplicationContext();
+            var reports = repository.Reports.Where(x => x.UserId == userId).ToList();
             return Json(reports);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("cars")]
-        public IActionResult GetCars([FromForm] int userId)
+        public async Task<IActionResult> GetCars([FromForm] int userId)
         {
-            using var db = new ApplicationContext();
-            var cars = db.Cars.Where(x => x.UserId == userId).ToList();
+            await using var repository = new ApplicationContext();
+            var cars = repository.Cars.Where(x => x.UserId == userId).ToList();
             return Json(cars);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("achievements")]
+        public async Task<IActionResult> GetAchievements([FromForm] int userId)
+        {
+            await using var repository = new ApplicationContext();
+            var achievements = repository.UserAchievements
+                .Where(x => x.UserId == userId)
+                .Select(x => x.AchievementId)
+                .Select(x => repository.Achievements.FirstOrDefault(y => y.Id == x));
+
+            return Json(achievements.ToList());
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+        [HttpPost("achieve")]
+        public async Task<IActionResult> Achieve([FromForm] UserAchieveRequest userAchieveRequest)
+        {
+            await using var repository = new ApplicationContext();
+
+            repository.UserAchievements.Add(new UserAchievements
+            {
+                UserId = userAchieveRequest.UserId,
+                AchievementId = userAchieveRequest.AchievementId
+            });
+
+            return await repository.SaveChangesAsync() > 0
+                ? Ok()
+                : Problem("Не удалось присвоить данное достижение данному пользователю");
         }
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            using var db = new ApplicationContext();
+            using var applicationContext = new ApplicationContext();
 
-            var person = db.Users.SingleOrDefault(x => x.Username == username && x.Password == password);
+            var person = applicationContext.Users.SingleOrDefault(x => x.Username == username && x.Password == password);
 
             if (person == null) 
                 return null;

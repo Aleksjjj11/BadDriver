@@ -19,6 +19,7 @@ namespace BadDriver.RestApi.Models
         public DbSet<Car> Cars { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Achievement> Achievements { get; set; }
+        public DbSet<UserAchievements> UserAchievements { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
