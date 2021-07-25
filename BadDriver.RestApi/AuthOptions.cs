@@ -13,7 +13,9 @@ namespace BadDriver.RestApi
 
         public static string Audience => _appConfiguration["AuthOptions:Audience"];
 
-        public static int Lifetime => int.Parse(_appConfiguration["AuthOptions:Lifetime"]);
+        public static int AccessTokenLifetime => int.Parse(_appConfiguration["AuthOptions:AccessTokenLifetime"]);
+
+        public static int RefreshTokenLifetime => int.Parse(_appConfiguration["AuthOptions:RefreshTokenLifetime"]);
 
         public static SymmetricSecurityKey GetSymmetricSecurityKey()
         {

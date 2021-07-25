@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using BadDriver.RestApi.Jwt;
 using BadDriver.RestApi.Models;
 using BadDriver.RestApi.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BadDriver.RestApi.Controllers
 {
@@ -18,6 +16,13 @@ namespace BadDriver.RestApi.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
+        private readonly IJwtManager _jwtManager;
+
+        public UserController(IJwtManager jwtManager)
+        {
+            _jwtManager = jwtManager;
+        }
+
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
@@ -26,33 +31,24 @@ namespace BadDriver.RestApi.Controllers
             return Json(repository.Users.ToList());
         }
 
-        [HttpPost("token")]
-        public IActionResult Token([FromForm] TokenRequest tokenRequest)
+        [HttpPost("tokens")]
+        public IActionResult Tokens([FromForm] TokensRequest tokensRequest)
         {
-            var identity = GetIdentity(tokenRequest.Username, tokenRequest.Password);
+            var identity = GetIdentity(tokensRequest.Username, tokensRequest.Password);
 
             if (identity == null)
-                return BadRequest(new { errorText = "Invalid username or password." });
+                return Problem("Invalid username or password.");
 
-            var now = DateTime.UtcNow;
-            // создаем JWT-токен
-            var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.Issuer,
-                audience: AuthOptions.Audience,
-                notBefore: now,
-                claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.Lifetime)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var tokens = _jwtManager.GenerateTokens(tokensRequest.Username, identity.Claims, DateTime.UtcNow);
 
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            return Json(tokens);
+        }
 
-            var response = new
-            {
-                access_token = encodedJwt,
-                username = identity.Name
-            };
-
-            return Json(response);
+        [HttpPost("access")]
+        public IActionResult AccessToken([FromBody] RefreshAccessRequest refreshAccessRequest)
+        {
+            var tokens  = _jwtManager.Refresh(refreshAccessRequest.RefreshToken, refreshAccessRequest.AccessToken, DateTime.UtcNow);
+            return Json(tokens);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -151,16 +147,6 @@ namespace BadDriver.RestApi.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
             return claimsIdentity;
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-
-            return Convert.ToBase64String(randomNumber);
         }
     }
 }

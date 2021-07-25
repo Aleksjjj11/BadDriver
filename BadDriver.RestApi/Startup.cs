@@ -1,3 +1,4 @@
+using BadDriver.RestApi.Jwt;
 using BadDriver.RestApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -50,6 +51,8 @@ namespace BadDriver.RestApi
                             ValidateIssuerSigningKey = true,
                         };
                     });
+
+            services.AddSingleton<IJwtManager, JwtManager>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
