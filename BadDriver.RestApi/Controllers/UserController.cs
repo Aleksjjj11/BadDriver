@@ -32,7 +32,7 @@ namespace BadDriver.RestApi.Controllers
         }
 
         [HttpPost("tokens")]
-        public IActionResult Tokens([FromForm] TokensRequest tokensRequest)
+        public IActionResult Tokens([FromBody] TokensRequest tokensRequest)
         {
             var identity = GetIdentity(tokensRequest.Username, tokensRequest.Password);
 
@@ -82,30 +82,39 @@ namespace BadDriver.RestApi.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("reports")]
-        public async Task<IActionResult> GetReports([FromForm] int userId)
+        [HttpGet("reports")]
+        public async Task<IActionResult> GetReports()
         {
             await using var repository = new ApplicationContext();
-            var reports = repository.Reports.Where(x => x.UserId == userId).ToList();
+
+            var user = await GetCurrentUser();
+            var reports = repository.Reports.Where(x => x.UserId == user.Id).ToList();
+
             return Json(reports);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("cars")]
-        public async Task<IActionResult> GetCars([FromForm] int userId)
+        [HttpGet("cars")]
+        public async Task<IActionResult> GetCars()
         {
             await using var repository = new ApplicationContext();
-            var cars = repository.Cars.Where(x => x.UserId == userId).ToList();
+
+            var user = await GetCurrentUser();
+            var cars = repository.Cars.Where(x => x.UserId == user.Id).ToList();
+
             return Json(cars);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("achievements")]
-        public async Task<IActionResult> GetAchievements([FromForm] int userId)
+        [HttpGet("achievements")]
+        public async Task<IActionResult> GetAchievements()
         {
             await using var repository = new ApplicationContext();
+
+            var user = await GetCurrentUser();
+
             var achievements = repository.UserAchievements
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == user.Id)
                 .Select(x => x.AchievementId)
                 .Select(x => repository.Achievements.FirstOrDefault(y => y.Id == x));
 
@@ -114,7 +123,7 @@ namespace BadDriver.RestApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
         [HttpPost("achieve")]
-        public async Task<IActionResult> Achieve([FromForm] UserAchieveRequest userAchieveRequest)
+        public async Task<IActionResult> Achieve([FromBody] UserAchieveRequest userAchieveRequest)
         {
             await using var repository = new ApplicationContext();
 
@@ -147,6 +156,16 @@ namespace BadDriver.RestApi.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
             return claimsIdentity;
+        }
+
+        private async Task<User> GetCurrentUser()
+        {
+            await using var repository = new ApplicationContext();
+
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var username = _jwtManager.DecodeJwtToken(token).Item1.Claims.Single(x => x.Type == ClaimTypes.Name).Value;
+
+            return await repository.Users.SingleAsync(x => x.Username == username);
         }
     }
 }
