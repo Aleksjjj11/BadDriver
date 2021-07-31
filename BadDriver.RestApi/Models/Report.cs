@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BadDriver.RestApi.Models
 {
@@ -19,5 +20,16 @@ namespace BadDriver.RestApi.Models
         public int UserId { get; set; }
         [Column("car_id")]
         public int CarId { get; set; }
+        [Column("date_created")]
+        public DateTime DateCreated { get; set; }
+        [Column("status")]
+        public StatusType Status { get; set; }
+    }
+
+    public enum StatusType
+    {
+        InProcessing,
+        Accepted,
+        Declined
     }
 }

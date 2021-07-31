@@ -1,5 +1,6 @@
 using BadDriver.RestApi.Jwt;
 using BadDriver.RestApi.Models;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -52,6 +53,10 @@ namespace BadDriver.RestApi
                         };
                     });
 
+            services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
+                .AddCertificate()
+                .AddCertificateCache();
+
             services.AddSingleton<IJwtManager, JwtManager>();
 
             services.AddControllers();
@@ -76,6 +81,7 @@ namespace BadDriver.RestApi
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

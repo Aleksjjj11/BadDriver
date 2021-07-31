@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BadDriver.RestApi.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     public class UserController : Controller
     {
@@ -23,7 +24,7 @@ namespace BadDriver.RestApi.Controllers
             _jwtManager = jwtManager;
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+        [Authorize(Roles = "admin")]
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -31,6 +32,7 @@ namespace BadDriver.RestApi.Controllers
             return Json(repository.Users.ToList());
         }
 
+        [AllowAnonymous]
         [HttpPost("tokens")]
         public IActionResult Tokens([FromBody] TokensRequest tokensRequest)
         {
@@ -44,6 +46,7 @@ namespace BadDriver.RestApi.Controllers
             return Json(tokens);
         }
 
+        [AllowAnonymous]
         [HttpPost("access")]
         public IActionResult AccessToken([FromBody] RefreshAccessRequest refreshAccessRequest)
         {
@@ -51,7 +54,6 @@ namespace BadDriver.RestApi.Controllers
             return Json(tokens);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest userRequest)
         {
@@ -81,7 +83,16 @@ namespace BadDriver.RestApi.Controllers
                 : ValidationProblem();
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpGet("about")]
+        public async Task<IActionResult> GetInfoAboutUser()
+        {
+            await using var repository = new ApplicationContext();
+
+            var user = await GetCurrentUser();
+
+            return Json(user);
+        }
+
         [HttpGet("reports")]
         public async Task<IActionResult> GetReports()
         {
@@ -93,7 +104,6 @@ namespace BadDriver.RestApi.Controllers
             return Json(reports);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("cars")]
         public async Task<IActionResult> GetCars()
         {
@@ -105,7 +115,6 @@ namespace BadDriver.RestApi.Controllers
             return Json(cars);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("achievements")]
         public async Task<IActionResult> GetAchievements()
         {
@@ -121,7 +130,7 @@ namespace BadDriver.RestApi.Controllers
             return Json(achievements.ToList());
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+        [Authorize(Roles = "admin")]
         [HttpPost("achieve")]
         public async Task<IActionResult> Achieve([FromBody] UserAchieveRequest userAchieveRequest)
         {
