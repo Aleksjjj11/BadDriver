@@ -20,7 +20,7 @@ namespace BadDriver.RestApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("create")]
-        public IActionResult CreateReport([FromForm] CreateReportRequest reportRequest)
+        public IActionResult CreateReport([FromBody] CreateReportRequest reportRequest)
         {
             var newReport = new Report
             {
