@@ -7,7 +7,7 @@ namespace BadDriver.RestApi.Models.Requests
         [Required]
         public int UserId { get; set; }
         [Required]
-        public int CarId { get; set; }
+        public Car Car { get; set; }
         [Required]
         public string Description { get; set; }
         [Required]

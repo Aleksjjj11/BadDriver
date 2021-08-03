@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using BadDriver.RestApi.Models;
 using BadDriver.RestApi.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
@@ -20,11 +21,28 @@ namespace BadDriver.RestApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("create")]
-        public IActionResult CreateReport([FromBody] CreateReportRequest reportRequest)
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportRequest reportRequest)
         {
+            await using var repository = new ApplicationContext();
+
+            var reportRequestCar = reportRequest.Car;
+            var car = repository.Cars.FirstOrDefault(x => x.CountryCode == reportRequestCar.CountryCode
+                                                          && x.Number == reportRequestCar.Number
+                                                          && x.RegionCode == reportRequestCar.RegionCode);
+
+            if (car == null)
+            {
+                repository.Cars.Add(reportRequestCar);
+                await repository.SaveChangesAsync();
+            }
+            else
+            {
+                reportRequestCar.Id = car.Id;
+            }
+
             var newReport = new Report
             {
-                CarId = reportRequest.CarId,
+                CarId = reportRequestCar.Id,
                 Description = reportRequest.Description,
                 UserId = reportRequest.UserId,
                 ImageUrl1 = reportRequest.ImageUrl1,
@@ -32,10 +50,9 @@ namespace BadDriver.RestApi.Controllers
                 ImageUrl3 = reportRequest.ImageUrl3
             };
 
-            using var repository = new ApplicationContext();
             repository.Reports.Add(newReport);
             
-            return repository.SaveChanges() > 0
+            return await repository.SaveChangesAsync() > 0
                 ? Ok()
                 : ValidationProblem();
         }
