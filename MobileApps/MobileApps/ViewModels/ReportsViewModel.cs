@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using MobileApps.Interfaces;
 using MobileApps.Views;
 using Xamarin.Forms;
@@ -14,7 +13,6 @@ namespace MobileApps.ViewModels
 
         public ObservableCollection<IReport> Reports => App.CurrentUser.Reports;
 
-        public IReport[] ArrayReports => Reports.ToArray();
         public IReport SelectedReport { get; set; }
 
         public ReportsViewModel(Page page)
@@ -23,13 +21,9 @@ namespace MobileApps.ViewModels
 
             InitCommands();
 
-            _bwUpdater = new BackgroundWorker
-            {
-                WorkerReportsProgress = true,
-            };
+            _bwUpdater = new BackgroundWorker();
 
             _bwUpdater.DoWork += BwUpdaterOnDoWork;
-            _bwUpdater.ProgressChanged += BwUpdaterOnProgressChanged;
             _bwUpdater.RunWorkerCompleted += BwUpdaterOnRunWorkerCompleted;
 
             IsBusy = true;
@@ -48,20 +42,14 @@ namespace MobileApps.ViewModels
 
         private void BwUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            IsBusy = false;
-
             OnPropertyChanged(nameof(Reports));
-            OnPropertyChanged(nameof(ArrayReports));
+            IsBusy = false;
         }
-
-        private void BwUpdaterOnProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            
-        }
-
+        
         private void BwUpdaterOnDoWork(object sender, DoWorkEventArgs e)
         {
-            App.CurrentUser.UpdateReports("http://188.225.83.42:7000");
+            IsBusy = true;
+            App.CurrentUser.UpdateReports(App.IpAddress).Wait();
         }
 
         private bool _isBusy;
@@ -86,9 +74,9 @@ namespace MobileApps.ViewModels
                 _bwUpdater.RunWorkerAsync();
             });
 
-            MoreInfoReportCommand = new Command<IReport>(x =>
+            MoreInfoReportCommand = new Command<IReport>(async x =>
             {
-                _ownPage.Navigation.PushModalAsync(new DetailReportInfoPage(x));
+                await Shell.Current.Navigation.PushModalAsync(new DetailReportInfoPage(x));
                 SelectedReport = null;
             });
 

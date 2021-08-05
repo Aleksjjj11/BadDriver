@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.CommunityToolkit.UI.Views.Options;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 namespace MobileApps.ViewModels
 {
@@ -16,8 +16,7 @@ namespace MobileApps.ViewModels
         private readonly Page _ownPage;
         private bool _isBusy;
 
-        public ObservableCollection<IAchievement> Achievements => App.CurrentUser.Achievements;
-        public IAchievement[] ArrayAchievements => Achievements.ToArray();
+        public ObservableCollection<IAchievement> Achievements { get; set; }
         
         public Command RefreshUserCommand { get; private set; }
 
@@ -37,48 +36,44 @@ namespace MobileApps.ViewModels
 
             InitCommand();
 
-            _bwAchievementUpdater = new BackgroundWorker
-            {
-                WorkerReportsProgress = true
-            };
+            _bwAchievementUpdater = new BackgroundWorker();
 
             _bwAchievementUpdater.DoWork += BwAchievementUpdaterOnDoWork;
-            _bwAchievementUpdater.ProgressChanged += BwAchievementUpdaterOnProgressChanged;
             _bwAchievementUpdater.RunWorkerCompleted += BwAchievementUpdaterOnRunWorkerCompleted;
         }
 
         private void InitCommand()
         {
-            RefreshUserCommand = new Command(() =>
-            {
-                _bwAchievementUpdater.RunWorkerAsync();
-            });
+            RefreshUserCommand = new Command(GetAllAchievements);
         }
 
-        private void BwAchievementUpdaterOnProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void GetAllAchievements()
         {
+            _bwAchievementUpdater.RunWorkerAsync();
         }
 
         private void BwAchievementUpdaterOnDoWork(object sender, DoWorkEventArgs e)
         {
-            try
-            {
-                (App.CurrentUser as User)?.GetAllAchievements();
-            }
-            catch (Exception ex)
-            {
-                Log.Warning("Error Achievement Update", ex.Message);
-            }
+            var allAchievements = ((User)App.CurrentUser).GetAllAchievements(App.IpAddress).Result;
+            e.Result = new ObservableCollection<IAchievement>(allAchievements ?? new List<IAchievement>());
         }
 
         private void BwAchievementUpdaterOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            IsBusy = false;
-
-            _ownPage.DisplayToastAsync(e.Error is null ? "Успех, вот ачивки!" : $"Крах! Вот ошибка\n{e.Error.Message}");
+            Achievements = new ObservableCollection<IAchievement>(e.Result as ObservableCollection<IAchievement>);
+            _ownPage.DisplayToastAsync(new ToastOptions
+            {
+                BackgroundColor = Color.FromHex("#c661cf"),
+                Duration = TimeSpan.FromSeconds(2),
+                MessageOptions = new MessageOptions
+                {
+                    Message = e.Error is null ? "Успех, вот ачивки!" : $"Крах! Вот ошибка\n{e.Error.Message}",
+                    Foreground = Color.White
+                }
+            });
 
             OnPropertyChanged(nameof(Achievements));
-            OnPropertyChanged(nameof(ArrayAchievements));
+            IsBusy = false;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace MobileApps.Views
     {
         public DetailReportInfoPage(IReport report)
         {
-            BindingContext = new DetailReportInfoViewModel(report, this);
+            BindingContext = new DetailReportInfoViewModel(this, report);
             InitializeComponent();
         }
     }

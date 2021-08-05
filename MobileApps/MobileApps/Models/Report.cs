@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
@@ -48,21 +49,21 @@ namespace MobileApps.Models
 
         public ImageSource ImagePreview => _imagePreview is null ? null : ImageSource.FromStream(() => new StreamReader(_imagePreview).BaseStream);
 
-        public Report(ICar car, ObservableCollection<string> imagesPaths, DateTime date, string description, StatusReport status)
+        public Report(ICar car, IEnumerable<string> imagesPaths, DateTime date, string description, StatusReport status)
         {
             DateReported = date;
             BadCar = car;
-            ImagesPaths = imagesPaths;
+            ImagesPaths = new ObservableCollection<string>(imagesPaths);
             Status = status;
             Description = description;
             ImagesSources = new ObservableCollection<ImageSource>();
 
-            foreach (var imagesPath in ImagesPaths)
-            {
-                ImagesSources.Add(ImageSource.FromUri(new Uri($"http://188.225.83.42:7000{imagesPath}")));
-            }
+            //foreach (var imagesPath in ImagesPaths)
+            //{
+            //    ImagesSources.Add(ImageSource.FromUri(new Uri($"http://188.225.83.42:7000{imagesPath}")));
+            //}
 
-            _imagePreview = ResizeImage(256, 100, new Uri($"http://188.225.83.42:7000{this.ImagesPaths[0]}"));
+            //_imagePreview = ResizeImage(256, 100, new Uri($"http://188.225.83.42:7000{this.ImagesPaths[0]}"));
 
             Log.Warning("f", "a");
         }

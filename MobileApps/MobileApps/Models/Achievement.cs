@@ -8,9 +8,20 @@ namespace MobileApps.Models
 {
     public class Achievement : IAchievement, INotifyPropertyChanged
     {
-        private string _name;
+        private int _id;
+        [JsonProperty("id")]
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                OnPropertyChanged(nameof(Id));
+            }
+        }
 
-        [JsonProperty("achivment_name")]
+        private string _name;
+        [JsonProperty("name")]
         public string Name
         {
             get => _name;
@@ -22,8 +33,7 @@ namespace MobileApps.Models
         }
 
         private string _description;
-
-        [JsonProperty("achivment_description")]
+        [JsonProperty("description")]
         public string Description
         {
             get => _description;
@@ -35,7 +45,6 @@ namespace MobileApps.Models
         }
 
         private string _bigImage;
-
         [JsonProperty("big_image")]
         public string BigImage
         {
@@ -48,7 +57,6 @@ namespace MobileApps.Models
         }
 
         private string _smallImage;
-
         [JsonProperty("small_image")]
         public string SmallImage
         {

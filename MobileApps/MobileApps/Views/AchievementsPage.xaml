@@ -19,7 +19,7 @@
             <ScrollView>
                 <StackLayout Grid.Row="2" Padding="10">
                     <BindableLayout.ItemsSource>
-                        <Binding Path="ArrayAchievements" />
+                        <Binding Path="Achievements" />
                     </BindableLayout.ItemsSource>
                     <BindableLayout.EmptyView>
                         <Grid>

@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Popups;
 using RestSharp;
 using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.CommunityToolkit.UI.Views.Options;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -23,11 +25,12 @@ namespace MobileApps.ViewModels
         private readonly BackgroundWorker _bwSenderReport;
         private readonly IUser _user = App.CurrentUser;
         private RestClient _restClient;
+        private readonly List<FileResult> _fileResults = new();
         
         public NewReportViewModel(Page page)
         {
             _ownPage = page;
-            
+
             GetCaptcha();
             
             CompressedImagesPathsCollection = new ObservableCollection<ImageSource>{ null, null, null };
@@ -256,28 +259,73 @@ namespace MobileApps.ViewModels
 
         private void BwSenderReportOnProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            _ownPage.DisplayToastAsync((string)e.UserState);
+            _ownPage.DisplayToastAsync(new ToastOptions
+            {
+                BackgroundColor = Color.FromHex("#c661cf"),
+                Duration = TimeSpan.FromSeconds(500),
+                MessageOptions = new MessageOptions
+                {
+                    Message = (string)e.UserState,
+                    Foreground = Color.White
+                }
+            });
         }
 
         private void BwSenderReportOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            IsBusy = false;
+            if (e.Result is HttpResponseMessage response)
+            {
+                if (response?.StatusCode != HttpStatusCode.OK)
+                {
+                    _ownPage.DisplayAlert("Ошибка", $"Произошла проблема при отправке!!!\n{response.Content.ReadAsStringAsync().Result}", "OK");
+                    return;
+                }
 
-            _ownPage.DisplayToastAsync("Жалоба отправлена!");
-            _ownPage.SendBackButtonPressed();
+                _ownPage.DisplayToastAsync(new ToastOptions
+                {
+                    BackgroundColor = Color.FromHex("#c661cf"),
+                    Duration = TimeSpan.FromSeconds(500),
+                    MessageOptions = new MessageOptions
+                    {
+                        Message = "Жалоба отлично отправлена!",
+                        Foreground = Color.White
+                    }
+                });
+                _ownPage.SendBackButtonPressed();
+            }
+
+            if (e.Result is Exception ex)
+            {
+                _ownPage.DisplayAlert("Ошибка", $"Произошла проблема при отправке!!!\n{ex.Message}", "OK");
+            }
+
+            IsBusy = false;
         }
 
         private void BwSenderReportOnDoWork(object sender, DoWorkEventArgs e)
         {
             IsBusy = true;
 
-            _ownPage.DisplayToastAsync("Всё верно, отправляем жалобу!");
             _bwSenderReport.ReportProgress(3, "Всё верно, отправляем жалобу!");
+            _bwSenderReport.ReportProgress(4, "Загружаем фотографии на сервер!");
+
+            var loadedFileUrls = new List<string>();
+
+            for (int i = 0; i < _fileResults.Count; i++)
+            {
+                _bwSenderReport.ReportProgress(i+5, $"Отправляем {i+1} фотографию!");
+
+                var url = FirebaseManager.UploadImage(_fileResults[i].OpenReadAsync().Result, App.CurrentUser).Result;
+
+                loadedFileUrls.Add(url);
+            }
 
             var car = new Car(NumberCar, RegionCar, CountryCar);
-            var report = new Report(car, ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing);
+            var report = new Report(car, loadedFileUrls, DateTime.Now, Description, StatusReport.Processing);
 
-            (_user as User)?.SendReport(report);
+            var response = (_user as User)?.SendReport(report, App.IpAddress).Result;
+
+            e.Result = response;
         }
 
         private async void PickPhoto(string index)
@@ -291,6 +339,7 @@ namespace MobileApps.ViewModels
                     Title = "Выберите 1 фото",
 
                 });
+                _fileResults.Add(photo);
 
                 var pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
 
@@ -324,8 +373,9 @@ namespace MobileApps.ViewModels
                 {
                     Title = "Сделайте 1 фото",
                 });
-
-                string pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
+                _fileResults.Add(photo);
+                
+                var pathResizedPhoto = ImageResizer.ResizeImage(1024, 100, photo);
 
                 CompressedImagesPathsCollection[intIndex] = ImageSource.FromFile(pathResizedPhoto);
                 ImagesPathsCollection[intIndex] = pathResizedPhoto;
@@ -345,32 +395,6 @@ namespace MobileApps.ViewModels
             {
                 Log.Warning(ex.Message, "Error");
             }
-        }
-
-        private async void SendReportToServer()
-        {
-            IsBusy = true;
-            
-            if (IsCorrectData() == false)
-            {
-                await _ownPage.DisplayAlert("Неверный формат", "Вы ввели номер машины неверного формата", "Ok");
-                return;
-            }
-            
-            if (CompressedImagesPathsCollection.Count != 3)
-            {
-                await _ownPage.DisplayAlert("Нехватка данных", "Не были выбрана или сделаны фотографии нарушения.", "Исправить");
-                return;
-            }
-
-            var car = new Car(NumberCar, RegionCar, CountryCar);
-            var report = new Report(car, ImagesPathsCollection, DateTime.Now, Description, StatusReport.Processing);
-
-            (_user as User)?.SendReport(report);
-
-            IsBusy = false;
-
-            _ownPage.SendBackButtonPressed();
         }
 
         private bool IsCorrectData()

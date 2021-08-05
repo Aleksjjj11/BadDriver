@@ -10,5 +10,5 @@
     <Image Source="{Binding CurrentImage}"
            VerticalOptions="CenterAndExpand"
            HorizontalOptions="CenterAndExpand"
-           Aspect="AspectFit"></Image>
+           Aspect="AspectFit"/>
 </xct:Popup>

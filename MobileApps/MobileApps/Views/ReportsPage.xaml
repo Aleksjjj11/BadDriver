@@ -26,12 +26,13 @@
                              Command="{Binding RefreshInfoCommand}"
                              RefreshColor="{StaticResource Primary1}">
                     <ScrollView>
-                        <StackLayout>
-                            <BindableLayout.ItemsSource>
-                                <Binding Path="ArrayReports"
-                                         Mode="OneWay" />
-                            </BindableLayout.ItemsSource>
-                            <BindableLayout.EmptyView>
+                        <CollectionView ItemsSource="{Binding Reports, Mode=OneWay}"
+                                        Margin="3">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical"
+                                                   ItemSpacing="5" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.EmptyView>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="2*"/>
@@ -39,7 +40,7 @@
                                     </Grid.RowDefinitions>
                                     <Label Grid.Row="0" 
                                            Text="Кажется тут пусто"
-                                           VerticalOptions="End"
+                                           VerticalOptions="CenterAndExpand"
                                            FontSize="Title"
                                            TextColor="{StaticResource SecondaryB1}"></Label>
                                     <forms:AnimationView 
@@ -51,16 +52,15 @@
                                         RepeatMode="Infinite"
                                         HeightRequest="300"
                                         WidthRequest="300"
-                                        VerticalOptions="Start"
+                                        VerticalOptions="StartAndExpand"
                                         HorizontalOptions="Center" 
                                         forms:CacheComposition="True"/>
                                 </Grid>
-                            </BindableLayout.EmptyView>
-                            <BindableLayout.ItemTemplate>
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="interfaces:IReport">
-                                    <Frame Margin="10, 5"
-                                           Padding="10, 5"
-                                           BackgroundColor="#f3efff">
+                                    <Frame BackgroundColor="#f3efff"
+                                           Padding="0">
                                         <Frame.GestureRecognizers>
                                             <TapGestureRecognizer NumberOfTapsRequired="1"
                                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ReportsViewModel}}, 
@@ -134,15 +134,17 @@
                                         </Grid>
                                     </Frame>
                                 </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </StackLayout>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </ScrollView>
                 </RefreshView>
             </Grid>
             <ImageButton Margin="15"
-                         Source="{FontImage FontFamily=Glyphter, Color=White, Size=Large, Glyph=c}"
+                         Source="{FontImage FontFamily=Glyphter, Color={StaticResource Primary1}, Size=Large, Glyph=c}"
                          Command="{Binding OpenNewReportPageCommand}"
-                         BackgroundColor="{StaticResource Primary1}"
+                         BorderWidth="2"
+                         BackgroundColor="Transparent"
+                         BorderColor="{StaticResource Primary1}"
                          CornerRadius="100"
                          Padding="15"
                          AbsoluteLayout.LayoutBounds=".95, .95, 90, 90"

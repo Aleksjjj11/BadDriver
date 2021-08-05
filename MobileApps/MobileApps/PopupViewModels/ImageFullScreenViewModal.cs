@@ -9,6 +9,45 @@ namespace MobileApps.PopupViewModels
     {
         private Page _ownPage;
 
+        public ImageFullScreenViewModal(ImageSource source, Page ownPage)
+        {
+            CurrentImage = source;
+            _ownPage = ownPage;
+
+            SKBitmap image = null;
+
+            switch (source)
+            {
+                case FileImageSource imageSource:
+                {
+                    image = SKBitmap.Decode(imageSource.File);
+                    break;
+                }
+                case UriImageSource uriImageSource:
+                {
+                    var httpClient = new System.Net.Http.HttpClient();
+                    var bytes = httpClient.GetByteArrayAsync(uriImageSource.Uri.ToString()).Result;
+                    var stream = new MemoryStream(bytes);
+
+                    image = SKBitmap.Decode(stream);
+                    break;
+                }
+            }
+
+            var widthPopup = _ownPage.Width - 30;
+
+            if (image is null)
+            {
+                SizePopup = new Size(widthPopup, widthPopup * 0.75);
+            }
+            else
+            {
+                double ratio = (double)image.Height / image.Width;
+
+                SizePopup = new Size(widthPopup, widthPopup * ratio);
+            }
+        }
+
         private Size _sizePopup;
         public Size SizePopup
         {
@@ -28,40 +67,6 @@ namespace MobileApps.PopupViewModels
             {
                 _currentImage = value;
                 OnPropertyChanged(nameof(CurrentImage));
-            }
-        }
-
-        public ImageFullScreenViewModal(ImageSource source, Page ownPage)
-        {
-            CurrentImage = source;
-            _ownPage = ownPage;
-
-            SKBitmap image = null;
-
-            if (source is FileImageSource imageSource)
-            {
-                image = SKBitmap.Decode(imageSource.File);
-            }
-            else if (source is UriImageSource uriImageSource)
-            {
-                var httpClient = new System.Net.Http.HttpClient();
-                var bytes = httpClient.GetByteArrayAsync(uriImageSource.Uri.ToString()).Result;
-                var stream = new MemoryStream(bytes);
-
-                image = SKBitmap.Decode(stream);
-            }
-
-            var widthPopup = _ownPage.Width - 30;
-
-            if (image is null)
-            {
-                SizePopup = new Size(widthPopup, widthPopup * 0.75);
-            }
-            else
-            {
-                double ratio = (double)image.Height / image.Width;
-
-                SizePopup = new Size(widthPopup, widthPopup * ratio);
             }
         }
     }

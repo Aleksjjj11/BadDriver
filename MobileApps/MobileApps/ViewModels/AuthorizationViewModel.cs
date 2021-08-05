@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using MobileApps.Interfaces;
 using MobileApps.Models;
 using MobileApps.Views;
@@ -9,7 +10,6 @@ using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.CommunityToolkit.UI.Views.Options;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 namespace MobileApps.ViewModels
 {
@@ -17,6 +17,12 @@ namespace MobileApps.ViewModels
     {
         private readonly Page _ownPage;
         private readonly BackgroundWorker _bwAuth;
+        private string _accessToken;
+        private string _refreshToken;
+
+        public AuthorizationViewModel()
+        {
+        }
 
         private bool _isBusy;
         public bool IsBusy
@@ -57,109 +63,14 @@ namespace MobileApps.ViewModels
         {
             _ownPage = page;
 
-            Username = App.CurrentUser?.Username;
-            Password = App.CurrentUser?.Password;
+            Username = Preferences.Get("username", string.Empty);
+            Password = Preferences.Get("password", string.Empty);
 
             InitCommands();
 
             _bwAuth = new BackgroundWorker();
             _bwAuth.DoWork += BwAuthOnDoWork;
             _bwAuth.RunWorkerCompleted += BwAuthOnRunWorkerCompleted;
-        }
-
-        private void InitCommands()
-        {
-            ChangeFormCommand = new Command(() =>
-            {
-                IsAuthorization = !IsAuthorization;
-            });
-
-            SendFormCommand = new Command(() =>
-            {
-                IsBusy = true;
-                _bwAuth.RunWorkerAsync();
-            }, () => IsBusy == false);
-
-            ForgotPasswordCommand = new Command(() =>
-            {
-                var toastOption = new ToastOptions
-                {
-                    BackgroundColor = Color.Transparent,
-                    MessageOptions = new MessageOptions
-                    {
-                        Message = "Данная функция пока не работает(",
-                        Foreground = Color.Black
-                    }
-                };
-
-                _ownPage.DisplayToastAsync(toastOption);
-            });
-
-            PropertyChanged += (_, __) =>
-            {
-                SendFormCommand.ChangeCanExecute();
-            };
-        }
-
-        private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            IsBusy = false;
-
-            try
-            {
-                switch (Device.RuntimePlatform)
-                {
-                    case Device.Android:
-                    {
-                        if (e?.Result is User)
-                        {
-                            var user = e.Result as IUser;
-
-                            App.CurrentUser = user;
-
-                            (_ownPage as AuthorizationPage)?.BackPressed();
-
-                            Preferences.Set("username", App.CurrentUser?.Username);
-                            Preferences.Set("password", App.CurrentUser?.Password);
-
-                            _ownPage.DisplayToastAsync("Вы успешно зарегистрировались");
-                        }
-
-                        if (e?.Result is string)
-                        {
-                            TextError = e?.Result.ToString();
-                        }
-
-                        if (e?.Result is string result)
-                        {
-                            _ownPage.DisplayToastAsync(result);
-                        }
-
-                        break;
-                    }
-                    case Device.iOS:
-                    {
-                        break;
-                    }
-                    default: break;
-                }
-            }
-            catch (Exception exception)
-            {
-                _ownPage.DisplayToastAsync(exception.Message);
-            }
-        }
-
-        private void BwAuthOnDoWork(object sender, DoWorkEventArgs e)
-        {
-            e.Result = IsAuthorization ? AuthorizationRequest() : RegistrationRequest();
-
-            if (e.Result is User user)
-            {
-                user?.Update();
-                user?.UpdateReports();
-                user?.GetAllAchievements();
-            }
         }
 
         private string _username;
@@ -243,6 +154,148 @@ namespace MobileApps.ViewModels
             }
         }
 
+        private void InitCommands()
+        {
+            ChangeFormCommand = new Command(() =>
+            {
+                IsAuthorization = !IsAuthorization;
+            });
+
+            SendFormCommand = new Command(async () =>
+            {
+                IsBusy = true;
+
+                if (IsAuthorization)
+                {
+                    var isSuccessAuth = await AuthorizationRequest();
+
+                    if (isSuccessAuth)
+                    {
+                        await Shell.Current.GoToAsync($"//{nameof(ReportsPage)}");
+                        await _ownPage.DisplayToastAsync(new ToastOptions
+                        {
+                            BackgroundColor = Color.FromHex("#c661cf"),
+                            Duration = TimeSpan.FromSeconds(2),
+                            MessageOptions = new MessageOptions
+                            {
+                                Message = "С возвращением",
+                                Foreground = Color.White
+                            }
+                        });
+                    }
+                    else
+                    {
+                        await _ownPage.DisplayToastAsync(new ToastOptions
+                        {
+                            BackgroundColor = Color.FromHex("#c661cf"),
+                            Duration = TimeSpan.FromSeconds(2),
+                            MessageOptions = new MessageOptions
+                            {
+                                Message = "Крах при авторизации",
+                                Foreground = Color.White
+                            }
+                        });
+                    }
+
+                }
+                else
+                {
+                    await RegistrationRequest();
+                }
+
+                IsBusy = false;
+            }, () => IsBusy == false);
+
+            ForgotPasswordCommand = new Command(() =>
+            {
+                _ownPage.DisplayToastAsync(new ToastOptions
+                {
+                    BackgroundColor = Color.FromHex("#c661cf"),
+                    Duration = TimeSpan.FromSeconds(2),
+                    MessageOptions = new MessageOptions
+                    {
+                        Message = "Данная функция пока не работает(",
+                        Foreground = Color.White
+                    }
+                });
+            });
+
+            PropertyChanged += (_, __) =>
+            {
+                SendFormCommand.ChangeCanExecute();
+            };
+        }
+
+        private void BwAuthOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            IsBusy = false;
+
+            try
+            {
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.Android:
+                        {
+                            if (e?.Result is User)
+                            {
+                                var user = e.Result as IUser;
+
+                                App.CurrentUser = user;
+
+                                (_ownPage as AuthorizationPage)?.BackPressed();
+
+                                Preferences.Set("username", App.CurrentUser?.Username);
+                                Preferences.Set("password", App.CurrentUser?.Password);
+
+                                _ownPage.DisplayToastAsync(new ToastOptions
+                                {
+                                    BackgroundColor = Color.FromHex("#c661cf"),
+                                    Duration = TimeSpan.FromSeconds(2),
+                                    MessageOptions = new MessageOptions
+                                    {
+                                        Message = "Вы успешно зарегистрировались",
+                                        Foreground = Color.White
+                                    }
+                                });
+                            }
+
+                            if (e?.Result is string)
+                            {
+                                TextError = e?.Result.ToString();
+                            }
+
+                            if (e?.Result is string result)
+                            {
+                                _ownPage.DisplayToastAsync(result);
+                            }
+
+                            break;
+                        }
+                    case Device.iOS:
+                        {
+                            break;
+                        }
+                    default: break;
+                }
+            }
+            catch (Exception exception)
+            {
+                _ownPage.DisplayToastAsync(exception.Message);
+            }
+        }
+
+        private void BwAuthOnDoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = IsAuthorization ? AuthorizationRequest() : RegistrationRequest();
+
+            if (e.Result is User user)
+            {
+                user?.Update(App.IpAddress).Wait();
+                user?.UpdateReports(App.IpAddress).Wait();
+                user?.GetAllAchievements(App.IpAddress).Wait();
+            }
+        }
+
         private bool IsCorrectData()
         {
             if (IsAuthorization)
@@ -260,49 +313,31 @@ namespace MobileApps.ViewModels
                    Password == RepeatPassword;
         }
 
-        private string AuthorizationRequest()
+        private async Task<bool> AuthorizationRequest()
         {
             if (IsCorrectData() == false)
             {
-                return "Проверьте логин и пароль";
+                return false;
             }
 
-            IUser user = new User
+
+            var user = new User
             {
                 Username = Username,
                 Password = Password
             };
 
-            try
-            {
-                (user as User)?.Update();
-                (user as User)?.UpdateReports();
+            var loginResponse = await user.Login();
 
-                App.CurrentUser = user;
+            user.SaveTokensAndUserInfoInProperty();
+            user.Update(App.IpAddress);
 
-                (_ownPage as AuthorizationPage)?.BackPressed();
+            App.CurrentUser = user;
 
-                Preferences.Set("username", App.CurrentUser?.Username);
-                Preferences.Set("password", App.CurrentUser?.Password);
-
-                return "Вы успешно авторизировались!";
-            }
-            catch (InvalidOperationException ex)
-            {
-                Preferences.Set("username", App.CurrentUser?.Username);
-                Preferences.Set("password", App.CurrentUser?.Password);
-
-                return "Вы успешно авторизировались!";
-            }
-            catch (Exception ex)
-            {
-                Log.Warning("AuthError", ex.Message);
-
-                return "Проверьте логин и пароль";
-            }
+            return loginResponse;
         }
-
-        private object RegistrationRequest(string ipUrl = "http://188.225.83.42:7000")
+        //TODO Переписать запрос на текущий сервер
+        private async Task<object> RegistrationRequest(string ipUrl = "http://188.225.83.42:7000")
         {
             if (IsCorrectData() == false)
             {

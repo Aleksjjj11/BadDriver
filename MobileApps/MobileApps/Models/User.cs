@@ -1,19 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 using MobileApps.Interfaces;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
+using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace MobileApps.Models
 {
     public class User: INotifyPropertyChanged, IUser
     {
+        private string _accessToken;
+        private string _refreshToken;
+        private readonly HttpClient _httpClient;
+
         public User()
         {
+            _httpClient = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+            });
+
             Reports = new ObservableCollection<IReport>();
             Achievements = new ObservableCollection<IAchievement>();
         }
@@ -22,6 +40,17 @@ namespace MobileApps.Models
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        private int _id;
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                OnPropertyChanged(nameof(Id));
+            }
         }
 
         private string _username;
@@ -83,214 +112,297 @@ namespace MobileApps.Models
 
         public int CountDeclined => Reports.Count(report => report.Status == StatusReport.Declined);
         public int CountAccepted => Reports.Count(report => report.Status == StatusReport.Accepted);
-        public int CountProcessing => Reports.Count(report => report.Status == StatusReport.Processing);
 
-        public void Update(string ipUrl = "http://188.225.83.42:7000")
+        public async Task Update(string ipUrl)
         {
-            string accessToken = GetAccessesToken(ipUrl);
-
-            if (accessToken is null)
-                throw new Exception("Ошибка авторизации");
-
-            var client = new RestClient($"{ipUrl}/reports/user-info/")
+            var request = new HttpRequestMessage
             {
-                Timeout = -1
+                RequestUri = new Uri($"{ipUrl}/api/User/about"),
+                Method = HttpMethod.Get,
             };
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
 
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _httpClient.SendAsync(request);
 
-            var response = client.Execute(request);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await CheckAndUpdateAccessToken();
+                response = await _httpClient.SendAsync(request);
+            }
 
-            if (response.StatusCode == 0)
-                throw new Exception("Сервер не отвечает");
+            var stringResponse = await response.Content.ReadAsStringAsync();
 
-            string content = response.Content.Replace("\\", "");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return;
+            }
 
-            var userInfoJson = new JObject(JObject.Parse(JArray.Parse(content)[0].ToString()));
+            var jsonResponse = JObject.Parse(stringResponse);
 
             try
             {
-                Username = userInfoJson["username"]?.ToString();
-                Email = userInfoJson["email"]?.ToString();
-                FirstName = userInfoJson["first_name"]?.ToString();
-                LastName = userInfoJson["last_name"]?.ToString();
-            } 
+                Id = jsonResponse["id"].Value<int>();
+                Username = jsonResponse["username"].ToString();
+                Email = jsonResponse["email"].ToString();
+                FirstName = jsonResponse["firstName"].ToString();
+                LastName = jsonResponse["lastName"].ToString();
+            }
             catch (Exception ex)
             {
                 Log.Warning("Update", $"Info wasn't updated.\n{ex.Message}");
             }
-
         }
 
-        public void UpdateReports(string ipUrl = "http://188.225.83.42:7000")
+        public int CountProcessing => Reports.Count(report => report.Status == StatusReport.Processing);
+
+        public async Task<bool> Login()
         {
-            string accessToken = GetAccessesToken(ipUrl);
-
-            if (accessToken is null)
-                throw new Exception("Ошибка авторизации");
-
-            var client = new RestClient($"{ipUrl}/reports/user-reports/")
+            var request = new HttpRequestMessage
             {
-                Timeout = -1
+                RequestUri = new Uri($"{App.IpAddress}/api/User/tokens/"), Method = HttpMethod.Post,
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    username = Username,
+                    password = Password
+                }), Encoding.UTF8, "application/json")
             };
 
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
-
-            var response = client.Execute(request);
-
-            if (response.StatusCode == 0)
-                throw new Exception("Сервер не отвечает");
-            
-            var reportsJArray = new JArray(JArray.Parse(response.Content));
-            
             try
             {
+                _accessToken = string.Empty;
+                _refreshToken = string.Empty;
+
+                var response = await _httpClient.SendAsync(request);
+                var stringResponse = await response.Content.ReadAsStringAsync();
+                ReadResponseAndSetTokens(stringResponse);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            } 
+            
+            return string.IsNullOrWhiteSpace(_accessToken) == false && string.IsNullOrWhiteSpace(_refreshToken) == false;
+        }
+
+        public async Task UpdateReports(string ipUrl)
+        {
+            var request = new HttpRequestMessage
+            {
+                RequestUri = new Uri($"{ipUrl}/api/User/reports/"),
+                Method = HttpMethod.Get
+            };
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
+
+            try
+            {
+                var response = _httpClient.SendAsync(request).Result;
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await CheckAndUpdateAccessToken();
+                    response = _httpClient.SendAsync(request).Result;
+                }
+
+                var stringResponse = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new HttpRequestException($"Status code: {response.StatusCode}\n" +
+                                                   $"Message: {stringResponse}");
+                }
+
+                var jsonResponseReports = JArray.Parse(stringResponse);
+
                 Reports.Clear();
 
-                for (int i = 0; i < reportsJArray.Count; i++)
+                var cars = new List<Car>();
+
+                foreach (var jsonResponseReport in jsonResponseReports)
                 {
-                    var carNumber = reportsJArray[i]["car_number"]?.ToString();
-                    var carRegion = reportsJArray[i]["car_region"]?.ToString();
-                    var carCountry = reportsJArray[i]["car_country"]?.ToString();
-                    var description = reportsJArray[i]["description"]?.ToString();
-                    var dateTime = DateTime.Parse(reportsJArray[i]["data"]?.ToString());
-                    var images = new ObservableCollection<string>();
-                    var statusReport = (StatusReport)reportsJArray[i]["status"]?.ToObject<int>();
+                    var description = jsonResponseReport["description"].ToString();
+                    var imageUrl1 = jsonResponseReport["imageUrl1"].ToString();
+                    var imageUrl2 = jsonResponseReport["imageUrl2"].ToString();
+                    var imageUrl3 = jsonResponseReport["imageUrl3"].ToString();
+                    var status = (StatusReport)jsonResponseReport["status"].Value<int>();
+                    var dateCreated = jsonResponseReport["dateCreated"].Value<DateTime>();
+                    var carId = int.Parse(jsonResponseReport["carId"].ToString());
 
-                    images.Add(reportsJArray[i]["image_1"]?.ToString());
-                    images.Add(reportsJArray[i]["image_2"]?.ToString());
-                    images.Add(reportsJArray[i]["image_3"]?.ToString());
+                    var car = cars.FirstOrDefault(x => x.Id == carId);
 
-                    var car = new Car(carNumber, carRegion, carCountry);
-                    var report = new Report(car, images, dateTime, description, statusReport);
+                    if (car == null)
+                    {
+                        var getCarRequest = new HttpRequestMessage
+                        {
+                            RequestUri = new Uri($"{ipUrl}/api/Car?id={carId}"),
+                            Method = HttpMethod.Get,
+                        };
+                        getCarRequest.Headers.Add("Authorization", $"Bearer {_accessToken}");
+
+                        response = _httpClient.SendAsync(getCarRequest).Result;
+                        stringResponse = await response.Content.ReadAsStringAsync();
+
+                        car = JsonConvert.DeserializeObject<Car>(stringResponse);
+                    }
+
+                    var report = new Report(car, new ObservableCollection<string>
+                    {
+                        imageUrl1, imageUrl2, imageUrl3
+                    }, dateCreated, description, status);
 
                     Reports.Add(report);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Log.Warning("Update", $"Reports weren't updated.\n{ex.Message}");
+                Debug.WriteLine(e);
             }
         }
 
         public ObservableCollection<IAchievement> Achievements { get; set; }
 
-        public void GetAllAchievements(string ipUrl = "http://188.225.83.42:7000")
+        public async Task<IEnumerable<IAchievement>> GetAllAchievements(string ipUrl)
         {
-            string accessToken = GetAccessesToken();
-            
-            if (accessToken is null)
-                throw new Exception("Ошибка авторизации");
-
-            var achievementCollection = new ObservableCollection<IAchievement>();
-
-            var client = new RestClient($"{ipUrl}/achivments/all_achivments/")
+            var request = new HttpRequestMessage
             {
-                Timeout = -1
+                RequestUri = new Uri($"{ipUrl}/api/Achievement/achievements/"),
+                Method = HttpMethod.Get
             };
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
 
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
-            
-            var response = client.Execute(request);
-            
-            if (response.StatusCode == 0)
-                throw new Exception("Сервер не отвечает");
-            
-            var achievementsJArray = JArray.Parse(response.Content);
-            
-            for (int i = 0; i < achievementsJArray.Count; i++)
+            var response = _httpClient.SendAsync(request).Result;
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                var name = achievementsJArray[i]["achivment_name"]?.ToString();
-                
-                if (name is null) continue;
-
-                var description = achievementsJArray[i]["achivment_description"]?.ToString();
-                
-                if (description is null) continue;
-
-                var bigImage = ipUrl + achievementsJArray[i]["big_image"];
-                
-                if (bigImage is null) continue;
-
-                var smallImage = ipUrl + achievementsJArray[i]["small_image"];
-                
-                if (smallImage is null) continue;
-
-                var achieve = new Achievement
-                {
-                    Name = name,
-                    Description = description,
-                    SmallImage = smallImage,
-                    BigImage = bigImage
-                };
-                
-                achievementCollection.Add(achieve);
+                await CheckAndUpdateAccessToken();
+                response = _httpClient.SendAsync(request).Result;
             }
 
-            Achievements = achievementCollection;
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var achievements = JsonConvert.DeserializeObject<List<Achievement>>(stringResponse);
+                return achievements;
+            }
+            catch (Exception e)
+            {
+                await Shell.Current.DisplayToastAsync(e.Message);
+                return new List<IAchievement>();
+            }
         }
 
-        public void SendReport(IReport report, string ipUrl = "http://188.225.83.42:7000")
+        public async Task GetGivenAchievements(string ipUrl)
         {
-            string accessToken = GetAccessesToken(ipUrl);
-
-            if (accessToken is null)
-                throw new Exception("Access token is null!");
-
-            var client = new RestClient($"{ipUrl}/reports/send/")
+            var request = new HttpRequestMessage
             {
-                Timeout = -1
+                RequestUri = new Uri($"{ipUrl}/api/User/achievements/"),
+                Method = HttpMethod.Get
             };
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
 
-            var request = new RestRequest(Method.POST);
-            
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
-            request.AddParameter("user_name", this.Username);
-            request.AddParameter("car_number", report.BadCar.Number);
-            request.AddParameter("car_region", report.BadCar.Region);
-            request.AddParameter("car_country", report.BadCar.Country);
-            request.AddParameter("data", report.DateReported.ToString("s"));
-            request.AddParameter("status", (int)report.Status);
-            request.AddParameter("description", report.Description);
-            request.AddFile("image_1", report.ImagesPaths[0]);
-            request.AddFile("image_2", report.ImagesPaths[1]);
-            request.AddFile("image_3", report.ImagesPaths[2]);
-            
-            var response = client.Execute(request);
+            var response = _httpClient.SendAsync(request).Result;
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await CheckAndUpdateAccessToken();
+                response = _httpClient.SendAsync(request).Result;
+            }
+
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var achievements = JsonConvert.DeserializeObject<List<Achievement>>(stringResponse);
+                Achievements.Clear();
+                Achievements = new ObservableCollection<IAchievement>(achievements);
+
+                OnPropertyChanged(nameof(Achievements));
+            }
+            catch (Exception e)
+            {
+                await Shell.Current.DisplayToastAsync(e.Message);
+            }
         }
-        /// <summary>
-        /// Метод отправляет запрос на авторизацию и получает токен доступа. При провальной авторизации возвращает null.
-        /// </summary>
-        /// <param name="ipUrl">Ссылка на сервер формата http://xxxx.xxxx.xxxx.xxxx:xxxx</param>
-        /// <returns></returns>
-        private string GetAccessesToken(string ipUrl = "http://188.225.83.42:7000")
+
+        public async Task<HttpResponseMessage> SendReport(IReport report, string ipUrl)
         {
-            var client = new RestClient($"{ipUrl}/auth/login/")
+            var car = report.BadCar;
+
+            var request = new HttpRequestMessage
             {
-                Timeout = -1
+                RequestUri = new Uri($"{ipUrl}/api/Report/create"),
+                Method = HttpMethod.Post,
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    userId = Id,
+                    car = new
+                    {
+                        id = car.Id,
+                        number = car.Number,
+                        regionCode = car.Region,
+                        countryCode = car.Country,
+                        userId = 0
+                    },
+                    description = report.Description,
+                    imageUrl1 = report.ImagesPaths[0],
+                    imageUrl2 = report.ImagesPaths[1],
+                    imageUrl3 = report.ImagesPaths[2],
+                }), Encoding.UTF8, "application/json")
+            };
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
+
+            try
+            {
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await CheckAndUpdateAccessToken();
+                    response = _httpClient.SendAsync(request).Result;
+                }
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public void SaveTokensAndUserInfoInProperty()
+        {
+            Preferences.Set("username", Username);
+            Preferences.Set("password", Password);
+            Preferences.Set("accessToken", _accessToken);
+            Preferences.Set("refreshToken", _refreshToken);
+        }
+
+        public async Task CheckAndUpdateAccessToken()
+        {
+            var request = new HttpRequestMessage
+            {
+                RequestUri = new Uri($"{App.IpAddress}/api/User/access"),
+                Method = HttpMethod.Post,
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    accessToken = _accessToken,
+                    refreshToken = _refreshToken
+                }), Encoding.UTF8, "application/json")
             };
 
-            var request = new RestRequest(Method.POST)
-            {
-                AlwaysMultipartFormData = true
-            };
+            _accessToken = string.Empty;
+            _refreshToken = string.Empty;
 
-            request.AddParameter("username", this.Username);
-            request.AddParameter("password", this.Password);
+            var response = await _httpClient.SendAsync(request);
+            var stringResponse = await response.Content.ReadAsStringAsync();
 
-            var response = client.Execute(request);
+            ReadResponseAndSetTokens(stringResponse);
+        }
 
-            if (response.StatusCode == 0)
-                throw new Exception("Сервер не отвечает");
+        private void ReadResponseAndSetTokens(string stringResponse)
+        {
+            var jsonResponse = JObject.Parse(stringResponse);
 
-            var responseJson = new JObject(JObject.Parse(response.Content));
-
-            var accessToken = responseJson["access"]?.ToString();
-
-            return accessToken;
+            _accessToken = jsonResponse["accessToken"]?.ToString();
+            _refreshToken = jsonResponse["refreshToken"]?["tokenString"]?.ToString();
         }
     }
 }

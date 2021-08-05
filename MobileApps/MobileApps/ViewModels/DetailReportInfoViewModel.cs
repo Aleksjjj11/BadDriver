@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using MobileApps.Interfaces;
 using MobileApps.Popups;
 using Xamarin.CommunityToolkit.Extensions;
@@ -10,14 +12,16 @@ namespace MobileApps.ViewModels
     {
         private readonly Page _ownPage;
 
-        public IReport Report { get; }
+        public IReport Report { get; private set; }
 
-        public ObservableCollection<ImageSource> ImageSources => Report?.ImagesSources;
-
-        public DetailReportInfoViewModel(IReport report, Page ownPage)
+        public ObservableCollection<ImageSource> ImageSources { get; private set; }
+        //TODO пофиксить наложение фотографий, когда кликаешь много раз на одну из них
+        public DetailReportInfoViewModel(Page ownPage, IReport report)
         {
-            Report = report;
             _ownPage = ownPage;
+            Report = report;
+
+            ImageSources = new ObservableCollection<ImageSource>(report.ImagesPaths.Select(x => ImageSource.FromUri(new Uri(x))));
 
             InitCommands();
         }

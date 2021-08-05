@@ -93,8 +93,8 @@ namespace MobileApps.ViewModels
 
         private void BwUpdaterOnDoWork(object sender, DoWorkEventArgs e)
         {
-            User.Update("http://188.225.83.42:7000");
-            User.UpdateReports("http://188.225.83.42:7000");
+            User.Update("https://192.168.0.102:5001");
+            User.UpdateReports("https://192.168.0.102:5001");
         }
 
         public Command UpdateUserCommand { get; private set; }
