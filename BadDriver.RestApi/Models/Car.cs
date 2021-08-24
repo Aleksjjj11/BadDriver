@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BadDriver.RestApi.Models
 {
@@ -15,5 +16,7 @@ namespace BadDriver.RestApi.Models
         public string CountryCode { get; set; }
         [Column("user_id")]
         public int UserId { get; set; }
+        [Column("last_inspection_date")]
+        public DateTime LastInspectionDate { get; set; }
     }
 }
