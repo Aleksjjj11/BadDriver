@@ -21,8 +21,8 @@ namespace BadDriver.RestApi.Controllers
             {
                 id = car.Id,
                 number = car.Number,
-                region_code = car.RegionCode,
-                country_code = car.CountryCode
+                regionCode = car.RegionCode,
+                countryCode = car.CountryCode
             });
         }
     }
