@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileApps", "MobileApps\Mo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadDriver.RestApi", "BadDriver.RestApi\BadDriver.RestApi.csproj", "{7BA432AC-CF22-407D-B527-797F7FA57E6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadDriversNatives.Android", "BadDriversNatives.Android\BadDriversNatives.Android.csproj", "{070E71A7-F83C-4910-B062-28791794BE2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,18 @@ Global
 		{7BA432AC-CF22-407D-B527-797F7FA57E6C}.Release|iPhone.Build.0 = Release|Any CPU
 		{7BA432AC-CF22-407D-B527-797F7FA57E6C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{7BA432AC-CF22-407D-B527-797F7FA57E6C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|iPhone.Build.0 = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{070E71A7-F83C-4910-B062-28791794BE2C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

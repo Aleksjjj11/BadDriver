@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Журнал"
+        android:icon="@drawable/notepad_1"
+        android:id="@+id/menu_journal_item"
+        app:itemRippleColor="@color/colorPrimary"
+        app:labelVisibilityMode="labeled"/>
+
+    <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Достижения"
+        android:icon="@drawable/star"
+        android:id="@+id/menu_achievements_item"
+        app:itemRippleColor="@color/colorPrimary"
+        app:labelVisibilityMode="labeled"/>
+
+    <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Гараж"
+        android:icon="@drawable/house"
+        android:id="@+id/menu_garage_item"
+        app:itemRippleColor="@color/colorPrimary"
+        app:labelVisibilityMode="labeled"/>
+
+    <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Профиль"
+        android:icon="@drawable/user"
+        android:id="@+id/menu_profile_item"
+        app:itemRippleColor="@color/colorPrimary"
+        app:labelVisibilityMode="labeled"/>
+</menu>

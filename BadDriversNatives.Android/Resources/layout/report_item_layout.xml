@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+    <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@android:color/black"
+          android:textSize="22sp"
+          android:text="A123BC"
+          android:id="@+id/number_car"
+          android:layout_weight="1.5"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@android:color/black"
+          android:textSize="22sp"
+          android:text="186"
+          android:id="@+id/region_car"
+          android:layout_weight="0.5"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@android:color/black"
+          android:textSize="22sp"
+          android:text="RUS"
+          android:id="@+id/country_car"
+          android:layout_weight="0.5"/>
+    </TableRow>
+
+    <TableRow
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textSize="16sp"
+        android:text="12.12.2020 16:30"
+        android:id="@+id/date_report"
+        android:layout_weight="1"/>
+    </TableRow>
+</TableLayout>
